@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { ChevronDown, ChevronUp, Globe } from 'lucide-react';
+import { useTranslation } from '../i18n/translations';
 
 const NewsFeed: React.FC = () => {
   const { dayState, readNews } = useGameStore();
   const [expandedNews, setExpandedNews] = useState<string[]>([]);
+  const { t, language } = useTranslation();
 
   const handleNewsClick = (id: string, isRead: boolean) => {
     setExpandedNews(prev => 
@@ -23,8 +25,8 @@ const NewsFeed: React.FC = () => {
     <div className="newsfeed-container">
       <div className="newsfeed-header">
         <Globe size={28} className="newsfeed-logo" />
-        <h2>Global Financial News</h2>
-        <span className="newsfeed-date">Market Day {dayState.currentDay}</span>
+        <h2>{t('newsfeed.title')}</h2>
+        <span className="newsfeed-date">{t('newsfeed.marketDay')} {dayState.currentDay}</span>
       </div>
 
       {featuredNews && (
@@ -33,17 +35,17 @@ const NewsFeed: React.FC = () => {
           onClick={() => handleNewsClick(featuredNews.id, featuredNews.read)}
         >
           <div className="news-card-content">
-            {!featuredNews.read && <span className="breaking-badge">BREAKING</span>}
-            <h2>{featuredNews.title}</h2>
+            {!featuredNews.read && <span className="breaking-badge">{t('newsfeed.breaking')}</span>}
+            <h2>{featuredNews.title[language]}</h2>
             
             <div className={`news-body ${expandedNews.includes(featuredNews.id) ? 'expanded' : 'collapsed'}`}>
-              <p>{featuredNews.content}</p>
+              <p>{featuredNews.content[language]}</p>
             </div>
             
             <div className="news-meta">
-              <span className="source">Source: GFN News Desk</span>
+              <span className="source">{t('newsfeed.sourceGfn')}</span>
               <button className="expand-btn">
-                {expandedNews.includes(featuredNews.id) ? 'Read Less' : 'Read Full Story'}
+                {expandedNews.includes(featuredNews.id) ? t('newsfeed.readLess') : t('newsfeed.readFull')}
               </button>
             </div>
           </div>
@@ -58,15 +60,15 @@ const NewsFeed: React.FC = () => {
             onClick={() => handleNewsClick(news.id, news.read)}
           >
             <div className="news-card-content">
-              {!news.read && <span className="new-badge">NEW</span>}
-              <h3 className=''>{news.title}</h3>
+              {!news.read && <span className="new-badge">{t('newsfeed.new')}</span>}
+              <h3 className=''>{news.title[language]}</h3>
               
               <div className={`news-body ${expandedNews.includes(news.id) ? 'expanded' : 'collapsed'}`}>
-                <p>{news.content}</p>
+                <p>{news.content[language]}</p>
               </div>
               
               <div className="news-meta">
-                <span className="source">Source: Market Watch</span>
+                <span className="source">{t('newsfeed.sourceMarketWatch')}</span>
                 <span className="read-more">
                    {expandedNews.includes(news.id) ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </span>

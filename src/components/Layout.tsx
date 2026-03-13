@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useQueryState, parseAsStringLiteral } from 'nuqs';
-import { Newspaper, TrendingUp, Briefcase, ChevronRight } from 'lucide-react';
+import { Newspaper, TrendingUp, Briefcase, ChevronRight, Globe } from 'lucide-react';
+import { useTranslation } from '../i18n/translations';
+import { useLanguageStore } from '../store/useLanguageStore';
 
 import DayEndSummary from './DayEndSummary';
 import Portfolio from './Portfolio';
@@ -21,6 +23,8 @@ const Layout: React.FC = () => {
   const [showSummary, setShowSummary] = useState(false);
   
   const { dayState, portfolio, nextDay } = useGameStore();
+  const { t } = useTranslation();
+  const { language, setLanguage } = useLanguageStore();
 
   const handleNextDay = () => {
     setShowSummary(true);
@@ -39,17 +43,28 @@ const Layout: React.FC = () => {
       {/* Sidebar Navigation */}
       <nav className="sidebar">
         <div className="sidebar-header">
-          <h2>NeuroTrade</h2>
-          <span className="day-badge">Day {dayState.currentDay} / {dayState.maxDays}</span>
+          <h2>{t('app.title')}</h2>
+          <span className="day-badge">{t('layout.day')} {dayState.currentDay} / {dayState.maxDays}</span>
         </div>
         
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+          <button 
+            onClick={() => setLanguage(language === 'en' ? 'ko' : 'en')}
+            className="nav-btn" 
+            style={{ width: 'auto', padding: '0.4rem 0.8rem', fontSize: '0.8rem', borderRadius: '20px', backgroundColor: 'var(--bg-card)' }}
+          >
+            <Globe size={14} style={{ marginRight: '6px' }} />
+            {language === 'en' ? '한국어' : 'English'}
+          </button>
+        </div>
+
         <div className="nav-items">
           <button 
             className={`nav-btn ${activeTab === 'news' ? 'active' : ''}`}
             onClick={() => setActiveTab('news')}
           >
             <Newspaper size={20} />
-            News
+            {t('nav.news')}
             {unreadNews > 0 && <span className="notification-badge">{unreadNews}</span>}
           </button>
           <button 
@@ -57,20 +72,20 @@ const Layout: React.FC = () => {
             onClick={() => setActiveTab('market')}
           >
             <TrendingUp size={20} />
-            Market
+            {t('nav.market')}
           </button>
           <button 
             className={`nav-btn ${activeTab === 'portfolio' ? 'active' : ''}`}
             onClick={() => setActiveTab('portfolio')}
           >
             <Briefcase size={20} />
-            Portfolio
+            {t('nav.portfolio')}
           </button>
         </div>
 
         <div className="sidebar-footer">
           <div className="portfolio-summary">
-            <span className="label">Cash Balance</span>
+            <span className="label">{t('layout.cashBalance')}</span>
             <span className="value">${portfolio.cash.toFixed(2)}</span>
           </div>
           <button 
@@ -78,7 +93,7 @@ const Layout: React.FC = () => {
             onClick={handleNextDay}
             disabled={dayState.currentDay >= dayState.maxDays && showSummary}
           >
-            {dayState.currentDay >= dayState.maxDays ? 'Finish Game' : 'End Day'}
+            {dayState.currentDay >= dayState.maxDays ? t('layout.finishGame') : t('layout.endDay')}
             <ChevronRight size={20} />
           </button>
         </div>

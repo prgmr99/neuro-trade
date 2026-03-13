@@ -1,8 +1,10 @@
 import React from 'react';
 import { useGameStore } from '../store/gameStore';
+import { useTranslation } from '../i18n/translations';
 
 const Portfolio: React.FC = () => {
   const { portfolio, stocks } = useGameStore();
+  const { t } = useTranslation();
 
   const holdingsList = Object.values(portfolio.holdings);
   
@@ -10,36 +12,36 @@ const Portfolio: React.FC = () => {
   
   return (
     <div className="portfolio-container">
-      <h2>Your Portfolio</h2>
+      <h2>{t('portfolio.title')}</h2>
       
       <div className="portfolio-summary-cards">
         <div className="summary-card">
-          <span className="label">Available Cash</span>
+          <span className="label">{t('portfolio.availableCash')}</span>
           <span className="value">${portfolio.cash.toFixed(2)}</span>
         </div>
         <div className="summary-card">
-          <span className="label">Total Value</span>
+          <span className="label">{t('portfolio.totalValue')}</span>
           <span className="value">
             ${(totalValue + holdingsList.reduce((acc, h) => acc + h.quantity * stocks[h.symbol].price, 0)).toFixed(2)}
           </span>
         </div>
       </div>
 
-      <h3>Current Holdings</h3>
+      <h3>{t('portfolio.currentHoldings')}</h3>
       {holdingsList.length === 0 ? (
         <div className="empty-state">
-          <p>You don't own any stocks yet. Go to the Market to make your first trade.</p>
+          <p>{t('portfolio.emptyState')}</p>
         </div>
       ) : (
         <table className="holdings-table">
           <thead>
             <tr>
-              <th>Symbol</th>
-              <th>Quantity</th>
-              <th>Avg Price</th>
-              <th>Current Price</th>
-              <th>Total Value</th>
-              <th>Return</th>
+              <th>{t('portfolio.symbol')}</th>
+              <th>{t('portfolio.quantity')}</th>
+              <th>{t('portfolio.avgPrice')}</th>
+              <th>{t('portfolio.currentPrice')}</th>
+              <th>{t('portfolio.totalValue')}</th>
+              <th>{t('portfolio.return')}</th>
             </tr>
           </thead>
           <tbody>

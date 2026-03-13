@@ -1,4 +1,5 @@
 export type StockSymbol = string;
+export type LocalizedString = Record<'en' | 'ko', string>;
 
 export interface DayPrice {
   day: number;
@@ -10,19 +11,19 @@ export interface DayPrice {
 
 export interface Stock {
   symbol: StockSymbol;
-  name: string;
+  name: LocalizedString;
   price: number;
   previousPrice: number;
   priceHistory: DayPrice[];
   volatility: number; 
-  description: string;
+  description: LocalizedString;
 }
 
 export interface News {
   id: string;
   dayIdx: number;
-  title: string;
-  content: string;
+  title: LocalizedString;
+  content: LocalizedString;
   read: boolean;
   effect: Record<StockSymbol, number>; // How this news influences stock prices (multiplier: e.g. 1.05 for +5%)
 }

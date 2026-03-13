@@ -1,5 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../store/gameStore';
+import { useTranslation } from '../i18n/translations';
 
 interface Props {
   onClose: () => void;
@@ -7,6 +8,7 @@ interface Props {
 
 const DayEndSummary: React.FC<Props> = ({ onClose }) => {
   const { dayState } = useGameStore();
+  const { t, language } = useTranslation();
 
   const prevDay = dayState.currentDay - 1; // It's showing the summary of the day that just ended
   // We need to fetch the news that influenced this day
@@ -17,14 +19,14 @@ const DayEndSummary: React.FC<Props> = ({ onClose }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content summary-modal">
-        <h2>Day {prevDay} Summary</h2>
-        <p className="summary-intro">Here is how the day's news impacted the market:</p>
+        <h2>{t('summary.daySummary', { day: prevDay })}</h2>
+        <p className="summary-intro">{t('summary.intro')}</p>
         
         <div className="news-impact-list">
           {summaryNews.map(news => (
             <div key={news.id} className="impact-card">
-              <h4>{news.title}</h4>
-              <p>{news.content}</p>
+              <h4>{news.title[language]}</h4>
+              <p>{news.content[language]}</p>
               
               <div className="effect-chips">
                 {Object.entries(news.effect).map(([symbol, multiplier]) => {
@@ -43,7 +45,7 @@ const DayEndSummary: React.FC<Props> = ({ onClose }) => {
 
         <div className="modal-actions">
           <button className="primary-btn" onClick={onClose}>
-            {dayState.currentDay > dayState.maxDays ? 'Finish' : 'Advance to Next Day'}
+            {dayState.currentDay > dayState.maxDays ? t('summary.finish') : t('summary.advance')}
           </button>
         </div>
       </div>

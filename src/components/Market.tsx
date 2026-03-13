@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { TrendingUp, TrendingDown, BarChart2 } from 'lucide-react';
 import StockChart from './StockChart';
+import { useTranslation } from '../i18n/translations';
 
 const Market: React.FC = () => {
   const { stocks, portfolio, buyStock, sellStock } = useGameStore();
   const [tradeQuantity, setTradeQuantity] = useState<Record<string, number>>({});
   const [expandedChart, setExpandedChart] = useState<string | null>(null);
+  const { t, language } = useTranslation();
 
   const handleQuantityChange = (symbol: string, value: string) => {
     const num = parseInt(value) || 0;
@@ -15,7 +17,7 @@ const Market: React.FC = () => {
 
   return (
     <div className="market-container">
-      <h2>Market Overview</h2>
+      <h2>{t('market.overview')}</h2>
       <div className="stocks-grid">
         {Object.values(stocks).map(stock => {
           const change = stock.price - stock.previousPrice;
@@ -29,7 +31,7 @@ const Market: React.FC = () => {
               <div className="stock-header">
                 <div>
                   <h3>{stock.symbol}</h3>
-                  <span className="stock-name">{stock.name}</span>
+                  <span className="stock-name">{stock.name[language]}</span>
                 </div>
                 <div className={`price-tag ${isUp ? 'positive' : 'negative'}`}>
                   ${stock.price.toFixed(2)}
@@ -46,7 +48,7 @@ const Market: React.FC = () => {
                   onClick={() => setExpandedChart(expandedChart === stock.symbol ? null : stock.symbol)}
                 >
                   <BarChart2 size={16} />
-                  {expandedChart === stock.symbol ? 'Hide Chart' : 'Show Chart'}
+                  {expandedChart === stock.symbol ? t('market.hideChart') : t('market.showChart')}
                 </button>
               </div>
 
@@ -56,7 +58,7 @@ const Market: React.FC = () => {
                 </div>
               )}
               
-              <p className="stock-description" style={{ marginTop: '1rem' }}>{stock.description}</p>
+              <p className="stock-description" style={{ marginTop: '1rem' }}>{stock.description[language]}</p>
               
               <div className="trade-controls">
                 <input 
@@ -64,26 +66,26 @@ const Market: React.FC = () => {
                   min="0"
                   value={qty || ''} 
                   onChange={(e) => handleQuantityChange(stock.symbol, e.target.value)}
-                  placeholder="Qty"
+                  placeholder={t('market.qtyPlaceholder')}
                 />
                 <button 
                   className="buy-btn"
                   onClick={() => buyStock(stock.symbol, qty)}
                   disabled={qty > 0 && portfolio.cash < (qty * stock.price)}
                 >
-                  Buy
+                  {t('market.buy')}
                 </button>
                 <button 
                   className="sell-btn"
                   onClick={() => sellStock(stock.symbol, qty)}
                   disabled={qty > 0 && holdingQty < qty}
                 >
-                  Sell
+                  {t('market.sell')}
                 </button>
               </div>
               <div className="holding-info" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
-                <span style={{color: 'var(--text-secondary)', fontSize: '0.9rem'}}>Estimated Cost: ${(qty * stock.price).toFixed(2)}</span>
-                <span style={{fontWeight: 500, color: 'var(--text-primary)'}}>You own: {holdingQty} shares</span>
+                <span style={{color: 'var(--text-secondary)', fontSize: '0.9rem'}}>{t('market.estimatedCost')}{(qty * stock.price).toFixed(2)}</span>
+                <span style={{fontWeight: 500, color: 'var(--text-primary)'}}>{t('market.youOwn', { qty: holdingQty })}</span>
               </div>
             </div>
           );
