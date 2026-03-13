@@ -31,6 +31,7 @@ export const useGameStore = create<GameState>((set) => ({
   history: [{ day: 1, portfolioValue: 10000 }],
 
   buyStock: (symbol, quantity) => set((state) => {
+    if (quantity <= 0) return state;
     const stock = state.stocks[symbol];
     const totalCost = stock.price * quantity;
     
@@ -53,6 +54,7 @@ export const useGameStore = create<GameState>((set) => ({
   }),
 
   sellStock: (symbol, quantity) => set((state) => {
+    if (quantity <= 0) return state;
     const holding = state.portfolio.holdings[symbol];
     if (!holding || holding.quantity < quantity) return state;
 
@@ -88,64 +90,52 @@ export const useGameStore = create<GameState>((set) => ({
   nextDay: () => set((state) => {
     // 1. Calculate new stock prices based on current day's news effects + random volatility
     const newStocks = { ...state.stocks };
+    const affectedStocks = new Set<string>();
     
+    // First, snapshot previousPrice for all stocks at the start of the day
+    Object.keys(newStocks).forEach(symbol => {
+      newStocks[symbol] = { ...newStocks[symbol] }; // clone
+      newStocks[symbol].previousPrice = newStocks[symbol].price;
+    });
+
+    // Accumulate the effects sequentially
     state.dayState.dailyNews.forEach(news => {
       Object.entries(news.effect).forEach(([symbol, multiplier]) => {
         if (newStocks[symbol]) {
-          newStocks[symbol] = { ...newStocks[symbol] }; // clone stock object
-          newStocks[symbol].previousPrice = newStocks[symbol].price;
-          
-          // Apply effect + some basic random noise based on volatility
+          affectedStocks.add(symbol);
           const baseChange = multiplier; 
           const noise = 1 + (Math.random() - 0.5) * newStocks[symbol].volatility;
-          const openPrice = newStocks[symbol].price;
-          const closePrice = Math.max(0.01, openPrice * baseChange * noise);
-          
-          // Generate realistic high/low for candlestick
-          const highPrice = Math.max(openPrice, closePrice) * (1 + Math.random() * newStocks[symbol].volatility);
-          const lowPrice = Math.min(openPrice, closePrice) * (1 - Math.random() * newStocks[symbol].volatility);
-
-          newStocks[symbol].price = closePrice;
-          
-          newStocks[symbol].priceHistory = [
-            ...newStocks[symbol].priceHistory,
-            {
-              day: state.dayState.currentDay,
-              open: openPrice,
-              close: closePrice,
-              high: highPrice,
-              low: lowPrice,
-            }
-          ];
+          newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * baseChange * noise);
         }
       });
     });
 
-    // Handle stocks that didn't have news effects (flat day with noise)
+    // Add noise to unaffected stocks, and generate chart data for ALL
     Object.keys(newStocks).forEach(symbol => {
-      if (state.dayState.dailyNews.every(news => !news.effect[symbol])) {
-         newStocks[symbol] = { ...newStocks[symbol] };
-         const stock = newStocks[symbol];
-         const openPrice = stock.price;
-         const noise = 1 + (Math.random() - 0.5) * stock.volatility * 0.5; // less volatility on no news
-         const closePrice = Math.max(0.01, openPrice * noise);
-         
-         const highPrice = Math.max(openPrice, closePrice) * (1 + Math.random() * stock.volatility * 0.2);
-         const lowPrice = Math.min(openPrice, closePrice) * (1 - Math.random() * stock.volatility * 0.2);
-
-         stock.previousPrice = openPrice;
-         stock.price = closePrice;
-         stock.priceHistory = [
-           ...stock.priceHistory,
-           {
-             day: state.dayState.currentDay,
-             open: openPrice,
-             close: closePrice,
-             high: highPrice,
-             low: lowPrice,
-           }
-         ];
+      const stock = newStocks[symbol];
+      const openPrice = stock.previousPrice;
+      
+      if (!affectedStocks.has(symbol)) {
+        const noise = 1 + (Math.random() - 0.5) * stock.volatility * 0.5; // less volatility on no news
+        stock.price = Math.max(0.01, stock.price * noise);
       }
+      
+      const closePrice = stock.price;
+      const volMultiplier = affectedStocks.has(symbol) ? 1 : 0.2;
+      
+      const highPrice = Math.max(openPrice, closePrice) * (1 + Math.random() * stock.volatility * volMultiplier);
+      const lowPrice = Math.min(openPrice, closePrice) * (1 - Math.random() * stock.volatility * volMultiplier);
+
+      stock.priceHistory = [
+        ...stock.priceHistory,
+        {
+          day: state.dayState.currentDay,
+          open: openPrice,
+          close: closePrice,
+          high: highPrice,
+          low: lowPrice,
+        }
+      ];
     });
 
     // 2. Advance day
