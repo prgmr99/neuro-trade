@@ -1,10 +1,19 @@
 export type StockSymbol = string;
 
+export interface DayPrice {
+  day: number;
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+}
+
 export interface Stock {
   symbol: StockSymbol;
   name: string;
   price: number;
   previousPrice: number;
+  priceHistory: DayPrice[];
   volatility: number; 
   description: string;
 }

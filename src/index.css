@@ -395,6 +395,44 @@ body {
   margin-bottom: 1.5rem;
 }
 
+.stock-actions-top {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.chart-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chart-toggle-btn:hover {
+  background: var(--surface-light);
+  color: var(--text-primary);
+}
+
+.chart-toggle-btn.active {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.stock-chart-container {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 1rem 0;
+  margin-top: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 .trade-controls {
   display: flex;
   gap: 0.75rem;

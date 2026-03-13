@@ -92,13 +92,60 @@ export const useGameStore = create<GameState>((set) => ({
     state.dayState.dailyNews.forEach(news => {
       Object.entries(news.effect).forEach(([symbol, multiplier]) => {
         if (newStocks[symbol]) {
+          newStocks[symbol] = { ...newStocks[symbol] }; // clone stock object
           newStocks[symbol].previousPrice = newStocks[symbol].price;
+          
           // Apply effect + some basic random noise based on volatility
           const baseChange = multiplier; 
           const noise = 1 + (Math.random() - 0.5) * newStocks[symbol].volatility;
-          newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * baseChange * noise);
+          const openPrice = newStocks[symbol].price;
+          const closePrice = Math.max(0.01, openPrice * baseChange * noise);
+          
+          // Generate realistic high/low for candlestick
+          const highPrice = Math.max(openPrice, closePrice) * (1 + Math.random() * newStocks[symbol].volatility);
+          const lowPrice = Math.min(openPrice, closePrice) * (1 - Math.random() * newStocks[symbol].volatility);
+
+          newStocks[symbol].price = closePrice;
+          
+          newStocks[symbol].priceHistory = [
+            ...newStocks[symbol].priceHistory,
+            {
+              day: state.dayState.currentDay,
+              open: openPrice,
+              close: closePrice,
+              high: highPrice,
+              low: lowPrice,
+            }
+          ];
         }
       });
+    });
+
+    // Handle stocks that didn't have news effects (flat day with noise)
+    Object.keys(newStocks).forEach(symbol => {
+      if (state.dayState.dailyNews.every(news => !news.effect[symbol])) {
+         newStocks[symbol] = { ...newStocks[symbol] };
+         const stock = newStocks[symbol];
+         const openPrice = stock.price;
+         const noise = 1 + (Math.random() - 0.5) * stock.volatility * 0.5; // less volatility on no news
+         const closePrice = Math.max(0.01, openPrice * noise);
+         
+         const highPrice = Math.max(openPrice, closePrice) * (1 + Math.random() * stock.volatility * 0.2);
+         const lowPrice = Math.min(openPrice, closePrice) * (1 - Math.random() * stock.volatility * 0.2);
+
+         stock.previousPrice = openPrice;
+         stock.price = closePrice;
+         stock.priceHistory = [
+           ...stock.priceHistory,
+           {
+             day: state.dayState.currentDay,
+             open: openPrice,
+             close: closePrice,
+             high: highPrice,
+             low: lowPrice,
+           }
+         ];
+      }
     });
 
     // 2. Advance day
@@ -121,14 +168,43 @@ export const useGameStore = create<GameState>((set) => ({
     };
   }),
 
-  setInitialState: (stocks, news, maxDays) => set({
-    stocks,
-    allNews: news,
-    dayState: {
-      currentDay: 1,
-      maxDays,
-      dailyNews: news.filter(n => n.dayIdx === 1), // Load day 1 news
-    },
-    // Keep initial history and portfolio
-  }),
+  setInitialState: (stocks, news, maxDays) => {
+    // Generate some fake past history so Day 1 has a chart (e.g. Day -5 to Day 0)
+    const initializedStocks = { ...stocks };
+    Object.keys(initializedStocks).forEach(symbol => {
+      const stock = initializedStocks[symbol];
+      let currentSimPrice = stock.price * 0.8; // Start lower in the past randomly
+      const history = [];
+      for (let i = -5; i <= 0; i++) {
+        const noise = 1 + (Math.random() - 0.5) * stock.volatility;
+        const openPrice = currentSimPrice;
+        const closePrice = openPrice * noise;
+        const highPrice = Math.max(openPrice, closePrice) * (1 + Math.random() * stock.volatility);
+        const lowPrice = Math.min(openPrice, closePrice) * (1 - Math.random() * stock.volatility);
+        
+        history.push({
+          day: i,
+          open: openPrice,
+          close: closePrice,
+          high: highPrice,
+          low: lowPrice,
+        });
+        currentSimPrice = closePrice;
+      }
+      stock.price = currentSimPrice; // set to current simulated
+      stock.previousPrice = history[history.length - 2]?.close || currentSimPrice;
+      stock.priceHistory = history;
+    });
+
+    set({
+      stocks: initializedStocks,
+      allNews: news,
+      dayState: {
+        currentDay: 1,
+        maxDays,
+        dailyNews: news.filter(n => n.dayIdx === 1), // Load day 1 news
+      },
+      // Keep initial history and portfolio
+    });
+  },
 }));

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, BarChart2 } from 'lucide-react';
+import StockChart from './StockChart';
 
 const Market: React.FC = () => {
   const { stocks, portfolio, buyStock, sellStock } = useGameStore();
   const [tradeQuantity, setTradeQuantity] = useState<Record<string, number>>({});
+  const [expandedChart, setExpandedChart] = useState<string | null>(null);
 
   const handleQuantityChange = (symbol: string, value: string) => {
     const num = parseInt(value) || 0;
@@ -38,7 +40,23 @@ const Market: React.FC = () => {
                 </div>
               </div>
               
-              <p className="stock-description">{stock.description}</p>
+              <div className="stock-actions-top">
+                <button 
+                  className={`chart-toggle-btn ${expandedChart === stock.symbol ? 'active' : ''}`}
+                  onClick={() => setExpandedChart(expandedChart === stock.symbol ? null : stock.symbol)}
+                >
+                  <BarChart2 size={16} />
+                  {expandedChart === stock.symbol ? 'Hide Chart' : 'Show Chart'}
+                </button>
+              </div>
+
+              {expandedChart === stock.symbol && (
+                <div className="stock-chart-container">
+                  <StockChart data={stock.priceHistory} />
+                </div>
+              )}
+              
+              <p className="stock-description" style={{ marginTop: '1rem' }}>{stock.description}</p>
               
               <div className="trade-controls">
                 <input 
