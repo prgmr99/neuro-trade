@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useQueryState, parseAsStringLiteral } from 'nuqs';
-import { Mail, TrendingUp, Briefcase, ChevronRight } from 'lucide-react';
+import { Newspaper, TrendingUp, Briefcase, ChevronRight } from 'lucide-react';
 
 import DayEndSummary from './DayEndSummary';
 import Portfolio from './Portfolio';
 import Market from './Market';
-import Inbox from './Inbox';
+import NewsFeed from './NewsFeed';
 
 
-const tabOptions = ['inbox', 'market', 'portfolio'] as const;
+const tabOptions = ['news', 'market', 'portfolio'] as const;
 type Tab = typeof tabOptions[number];
 
 const Layout: React.FC = () => {
   const [activeTabQuery, setActiveTab] = useQueryState(
     'tab',
-    parseAsStringLiteral(tabOptions).withDefault('inbox')
+    parseAsStringLiteral(tabOptions).withDefault('news')
   );
   const activeTab = activeTabQuery as Tab;
   const [showSummary, setShowSummary] = useState(false);
@@ -29,7 +29,7 @@ const Layout: React.FC = () => {
   const closeSummaryAndAdvance = () => {
     nextDay();
     setShowSummary(false);
-    setActiveTab('inbox'); // Go back to inbox for next day's news
+    setActiveTab('news'); // Go back to news for next day's news
   };
 
   const unreadNews = dayState.dailyNews.filter(n => !n.read).length;
@@ -45,11 +45,11 @@ const Layout: React.FC = () => {
         
         <div className="nav-items">
           <button 
-            className={`nav-btn ${activeTab === 'inbox' ? 'active' : ''}`}
-            onClick={() => setActiveTab('inbox')}
+            className={`nav-btn ${activeTab === 'news' ? 'active' : ''}`}
+            onClick={() => setActiveTab('news')}
           >
-            <Mail size={20} />
-            Inbox
+            <Newspaper size={20} />
+            News
             {unreadNews > 0 && <span className="notification-badge">{unreadNews}</span>}
           </button>
           <button 
@@ -86,7 +86,7 @@ const Layout: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="main-content">
-        {activeTab === 'inbox' && <Inbox />}
+        {activeTab === 'news' && <NewsFeed />}
         {activeTab === 'market' && <Market />}
         {activeTab === 'portfolio' && <Portfolio />}
       </main>
