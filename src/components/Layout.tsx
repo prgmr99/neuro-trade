@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
+import { useQueryState, parseAsStringLiteral } from 'nuqs';
 import { Mail, TrendingUp, Briefcase, ChevronRight } from 'lucide-react';
-import Inbox from './Inbox';
-import Market from './Market';
-import Portfolio from './Portfolio';
-import DayEndSummary from './DayEndSummary';
 
-type Tab = 'inbox' | 'market' | 'portfolio';
+import DayEndSummary from './DayEndSummary';
+import Portfolio from './Portfolio';
+import Market from './Market';
+import Inbox from './Inbox';
+
+
+const tabOptions = ['inbox', 'market', 'portfolio'] as const;
+type Tab = typeof tabOptions[number];
 
 const Layout: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('inbox');
+  const [activeTabQuery, setActiveTab] = useQueryState(
+    'tab',
+    parseAsStringLiteral(tabOptions).withDefault('inbox')
+  );
+  const activeTab = activeTabQuery as Tab;
   const [showSummary, setShowSummary] = useState(false);
   
   const { dayState, portfolio, nextDay } = useGameStore();
