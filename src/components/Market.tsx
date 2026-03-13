@@ -7,7 +7,7 @@ import { useTranslation } from '../i18n/translations';
 const Market: React.FC = () => {
   const { stocks, portfolio, buyStock, sellStock } = useGameStore();
   const [tradeQuantity, setTradeQuantity] = useState<Record<string, number>>({});
-  const [expandedChart, setExpandedChart] = useState<string | null>(null);
+  const [expandedCharts, setExpandedCharts] = useState<string[]>(Object.keys(stocks));
   const { t, language } = useTranslation();
 
   const handleQuantityChange = (symbol: string, value: string) => {
@@ -44,15 +44,21 @@ const Market: React.FC = () => {
               
               <div className="stock-actions-top">
                 <button 
-                  className={`chart-toggle-btn ${expandedChart === stock.symbol ? 'active' : ''}`}
-                  onClick={() => setExpandedChart(expandedChart === stock.symbol ? null : stock.symbol)}
+                  className={`chart-toggle-btn ${expandedCharts.includes(stock.symbol) ? 'active' : ''}`}
+                  onClick={() => {
+                    setExpandedCharts(prev => 
+                      prev.includes(stock.symbol) 
+                        ? prev.filter(s => s !== stock.symbol) 
+                        : [...prev, stock.symbol]
+                    );
+                  }}
                 >
                   <BarChart2 size={16} />
-                  {expandedChart === stock.symbol ? t('market.hideChart') : t('market.showChart')}
+                  {expandedCharts.includes(stock.symbol) ? t('market.hideChart') : t('market.showChart')}
                 </button>
               </div>
 
-              {expandedChart === stock.symbol && (
+              {expandedCharts.includes(stock.symbol) && (
                 <div className="stock-chart-container">
                   <StockChart data={stock.priceHistory} />
                 </div>

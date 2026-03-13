@@ -110,7 +110,7 @@ export const translations = {
     },
     newsfeed: {
       title: "글로벌 금융 뉴스",
-      marketDay: "시장",
+      marketDay: "Day",
       breaking: "속보",
       new: "NEW",
       sourceGfn: "출처: GFN 뉴스 데스크",
