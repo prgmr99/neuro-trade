@@ -1,0 +1,16 @@
+{
+  "name": "NeuroTrade",
+  "short_name": "NeuroTrade",
+  "description": "Analyze breaking news, predict market movements, and build your portfolio in 5 days.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
