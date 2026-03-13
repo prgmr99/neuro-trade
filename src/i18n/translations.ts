@@ -58,6 +58,12 @@ export const translations = {
       intro: "Here is how the day's news impacted the market:",
       advance: "Advance to Next Day",
       finish: "Finish"
+    },
+    gameOver: {
+      title: "Simulation Complete",
+      finalBalance: "Final Portfolio Value",
+      returnRate: "Total Return",
+      playAgain: "Return to Title"
     }
   },
   ko: {
@@ -117,6 +123,12 @@ export const translations = {
       intro: "오늘의 뉴스가 시장에 미친 영향은 다음과 같습니다:",
       advance: "다음 날로 이동",
       finish: "게임 종료"
+    },
+    gameOver: {
+      title: "시뮬레이션 종료",
+      finalBalance: "최종 포트폴리오 가치",
+      returnRate: "총 수익률",
+      playAgain: "처음으로 돌아가기"
     }
   }
 };

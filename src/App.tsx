@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useGameStore } from './store/gameStore';
 import { INITIAL_STOCKS, SCENARIO_NEWS } from './data/scenarios';
 import Layout from './components/Layout';
+import GameOverScreen from './components/GameOverScreen';
 import { useTranslation } from './i18n/translations';
 
 function App() {
   const [started, setStarted] = useState(false);
-  const { setInitialState } = useGameStore();
+  const { setInitialState, dayState } = useGameStore();
   const { t } = useTranslation();
 
   const startGame = () => {
@@ -29,6 +30,10 @@ function App() {
         </div>
       </div>
     );
+  }
+
+  if (started && dayState.currentDay > dayState.maxDays) {
+    return <GameOverScreen onRestart={() => setStarted(false)} />;
   }
 
   return (
