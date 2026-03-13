@@ -804,8 +804,462 @@ body {
   background: var(--accent-hover);
 }
 
+/* ===== Mobile Header (hidden on desktop) ===== */
+.mobile-header {
+  display: none;
+}
+
+/* ===== Bottom Navigation (hidden on desktop) ===== */
+.bottom-nav {
+  display: none;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Responsive: Tablet (≤1024px) ===== */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+    padding: 1.25rem;
+  }
+
+  .sidebar-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .main-content {
+    padding: 1.5rem;
+  }
+
+  .news-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  .stocks-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  .portfolio-container h2,
+  .market-container h2,
+  .newsfeed-header h2 {
+    font-size: 1.75rem;
+  }
+
+  .summary-card .value {
+    font-size: 2rem;
+  }
+}
+
+/* ===== Responsive: Mobile (≤768px) ===== */
+@media (max-width: 768px) {
+  /* Layout restructure: sidebar hidden, column layout */
+  .layout {
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--toss-shadow);
+    z-index: 10;
+    flex-shrink: 0;
+  }
+
+  .mobile-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .mobile-header-left h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--accent-color);
+    letter-spacing: -0.02em;
+  }
+
+  .mobile-header .day-badge {
+    margin-top: 0;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .mobile-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mobile-cash {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mobile-lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 14px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+  }
+
+  /* Bottom tab navigation */
+  .bottom-nav {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    padding: 0.4rem 0.5rem;
+    padding-bottom: calc(0.4rem + env(safe-area-inset-bottom));
+    background: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.04);
+    z-index: 10;
+    flex-shrink: 0;
+    gap: 0.25rem;
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 0.35rem 0;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.65rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    position: relative;
+    border-radius: 10px;
+    transition: color 0.2s;
+    flex: 1;
+    min-height: 44px;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--accent-color);
+    font-weight: 700;
+  }
+
+  .bottom-nav-item .notification-badge {
+    position: absolute;
+    top: 2px;
+    right: calc(50% - 18px);
+    font-size: 0.55rem;
+    padding: 1px 4px;
+    min-width: 14px;
+    text-align: center;
+  }
+
+  .bottom-nav-end-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 0.35rem 0.5rem;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+    flex: 1;
+    min-height: 44px;
+  }
+
+  .bottom-nav-end-day:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Main content adjustments */
+  .main-content {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Splash screen */
+  .splash-content {
+    padding: 2rem 1.5rem;
+    margin: 0 1rem;
+  }
+
+  .splash-content h1 {
+    font-size: 2.25rem;
+  }
+
+  .splash-content .subtitle {
+    font-size: 1.05rem;
+  }
+
+  .start-btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    width: 100%;
+  }
+
+  /* News feed */
+  .newsfeed-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+  }
+
+  .newsfeed-header h2 {
+    font-size: 1.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .newsfeed-date {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .news-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .news-card h2 {
+    font-size: 1.35rem;
+  }
+
+  .news-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .featured .news-card-content {
+    padding: 1.5rem;
+  }
+
+  .news-card-content {
+    padding: 1.25rem;
+  }
+
+  .news-card:hover {
+    transform: none;
+    box-shadow: var(--toss-shadow);
+  }
+
+  /* Market */
+  .market-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .stocks-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stock-card {
+    padding: 1.25rem;
+  }
+
+  .stock-card:hover {
+    transform: none;
+  }
+
+  .stock-header h3 {
+    font-size: 1.25rem;
+  }
+
+  .price-tag {
+    font-size: 1.15rem;
+  }
+
+  .trade-controls {
+    gap: 0.5rem;
+  }
+
+  .trade-controls input {
+    width: 60px;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  .buy-btn, .sell-btn {
+    padding: 0.65rem;
+    font-size: 0.95rem;
+    min-height: 44px;
+  }
+
+  /* Portfolio */
+  .portfolio-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .portfolio-summary-cards {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .summary-card {
+    padding: 1.25rem;
+  }
+
+  .summary-card .value {
+    font-size: 1.75rem;
+  }
+
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 20px;
+  }
+
+  .holdings-table {
+    min-width: 520px;
+  }
+
+  .holdings-table th,
+  .holdings-table td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    margin: 0;
+    padding: 1.5rem;
+    border-radius: 20px 20px 0 0;
+    max-height: 85vh;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .summary-modal h2 {
+    font-size: 1.5rem;
+  }
+
+  .impact-card {
+    padding: 1rem;
+  }
+
+  .impact-card h4 {
+    font-size: 1.05rem;
+  }
+
+  .primary-btn {
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    min-height: 44px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+}
+
+/* ===== Responsive: Small mobile (≤480px) ===== */
+@media (max-width: 480px) {
+  .splash-content h1 {
+    font-size: 1.85rem;
+  }
+
+  .splash-content {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .instructions {
+    font-size: 0.9rem;
+  }
+
+  .mobile-header {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .mobile-header-left h2 {
+    font-size: 1.1rem;
+  }
+
+  .main-content {
+    padding: 0.75rem;
+  }
+
+  .stock-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .price-tag {
+    text-align: left;
+  }
+
+  .price-tag .change {
+    justify-content: flex-start;
+  }
+
+  .newsfeed-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .news-card h2 {
+    font-size: 1.2rem;
+  }
+
+  .news-card h3 {
+    font-size: 1rem;
+  }
+
+  .market-container h2,
+  .portfolio-container h2 {
+    font-size: 1.3rem;
+  }
+
+  .summary-card .value {
+    font-size: 1.5rem;
+  }
+
+  .bottom-nav-item {
+    font-size: 0.6rem;
+  }
+
+  .bottom-nav-end-day {
+    font-size: 0.6rem;
+  }
 }

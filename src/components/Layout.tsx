@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useQueryState, parseAsStringLiteral } from 'nuqs';
-import { Newspaper, TrendingUp, Briefcase, ChevronRight, Globe } from 'lucide-react';
+import { Newspaper, TrendingUp, Briefcase, ChevronRight, Globe, Play } from 'lucide-react';
 import { useTranslation } from '../i18n/translations';
 import { useLanguageStore } from '../store/useLanguageStore';
 
@@ -21,7 +21,7 @@ const Layout: React.FC = () => {
   );
   const activeTab = activeTabQuery as Tab;
   const [showSummary, setShowSummary] = useState(false);
-  
+
   const { dayState, portfolio, nextDay } = useGameStore();
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
@@ -33,24 +33,40 @@ const Layout: React.FC = () => {
   const closeSummaryAndAdvance = () => {
     nextDay();
     setShowSummary(false);
-    setActiveTab('news'); // Go back to news for next day's news
+    setActiveTab('news');
   };
 
   const unreadNews = dayState.dailyNews.filter(n => !n.read).length;
+  const toggleLanguage = () => setLanguage(language === 'en' ? 'ko' : 'en');
 
   return (
     <div className="layout">
-      {/* Sidebar Navigation */}
+      {/* Mobile Header - visible only on mobile */}
+      <header className="mobile-header">
+        <div className="mobile-header-left">
+          <h2>{t('app.title')}</h2>
+          <span className="day-badge">{t('layout.day')} {dayState.currentDay}/{dayState.maxDays}</span>
+        </div>
+        <div className="mobile-header-right">
+          <span className="mobile-cash">${portfolio.cash.toFixed(0)}</span>
+          <button className="mobile-lang-btn" onClick={toggleLanguage}>
+            <Globe size={12} />
+            {language === 'en' ? 'KO' : 'EN'}
+          </button>
+        </div>
+      </header>
+
+      {/* Sidebar Navigation - hidden on mobile */}
       <nav className="sidebar">
         <div className="sidebar-header">
           <h2>{t('app.title')}</h2>
           <span className="day-badge">{t('layout.day')} {dayState.currentDay} / {dayState.maxDays}</span>
         </div>
-        
+
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-          <button 
-            onClick={() => setLanguage(language === 'en' ? 'ko' : 'en')}
-            className="nav-btn" 
+          <button
+            onClick={toggleLanguage}
+            className="nav-btn"
             style={{ width: 'auto', padding: '0.4rem 0.8rem', fontSize: '0.8rem', borderRadius: '20px', backgroundColor: 'var(--bg-card)' }}
           >
             <Globe size={14} style={{ marginRight: '6px' }} />
@@ -59,7 +75,7 @@ const Layout: React.FC = () => {
         </div>
 
         <div className="nav-items">
-          <button 
+          <button
             className={`nav-btn ${activeTab === 'news' ? 'active' : ''}`}
             onClick={() => setActiveTab('news')}
           >
@@ -67,14 +83,14 @@ const Layout: React.FC = () => {
             {t('nav.news')}
             {unreadNews > 0 && <span className="notification-badge">{unreadNews}</span>}
           </button>
-          <button 
+          <button
             className={`nav-btn ${activeTab === 'market' ? 'active' : ''}`}
             onClick={() => setActiveTab('market')}
           >
             <TrendingUp size={20} />
             {t('nav.market')}
           </button>
-          <button 
+          <button
             className={`nav-btn ${activeTab === 'portfolio' ? 'active' : ''}`}
             onClick={() => setActiveTab('portfolio')}
           >
@@ -88,8 +104,8 @@ const Layout: React.FC = () => {
             <span className="label">{t('layout.cashBalance')}</span>
             <span className="value">${portfolio.cash.toFixed(2)}</span>
           </div>
-          <button 
-            className="next-day-btn" 
+          <button
+            className="next-day-btn"
             onClick={handleNextDay}
             disabled={dayState.currentDay >= dayState.maxDays && showSummary}
           >
@@ -105,6 +121,40 @@ const Layout: React.FC = () => {
         {activeTab === 'market' && <Market />}
         {activeTab === 'portfolio' && <Portfolio />}
       </main>
+
+      {/* Bottom Navigation - visible only on mobile */}
+      <nav className="bottom-nav">
+        <button
+          className={`bottom-nav-item ${activeTab === 'news' ? 'active' : ''}`}
+          onClick={() => setActiveTab('news')}
+        >
+          <Newspaper size={20} />
+          {t('nav.news')}
+          {unreadNews > 0 && <span className="notification-badge">{unreadNews}</span>}
+        </button>
+        <button
+          className={`bottom-nav-item ${activeTab === 'market' ? 'active' : ''}`}
+          onClick={() => setActiveTab('market')}
+        >
+          <TrendingUp size={20} />
+          {t('nav.market')}
+        </button>
+        <button
+          className={`bottom-nav-item ${activeTab === 'portfolio' ? 'active' : ''}`}
+          onClick={() => setActiveTab('portfolio')}
+        >
+          <Briefcase size={20} />
+          {t('nav.portfolio')}
+        </button>
+        <button
+          className="bottom-nav-end-day"
+          onClick={handleNextDay}
+          disabled={dayState.currentDay >= dayState.maxDays && showSummary}
+        >
+          <Play size={16} />
+          {dayState.currentDay >= dayState.maxDays ? t('layout.finishGame') : t('layout.endDay')}
+        </button>
+      </nav>
 
       {/* Modals */}
       {showSummary && (

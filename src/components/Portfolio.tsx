@@ -33,40 +33,42 @@ const Portfolio: React.FC = () => {
           <p>{t('portfolio.emptyState')}</p>
         </div>
       ) : (
-        <table className="holdings-table">
-          <thead>
-            <tr>
-              <th>{t('portfolio.symbol')}</th>
-              <th>{t('portfolio.quantity')}</th>
-              <th>{t('portfolio.avgPrice')}</th>
-              <th>{t('portfolio.currentPrice')}</th>
-              <th>{t('portfolio.totalValue')}</th>
-              <th>{t('portfolio.return')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {holdingsList.map(holding => {
-              const currentPrice = stocks[holding.symbol].price;
-              const value = holding.quantity * currentPrice;
-              const costBasis = holding.quantity * holding.averagePrice;
-              const returnPct = ((value - costBasis) / costBasis) * 100;
-              const isPositive = returnPct >= 0;
+        <div className="table-scroll-wrapper">
+          <table className="holdings-table">
+            <thead>
+              <tr>
+                <th>{t('portfolio.symbol')}</th>
+                <th>{t('portfolio.quantity')}</th>
+                <th>{t('portfolio.avgPrice')}</th>
+                <th>{t('portfolio.currentPrice')}</th>
+                <th>{t('portfolio.totalValue')}</th>
+                <th>{t('portfolio.return')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {holdingsList.map(holding => {
+                const currentPrice = stocks[holding.symbol].price;
+                const value = holding.quantity * currentPrice;
+                const costBasis = holding.quantity * holding.averagePrice;
+                const returnPct = ((value - costBasis) / costBasis) * 100;
+                const isPositive = returnPct >= 0;
 
-              return (
-                <tr key={holding.symbol}>
-                  <td><strong>{holding.symbol}</strong></td>
-                  <td>{holding.quantity}</td>
-                  <td>${holding.averagePrice.toFixed(2)}</td>
-                  <td>${currentPrice.toFixed(2)}</td>
-                  <td>${value.toFixed(2)}</td>
-                  <td className={isPositive ? 'positive' : 'negative'}>
-                    {isPositive ? '+' : ''}{returnPct.toFixed(2)}%
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                return (
+                  <tr key={holding.symbol}>
+                    <td><strong>{holding.symbol}</strong></td>
+                    <td>{holding.quantity}</td>
+                    <td>${holding.averagePrice.toFixed(2)}</td>
+                    <td>${currentPrice.toFixed(2)}</td>
+                    <td>${value.toFixed(2)}</td>
+                    <td className={isPositive ? 'positive' : 'negative'}>
+                      {isPositive ? '+' : ''}{returnPct.toFixed(2)}%
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
