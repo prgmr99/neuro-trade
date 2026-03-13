@@ -62,27 +62,28 @@ const Market: React.FC = () => {
                 <input 
                   type="number" 
                   min="0"
-                  value={qty} 
+                  value={qty || ''} 
                   onChange={(e) => handleQuantityChange(stock.symbol, e.target.value)}
                   placeholder="Qty"
                 />
                 <button 
                   className="buy-btn"
                   onClick={() => buyStock(stock.symbol, qty)}
-                  disabled={qty <= 0 || portfolio.cash < (qty * stock.price)}
+                  disabled={qty > 0 && portfolio.cash < (qty * stock.price)}
                 >
                   Buy
                 </button>
                 <button 
                   className="sell-btn"
                   onClick={() => sellStock(stock.symbol, qty)}
-                  disabled={qty <= 0 || holdingQty < qty}
+                  disabled={qty > 0 && holdingQty < qty}
                 >
                   Sell
                 </button>
               </div>
-              <div className="holding-info">
-                You own: {holdingQty} shares
+              <div className="holding-info" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+                <span style={{color: 'var(--text-secondary)', fontSize: '0.9rem'}}>Estimated Cost: ${(qty * stock.price).toFixed(2)}</span>
+                <span style={{fontWeight: 500, color: 'var(--text-primary)'}}>You own: {holdingQty} shares</span>
               </div>
             </div>
           );
