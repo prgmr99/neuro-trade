@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { useGameStore } from './store/gameStore';
-import { INITIAL_STOCKS, SCENARIO_NEWS } from './data/scenarios';
+import { SCENARIOS, GameMode } from './data';
 import Layout from './components/Layout';
 import GameOverScreen from './components/GameOverScreen';
 import { useTranslation } from './i18n/translations';
 
 function App() {
   const [started, setStarted] = useState(false);
+  const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
   const { setInitialState, dayState } = useGameStore();
   const { t } = useTranslation();
 
   const startGame = () => {
-    setInitialState(INITIAL_STOCKS, SCENARIO_NEWS, 5);
+    if (!selectedMode) return;
+    const scenario = SCENARIOS[selectedMode];
+    setInitialState(scenario.stocks, scenario.news, scenario.maxDays, scenario.startingCash);
     setStarted(true);
   };
 
@@ -21,19 +24,49 @@ function App() {
         <div className="splash-content glass-card">
           <h1>{t('app.title')}</h1>
           <p className="subtitle">{t('app.subtitle')}</p>
-          <div className="instructions">
-            <p>{t('app.instruction1')}</p>
-            <p>{t('app.instruction2')}</p>
-            <p>{t('app.instruction3')}</p>
+
+          <p className="mode-select-label">{t('app.modeSelect')}</p>
+          <div className="mode-selector">
+            <button
+              className={`mode-card ${selectedMode === 'classic' ? 'selected' : ''}`}
+              onClick={() => setSelectedMode('classic')}
+            >
+              <h3>{t('app.classicTitle')}</h3>
+              <p className="mode-desc">{t('app.classicDesc')}</p>
+              <p className="mode-detail">{t('app.classicDetail')}</p>
+            </button>
+            <button
+              className={`mode-card ${selectedMode === 'advanced' ? 'selected' : ''}`}
+              onClick={() => setSelectedMode('advanced')}
+            >
+              <h3>{t('app.advancedTitle')}</h3>
+              <p className="mode-desc">{t('app.advancedDesc')}</p>
+              <p className="mode-detail">{t('app.advancedDetail')}</p>
+            </button>
           </div>
-          <button className="start-btn" onClick={startGame}>{t('app.start')}</button>
+
+          {selectedMode && (
+            <div className="instructions">
+              <p>{t(selectedMode === 'classic' ? 'app.instruction1Classic' : 'app.instruction1Advanced')}</p>
+              <p>{t('app.instruction2')}</p>
+              <p>{t(selectedMode === 'classic' ? 'app.instruction3Classic' : 'app.instruction3Advanced')}</p>
+            </div>
+          )}
+
+          <button
+            className="start-btn"
+            onClick={startGame}
+            disabled={!selectedMode}
+          >
+            {t('app.start')}
+          </button>
         </div>
       </div>
     );
   }
 
   if (started && dayState.currentDay > dayState.maxDays) {
-    return <GameOverScreen onRestart={() => setStarted(false)} />;
+    return <GameOverScreen onRestart={() => { setStarted(false); setSelectedMode(null); }} />;
   }
 
   return (

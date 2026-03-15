@@ -7,7 +7,8 @@ import { useTranslation } from '../i18n/translations';
 const Market: React.FC = () => {
   const { stocks, portfolio, buyStock, sellStock } = useGameStore();
   const [tradeQuantity, setTradeQuantity] = useState<Record<string, number>>({});
-  const [expandedCharts, setExpandedCharts] = useState<string[]>(Object.keys(stocks));
+  const stockSymbols = Object.keys(stocks);
+  const [expandedCharts, setExpandedCharts] = useState<string[]>(stockSymbols.length > 5 ? [] : stockSymbols);
   const { t, language } = useTranslation();
 
   const handleQuantityChange = (symbol: string, value: string) => {

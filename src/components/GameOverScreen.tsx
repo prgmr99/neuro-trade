@@ -10,7 +10,7 @@ const GameOverScreen: React.FC<Props> = ({ onRestart }) => {
   const { history } = useGameStore();
   const { t } = useTranslation();
 
-  const initialValue = 10000;
+  const initialValue = history[0]?.portfolioValue ?? 10000;
   const finalValue = history[history.length - 1].portfolioValue;
   const returnPct = ((finalValue - initialValue) / initialValue) * 100;
   const isPositive = returnPct >= 0;

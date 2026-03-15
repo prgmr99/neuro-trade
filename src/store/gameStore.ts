@@ -13,7 +13,7 @@ interface GameState {
   sellStock: (symbol: StockSymbol, quantity: number) => void;
   readNews: (newsId: string) => void;
   nextDay: () => void;
-  setInitialState: (stocks: Record<StockSymbol, Stock>, news: News[], maxDays: number) => void;
+  setInitialState: (stocks: Record<StockSymbol, Stock>, news: News[], maxDays: number, startingCash?: number) => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -158,7 +158,7 @@ export const useGameStore = create<GameState>((set) => ({
     };
   }),
 
-  setInitialState: (stocks, news, maxDays) => {
+  setInitialState: (stocks, news, maxDays, startingCash = 10000) => {
     // Generate some fake past history so Day 1 has a chart (e.g. Day -5 to Day 0)
     const initializedStocks = { ...stocks };
     Object.keys(initializedStocks).forEach(symbol => {
@@ -192,9 +192,13 @@ export const useGameStore = create<GameState>((set) => ({
       dayState: {
         currentDay: 1,
         maxDays,
-        dailyNews: news.filter(n => n.dayIdx === 1), // Load day 1 news
+        dailyNews: news.filter(n => n.dayIdx === 1),
       },
-      // Keep initial history and portfolio
+      portfolio: {
+        cash: startingCash,
+        holdings: {},
+      },
+      history: [{ day: 1, portfolioValue: startingCash }],
     });
   },
 }));
