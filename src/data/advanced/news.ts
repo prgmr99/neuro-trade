@@ -1,4 +1,7 @@
 import { News } from '../../types';
+import { BOOST_DAYS_1_10 } from './news-boost-1';
+import { BOOST_DAYS_11_20 } from './news-boost-2';
+import { BOOST_DAYS_21_30 } from './news-boost-3';
 
 // Arc 1: AI Revolution (Days 1-29)
 const ARC_AI_REVOLUTION: News[] = [
@@ -6,7 +9,7 @@ const ARC_AI_REVOLUTION: News[] = [
     id: 'a1-1', dayIdx: 1,
     title: { en: 'NeoTech Unveils "Prometheus" AGI System', ko: '네오테크, 범용인공지능 "프로메테우스" 공개' },
     content: { en: 'NeoTech Corporation announced Prometheus, claiming it surpasses human-level reasoning across all benchmarks. Shares surged in pre-market trading as analysts called it "the most significant technological milestone of the century."', ko: '네오테크 코퍼레이션이 모든 벤치마크에서 인간 수준의 추론 능력을 초월한다고 주장하는 프로메테우스를 발표했습니다. 애널리스트들이 "세기의 가장 중요한 기술적 이정표"라고 평가하면서 주가가 장전 거래에서 급등했습니다.' },
-    read: false, effect: { TECH: 1.12 },
+    read: false, effect: { TECH: 1.08 },
   },
   {
     id: 'a1-2', dayIdx: 2,
@@ -24,7 +27,7 @@ const ARC_AI_REVOLUTION: News[] = [
     id: 'a1-4', dayIdx: 5,
     title: { en: 'Streaming Giants Face AI Content Disruption', ko: '스트리밍 대기업들, AI 콘텐츠 혁신에 직면' },
     content: { en: 'NeoTech\'s Prometheus is now generating full-length films and music albums at a fraction of traditional production costs, forcing media companies to reassess their content strategies. One major studio saw its stock drop 8% on reports of shelved productions.', ko: '네오테크의 프로메테우스가 기존 제작 비용의 극히 일부로 장편 영화와 음악 앨범을 생성하면서 미디어 기업들이 콘텐츠 전략을 재검토하고 있습니다. 한 대형 스튜디오는 제작 보류 보도로 주가가 8% 하락했습니다.' },
-    read: false, effect: { MEDIA: 0.90, TECH: 1.04 },
+    read: false, effect: { MEDIA: 0.92, TECH: 1.04 },
   },
   {
     id: 'a1-5', dayIdx: 7,
@@ -48,7 +51,7 @@ const ARC_AI_REVOLUTION: News[] = [
     id: 'a1-8', dayIdx: 12,
     title: { en: 'EU Proposes Emergency AI Moratorium Legislation', ko: 'EU, 긴급 AI 모라토리엄 법안 제안' },
     content: { en: 'The European Commission proposed a 90-day moratorium on AGI deployments pending a comprehensive safety review, sending shockwaves through global technology markets. Asian tech indices fell in sympathy trading overnight.', ko: '유럽위원회가 포괄적인 안전성 검토가 완료될 때까지 AGI 배포에 대한 90일 유예를 제안하며 글로벌 기술 시장에 충격을 주었습니다. 아시아 기술주 지수도 동조 하락했습니다.' },
-    read: false, effect: { TECH: 0.88, MEDIA: 0.95 },
+    read: false, effect: { TECH: 0.92, MEDIA: 0.95 },
   },
   {
     id: 'a1-9', dayIdx: 14,
@@ -60,7 +63,7 @@ const ARC_AI_REVOLUTION: News[] = [
     id: 'a1-10', dayIdx: 16,
     title: { en: 'DOJ Launches Antitrust Investigation into NeoTech', ko: '법무부, 네오테크 독점금지법 조사 착수' },
     content: { en: 'The U.S. Department of Justice formally opened an antitrust investigation into NeoTech\'s licensing practices, alleging the company is using Prometheus to unfairly dominate adjacent markets. NeoTech stock fell sharply while banking sector stocks that have alternate AI partners recovered.', ko: '미국 법무부가 네오테크의 라이선스 관행에 대한 공식 독점금지 조사를 시작하며, 프로메테우스를 이용한 인접 시장 불공정 지배를 주장했습니다. 네오테크 주가는 급락한 반면, 대체 AI 파트너를 보유한 은행 섹터 주가는 회복세를 보였습니다.' },
-    read: false, effect: { TECH: 0.87, BANK: 1.03 },
+    read: false, effect: { TECH: 0.91, BANK: 1.03 },
   },
   {
     id: 'a1-11', dayIdx: 18,
@@ -72,7 +75,7 @@ const ARC_AI_REVOLUTION: News[] = [
     id: 'a1-12', dayIdx: 20,
     title: { en: 'AI Market Correction Triggers Broad Tech Selloff', ko: 'AI 시장 조정, 기술주 전반 매도세 촉발' },
     content: { en: 'Overvaluation concerns sparked a broad selloff in technology stocks, with analysts warning that Prometheus adoption timelines had been priced in too aggressively. The correction also dragged media and e-commerce stocks lower amid a risk-off sentiment.', ko: '과대평가 우려가 기술주 전반의 매도세를 촉발했으며, 애널리스트들은 프로메테우스 도입 일정이 지나치게 공격적으로 주가에 반영됐다고 경고했습니다. 위험 회피 심리 속에 미디어 및 전자상거래 주가도 동반 하락했습니다.' },
-    read: false, effect: { TECH: 0.86, MEDIA: 0.92, ECOM: 0.94 },
+    read: false, effect: { TECH: 0.91, MEDIA: 0.93, ECOM: 0.94 },
   },
   {
     id: 'a1-13', dayIdx: 23,
@@ -112,31 +115,31 @@ const ARC_HEALTH_CRISIS: News[] = [
     id: 'a2-3', dayIdx: 5,
     title: { en: 'WHO Declares Public Health Emergency of International Concern', ko: 'WHO, 국제 공중보건 비상사태 선포' },
     content: { en: 'The World Health Organization formally declared the outbreak a Public Health Emergency of International Concern, activating its global response coordination framework. Food supply chain stocks fell on fears of cross-border logistics disruptions.', ko: '세계보건기구가 공식적으로 해당 발병을 국제 공중보건 비상사태로 선포하고 글로벌 대응 조정 체계를 가동했습니다. 국경 간 물류 차질 우려로 식품 공급망 주가가 하락했습니다.' },
-    read: false, effect: { HEALTH: 1.08, FOOD: 0.93, AERO: 0.88 },
+    read: false, effect: { HEALTH: 1.08, FOOD: 0.93, AERO: 0.92 },
   },
   {
     id: 'a2-4', dayIdx: 6,
     title: { en: 'G7 Nations Impose Coordinated Border Restrictions', ko: 'G7 국가들, 국경 제한 조치 공조' },
     content: { en: 'G7 nations announced coordinated border restrictions and mandatory quarantine protocols, effectively halting non-essential international travel. E-commerce logistics networks reported severe delays as air freight capacity collapsed.', ko: 'G7 국가들이 사실상 비필수 국제 여행을 차단하는 국경 제한 및 의무 격리 프로토콜을 발표했습니다. 항공 화물 용량이 붕괴되면서 전자상거래 물류 네트워크에 심각한 지연이 발생했다고 보고했습니다.' },
-    read: false, effect: { AERO: 0.85, ECOM: 0.91, FOOD: 0.95 },
+    read: false, effect: { AERO: 0.91, ECOM: 0.93, FOOD: 0.95 },
   },
   {
     id: 'a2-5', dayIdx: 7,
     title: { en: 'Hospital Systems Near Capacity as Cases Surge', ko: '병원 시스템, 환자 급증으로 포화 상태 근접' },
     content: { en: 'Hospitals in affected regions reported ICU occupancy rates exceeding 90%, triggering emergency resource allocation protocols. Medical supply companies and pharmaceutical distributors surged on emergency government procurement orders.', ko: '피해 지역 병원들이 중환자실 점유율이 90%를 초과했다고 보고하며 긴급 자원 배분 프로토콜을 가동했습니다. 정부의 긴급 조달 주문으로 의료 공급업체와 제약 유통업체 주가가 급등했습니다.' },
-    read: false, effect: { HEALTH: 1.11, ECOM: 1.04 },
+    read: false, effect: { HEALTH: 1.08, ECOM: 1.04 },
   },
   {
     id: 'a2-6', dayIdx: 8,
     title: { en: 'Global Food Supply Chains Under Strain from Lockdowns', ko: '봉쇄 조치로 글로벌 식품 공급망 압박' },
     content: { en: 'Agricultural export restrictions by three major food-producing nations triggered commodity price spikes of up to 18%, as domestic hoarding policies disrupted global supply chains. Food sector stocks fell on thin margin fears despite higher commodity prices.', ko: '3개 주요 식품 생산국의 농산물 수출 제한이 국내 사재기 정책으로 글로벌 공급망을 교란하며 원자재 가격을 최대 18% 폭등시켰습니다. 더 높은 원자재 가격에도 불구하고 마진 축소 우려로 식품 섹터 주가가 하락했습니다.' },
-    read: false, effect: { FOOD: 0.90, ECOM: 0.93 },
+    read: false, effect: { FOOD: 0.92, ECOM: 0.93 },
   },
   {
     id: 'a2-7', dayIdx: 9,
     title: { en: 'Biotech Firms Announce Competing Vaccine Programs', ko: '바이오테크 기업들, 경쟁적 백신 프로그램 발표' },
     content: { en: 'Five leading pharmaceutical companies announced expedited vaccine development programs, with the first candidate entering Phase I trials. Government pre-purchase commitments worth $15 billion were announced, driving the health sector sharply higher.', ko: '5개 주요 제약사가 가속화된 백신 개발 프로그램을 발표했으며, 첫 번째 후보물질이 1상 임상시험에 돌입했습니다. 150억 달러 규모의 정부 선구매 약정이 발표되면서 헬스케어 섹터 주가가 크게 상승했습니다.' },
-    read: false, effect: { HEALTH: 1.13 },
+    read: false, effect: { HEALTH: 1.09 },
   },
   {
     id: 'a2-8', dayIdx: 10,
@@ -148,13 +151,13 @@ const ARC_HEALTH_CRISIS: News[] = [
     id: 'a2-9', dayIdx: 11,
     title: { en: 'Phase III Trial Results Show 78% Efficacy for Lead Vaccine', ko: '선도 백신 3상 임상 결과, 78% 효능 확인' },
     content: { en: 'A leading pharmaceutical company released interim Phase III trial data showing 78% efficacy for its vaccine candidate, exceeding the WHO\'s 60% threshold. Emergency use authorization applications were filed immediately in 40 countries.', ko: '주요 제약사가 백신 후보물질의 78% 효능을 보여주는 3상 임상 중간 데이터를 공개하며 WHO의 60% 기준을 초과 달성했습니다. 즉시 40개국에 긴급 사용 승인 신청서가 제출되었습니다.' },
-    read: false, effect: { HEALTH: 1.14, AERO: 1.03 },
+    read: false, effect: { HEALTH: 1.10, AERO: 1.03 },
   },
   {
     id: 'a2-10', dayIdx: 12,
     title: { en: 'Antiviral Treatment Clears FDA Emergency Review', ko: '항바이러스 치료제, FDA 긴급 검토 통과' },
     content: { en: 'The FDA granted emergency use authorization to a novel antiviral compound, reporting a 55% reduction in hospitalizations in treated patients. Healthcare stocks reached all-time highs as production scale-up agreements were signed globally.', ko: 'FDA가 신규 항바이러스 화합물에 긴급 사용 승인을 부여하며 치료 환자의 입원이 55% 감소했다고 보고했습니다. 전 세계적으로 생산 확대 계약이 체결되면서 헬스케어 주가가 사상 최고치를 기록했습니다.' },
-    read: false, effect: { HEALTH: 1.12, AERO: 1.05 },
+    read: false, effect: { HEALTH: 1.08, AERO: 1.05 },
   },
   {
     id: 'a2-11', dayIdx: 14,
@@ -172,7 +175,7 @@ const ARC_HEALTH_CRISIS: News[] = [
     id: 'a2-13', dayIdx: 16,
     title: { en: 'International Travel Restrictions Formally Lifted in 28 Nations', ko: '28개국, 국제 여행 제한 공식 해제' },
     content: { en: '28 countries simultaneously lifted international travel restrictions, triggering the largest single-day recovery in airline bookings on record. Tourism-adjacent sectors, including food and hospitality supply chains, rallied strongly on restoration of global demand.', ko: '28개국이 동시에 국제 여행 제한을 해제하며 기록상 항공 예약 단일 최대 회복을 촉발했습니다. 글로벌 수요 회복으로 식품 및 숙박 공급망을 포함한 관광 관련 섹터가 강세를 보였습니다.' },
-    read: false, effect: { AERO: 1.13, FOOD: 1.06 },
+    read: false, effect: { AERO: 1.09, FOOD: 1.06 },
   },
   {
     id: 'a2-14', dayIdx: 17,
@@ -206,7 +209,7 @@ const ARC_ENERGY_TRANSITION: News[] = [
     id: 'a3-3', dayIdx: 5,
     title: { en: 'Sovereign Wealth Funds Pivot to Green Energy Assets', ko: '국부펀드, 녹색에너지 자산으로 포트폴리오 전환' },
     content: { en: 'Three major sovereign wealth funds announced a combined $200 billion reallocation toward renewable energy infrastructure over the next decade, citing carbon tax tailwinds.', ko: '주요 국부펀드 3곳이 탄소세 도입 기대를 배경으로 향후 10년간 총 2,000억 달러를 신재생에너지 인프라로 재배분한다고 발표했습니다.' },
-    read: false, effect: { GREEN: 1.12, TECH: 1.03 },
+    read: false, effect: { GREEN: 1.08, TECH: 1.03 },
   },
   {
     id: 'a3-4', dayIdx: 7,
@@ -230,7 +233,7 @@ const ARC_ENERGY_TRANSITION: News[] = [
     id: 'a3-7', dayIdx: 13,
     title: { en: 'Solid-State EV Battery Achieves 600-Mile Range in Tests', ko: '전고체 전기차 배터리, 테스트에서 960km 주행 달성' },
     content: { en: 'A major technology consortium announced a solid-state battery prototype delivering 600 miles of range with 10-minute charging, calling it a potential industry inflection point.', ko: '주요 기술 컨소시엄이 10분 충전으로 960km 주행이 가능한 전고체 배터리 프로토타입을 발표하며 업계의 전환점이 될 수 있다고 밝혔습니다.' },
-    read: false, effect: { GREEN: 1.11, TECH: 1.08 },
+    read: false, effect: { GREEN: 1.08, TECH: 1.08 },
   },
   {
     id: 'a3-8', dayIdx: 15,
@@ -266,7 +269,7 @@ const ARC_ENERGY_TRANSITION: News[] = [
     id: 'a3-13', dayIdx: 25,
     title: { en: 'Carbon Tax Signed Into Law; New Energy Era Declared', ko: '탄소세법 서명 완료…"새로운 에너지 시대" 선언' },
     content: { en: 'The president signed the landmark carbon pricing act into law, with analysts projecting $1.2 trillion in clean energy investment over the next decade and structural headwinds for fossil fuel-dependent industries.', ko: '대통령이 획기적인 탄소 가격제 법안에 서명했으며, 전문가들은 향후 10년간 1조 2,000억 달러의 청정에너지 투자와 화석연료 의존 산업에 대한 구조적 역풍을 예상하고 있습니다.' },
-    read: false, effect: { GREEN: 1.13, AERO: 0.96, FOOD: 0.95, REALTY: 0.96 },
+    read: false, effect: { GREEN: 1.09, AERO: 0.96, FOOD: 0.95, REALTY: 0.96 },
   },
 ];
 
@@ -276,7 +279,7 @@ const ARC_FINANCIAL_DISRUPTION: News[] = [
     id: 'a4-1', dayIdx: 8,
     title: { en: 'Bitcoin Breaks $120,000 as Retail Frenzy Returns', ko: '비트코인 1억 6천만 원 돌파…개인 투자 열풍 재점화' },
     content: { en: 'Bitcoin surged past $120,000 for the first time, driven by a wave of retail buying and renewed optimism following positive macroeconomic data from the Federal Reserve.', ko: '연방준비제도의 긍정적인 거시경제 지표 발표 이후 개인 투자자들의 매수세가 몰리며 비트코인이 사상 처음으로 1억 6천만 원을 돌파했습니다.' },
-    read: false, effect: { CRYPTO: 1.13, TECH: 1.05 },
+    read: false, effect: { CRYPTO: 1.09, TECH: 1.05 },
   },
   {
     id: 'a4-2', dayIdx: 10,
@@ -294,19 +297,19 @@ const ARC_FINANCIAL_DISRUPTION: News[] = [
     id: 'a4-4', dayIdx: 14,
     title: { en: 'Senate Banking Committee Signals Crypto Regulatory Crackdown', ko: '상원 은행위원회, 암호화폐 규제 강화 시사' },
     content: { en: 'The Senate Banking Committee chairperson warned that legislation to classify most crypto assets as securities could be introduced within 60 days, citing consumer protection concerns.', ko: '상원 은행위원회 위원장이 소비자 보호를 이유로 대부분의 암호화폐 자산을 증권으로 분류하는 법안이 60일 내에 발의될 수 있다고 경고했습니다.' },
-    read: false, effect: { CRYPTO: 0.90, BANK: 1.04, TECH: 0.97 },
+    read: false, effect: { CRYPTO: 0.92, BANK: 1.04, TECH: 0.97 },
   },
   {
     id: 'a4-5', dayIdx: 16,
     title: { en: 'Major DeFi Protocol Suffers $2.1 Billion Exploit', ko: '주요 디파이 프로토콜, 2조 8천억 원 규모 해킹 피해' },
     content: { en: 'Hackers exploited a smart contract vulnerability in one of DeFi\'s top lending protocols, draining $2.1 billion in assets before the exploit was patched — the largest hack in blockchain history.', ko: '해커들이 주요 디파이 대출 프로토콜의 스마트 컨트랙트 취약점을 악용해 패치 전까지 2조 8천억 원 상당의 자산을 탈취했으며, 이는 블록체인 역사상 최대 규모의 해킹입니다.' },
-    read: false, effect: { CRYPTO: 0.87, TECH: 0.95, ECOM: 0.97 },
+    read: false, effect: { CRYPTO: 0.91, TECH: 0.95, ECOM: 0.97 },
   },
   {
     id: 'a4-6', dayIdx: 17,
     title: { en: 'Crypto Market Wipeout: $800 Billion Erased in 48 Hours', ko: '암호화폐 시장 대폭락: 48시간 만에 1,000조 원 증발' },
     content: { en: 'A cascade of liquidations following the DeFi hack and regulatory headlines triggered a market-wide selloff, with total crypto market cap falling from $3.8 trillion to $3.0 trillion in two days.', ko: '디파이 해킹과 규제 관련 뉴스가 겹치며 연쇄 청산이 발생, 암호화폐 시가총액이 이틀 만에 4,900조 원에서 3,900조 원으로 급감했습니다.' },
-    read: false, effect: { CRYPTO: 0.88, BANK: 1.03, REALTY: 0.97 },
+    read: false, effect: { CRYPTO: 0.92, BANK: 1.03, REALTY: 0.97 },
   },
   {
     id: 'a4-7', dayIdx: 19,
@@ -364,13 +367,13 @@ const ARC_GEOPOLITICAL: News[] = [
     id: 'a5-2', dayIdx: 11,
     title: { en: 'EU Announces Retaliatory Tariffs on US Agricultural Goods', ko: 'EU, 미국산 농산물에 보복 관세 부과 발표' },
     content: { en: 'The European Union unveiled a sweeping 25% tariff on American agricultural and food products in response to US steel duties. Food and consumer staples exporters braced for significant revenue headwinds.', ko: '유럽연합이 미국의 철강 관세에 대한 보복으로 미국산 농산물에 25% 관세를 부과하겠다고 발표했다. 식품 수출 기업들은 실적 악화를 우려하고 있다.' },
-    read: false, effect: { FOOD: 0.88, ECOM: 0.94 },
+    read: false, effect: { FOOD: 0.92, ECOM: 0.94 },
   },
   {
     id: 'a5-3', dayIdx: 13,
     title: { en: 'Pentagon Accelerates Defense Procurement Amid Geopolitical Uncertainty', ko: '지정학적 불확실성 속 미 국방부 방산 조달 가속화' },
     content: { en: 'The Pentagon announced a $48 billion supplemental defense budget to accelerate procurement of advanced weapons systems and satellite technology. Aerospace and defense contractors saw their stocks surge to multi-year highs.', ko: '미 국방부가 첨단 무기 체계와 위성 기술 조달 가속화를 위해 480억 달러 규모의 추가 국방 예산을 발표했다. 방산 업체 주가가 수년 만에 최고치로 치솟았다.' },
-    read: false, effect: { AERO: 1.12, TECH: 1.04 },
+    read: false, effect: { AERO: 1.08, TECH: 1.04 },
   },
   {
     id: 'a5-4', dayIdx: 14,
@@ -382,13 +385,13 @@ const ARC_GEOPOLITICAL: News[] = [
     id: 'a5-5', dayIdx: 16,
     title: { en: 'Sanctions Target Chinese Tech Firms, Rattling Global Media Platforms', ko: '중국 기술 기업 제재, 글로벌 미디어 플랫폼에 파장' },
     content: { en: 'Washington expanded its sanctions list to include several Chinese media and streaming technology companies, raising concerns over platform fragmentation. Global media stocks fell on fears of market-access restrictions and content licensing disputes.', ko: '워싱턴이 중국 미디어·스트리밍 기술 기업들을 제재 목록에 추가하면서 플랫폼 분절화 우려가 높아졌다. 글로벌 미디어주는 시장 접근 제한과 콘텐츠 라이선스 분쟁 우려로 하락했다.' },
-    read: false, effect: { MEDIA: 0.89, TECH: 0.93 },
+    read: false, effect: { MEDIA: 0.92, TECH: 0.93 },
   },
   {
     id: 'a5-6', dayIdx: 17,
     title: { en: 'Grain Export Corridors Disrupted by Regional Conflict', ko: '지역 분쟁으로 곡물 수출 통로 차단' },
     content: { en: 'Key Black Sea shipping lanes were disrupted following escalating regional hostilities, threatening global wheat and corn supplies. Agricultural commodity prices spiked, pressuring food manufacturers while benefiting domestic producers.', ko: '지역 분쟁 격화로 흑해 주요 해상 항로가 차단되면서 글로벌 밀·옥수수 공급에 차질이 빚어졌다. 농산물 가격이 급등하면서 식품 제조업체는 압박을 받은 반면 국내 생산업체는 수혜를 입었다.' },
-    read: false, effect: { FOOD: 0.87, ECOM: 0.95 },
+    read: false, effect: { FOOD: 0.91, ECOM: 0.95 },
   },
   {
     id: 'a5-7', dayIdx: 19,
@@ -400,7 +403,7 @@ const ARC_GEOPOLITICAL: News[] = [
     id: 'a5-8', dayIdx: 21,
     title: { en: 'Defense Alliance Expands, Boosting Aerospace Contracts', ko: '방위 동맹 확대, 항공우주 계약 증가' },
     content: { en: 'NATO announced a major expansion of joint defense procurement, committing member states to increased spending on next-generation fighter jets and missile defense systems. Aerospace sector stocks climbed to record highs on the contract pipeline outlook.', ko: 'NATO가 차세대 전투기와 미사일 방어 시스템에 대한 회원국 공동 조달 확대를 발표했다. 항공우주 업종은 향후 계약 수주 전망에 힘입어 사상 최고치를 기록했다.' },
-    read: false, effect: { AERO: 1.13, TECH: 1.03 },
+    read: false, effect: { AERO: 1.09, TECH: 1.03 },
   },
   {
     id: 'a5-9', dayIdx: 23,
@@ -412,7 +415,7 @@ const ARC_GEOPOLITICAL: News[] = [
     id: 'a5-10', dayIdx: 25,
     title: { en: 'Tech Export Sanctions Eased Under New Bilateral Deal', ko: '새 양자 협정으로 기술 수출 제재 완화' },
     content: { en: 'A landmark bilateral agreement between the US and China eased restrictions on certain semiconductor exports, with oversight mechanisms agreed upon by both sides. Technology stocks surged as investors priced in restored supply chain fluidity.', ko: '미국과 중국이 감독 메커니즘에 합의하며 일부 반도체 수출 제재를 완화하는 양자 협정을 체결했다. 기술주는 공급망 유동성 회복 기대감으로 급등했다.' },
-    read: false, effect: { TECH: 1.11, AERO: 1.05 },
+    read: false, effect: { TECH: 1.08, AERO: 1.05 },
   },
   {
     id: 'a5-11', dayIdx: 27,
@@ -434,25 +437,25 @@ const ARC_REAL_ESTATE_CONSUMER: News[] = [
     id: 'a6-1', dayIdx: 5,
     title: { en: 'Central Bank Signals Aggressive Rate Hike Cycle', ko: '중앙은행, 공격적 금리 인상 사이클 시사' },
     content: { en: 'The Federal Reserve signaled a series of interest rate hikes to combat persistent inflation, sending mortgage rates to their highest levels in 15 years. Real estate and banking stocks fell sharply as borrowing cost concerns mounted.', ko: '연방준비제도가 지속적인 인플레이션에 대응하기 위해 연속 금리 인상을 예고하면서 모기지 금리가 15년 만에 최고치로 치솟았다. 부동산·은행주가 차입 비용 급등 우려로 급락했다.' },
-    read: false, effect: { REALTY: 0.88, BANK: 0.91 },
+    read: false, effect: { REALTY: 0.92, BANK: 0.91 },
   },
   {
     id: 'a6-2', dayIdx: 7,
     title: { en: 'Housing Market Shows Rapid Cooling as Sales Drop 18%', ko: '주택 판매 18% 급감, 부동산 시장 급속 냉각' },
     content: { en: 'National home sales fell 18% month-over-month as higher mortgage rates priced out first-time buyers, with inventory piling up in major metropolitan areas. Real estate developers cut project pipelines and flagged rising cancellation rates.', ko: '모기지 금리 상승으로 첫 주택 구매자들이 시장에서 밀려나면서 전국 주택 판매가 전월 대비 18% 급감했다. 주요 대도시를 중심으로 재고가 쌓이자 부동산 개발업체들이 사업 계획을 축소하고 계약 취소율 증가를 경고했다.' },
-    read: false, effect: { REALTY: 0.86, BANK: 0.93 },
+    read: false, effect: { REALTY: 0.91, BANK: 0.93 },
   },
   {
     id: 'a6-3', dayIdx: 9,
     title: { en: 'Commercial Real Estate Vacancies Hit Decade High', ko: '상업용 부동산 공실률 10년 만에 최고치' },
     content: { en: 'Office vacancy rates hit a decade-high as hybrid work policies became permanent at major corporations, straining commercial property valuations. Banks with large commercial real estate loan books saw credit risk concerns weigh on their share prices.', ko: '주요 기업들의 하이브리드 근무제 영구화로 오피스 공실률이 10년 만에 최고치를 기록하면서 상업용 부동산 가치에 부담을 주고 있다. 상업용 부동산 대출 비중이 높은 은행들은 신용 리스크 우려로 주가가 하락했다.' },
-    read: false, effect: { REALTY: 0.87, BANK: 0.90 },
+    read: false, effect: { REALTY: 0.92, BANK: 0.92 },
   },
   {
     id: 'a6-4', dayIdx: 11,
     title: { en: 'Remote Work Boom Drives Streaming and Digital Media Surge', ko: '재택근무 확산, 스트리밍·디지털 미디어 수요 급증' },
     content: { en: 'Permanent remote work policies at Fortune 500 companies fueled a surge in home entertainment spending, with streaming platforms and digital media outlets reporting record subscriber growth. Tech infrastructure providers also benefited from rising demand for home office solutions.', ko: '포춘 500대 기업의 영구 재택근무 정책 도입으로 홈 엔터테인먼트 지출이 급증하며 스트리밍 플랫폼과 디지털 미디어 업체들이 역대 최대 구독자 증가를 기록했다. 홈오피스 솔루션 수요 증가로 기술 인프라 기업들도 수혜를 입었다.' },
-    read: false, effect: { MEDIA: 1.11, TECH: 1.07 },
+    read: false, effect: { MEDIA: 1.08, TECH: 1.07 },
   },
   {
     id: 'a6-5', dayIdx: 13,
@@ -470,7 +473,7 @@ const ARC_REAL_ESTATE_CONSUMER: News[] = [
     id: 'a6-7', dayIdx: 17,
     title: { en: 'Central Bank Delivers Fifth Consecutive Rate Hike', ko: '중앙은행, 5회 연속 금리 인상 단행' },
     content: { en: 'The Federal Reserve delivered its fifth consecutive rate hike, bringing the benchmark rate to a 22-year high and fueling speculation that the tightening cycle was nearing its peak. Banks reported strong net interest margins but warned of increasing loan delinquencies in the mortgage book.', ko: '연방준비제도가 5회 연속 금리 인상을 단행해 기준금리가 22년 만에 최고치에 도달했으며, 긴축 사이클 정점 가능성에 대한 추측이 고조됐다. 은행들은 순이자마진 개선을 보고했지만 모기지 대출 연체율 증가를 경고했다.' },
-    read: false, effect: { BANK: 1.05, REALTY: 0.90 },
+    read: false, effect: { BANK: 1.05, REALTY: 0.92 },
   },
   {
     id: 'a6-8', dayIdx: 19,
@@ -488,7 +491,7 @@ const ARC_REAL_ESTATE_CONSUMER: News[] = [
     id: 'a6-10', dayIdx: 23,
     title: { en: 'Rate Cut Expectations Drive Mortgage Market Boom', ko: '금리 인하 기대감에 모기지 시장 활기 회복' },
     content: { en: 'Futures markets priced in three rate cuts over the next 12 months, triggering a refinancing boom and a surge in new mortgage applications. Banks reported strong forward booking pipelines and real estate developers resumed projects that had been shelved.', ko: '선물 시장이 향후 12개월 내 세 차례 금리 인하를 반영하면서 대규모 재융자 붐과 신규 모기지 신청 급증이 나타났다. 은행들은 강한 선행 예약 파이프라인을 보고했으며, 부동산 개발업체들은 보류했던 사업을 재개했다.' },
-    read: false, effect: { REALTY: 1.11, BANK: 1.08, ECOM: 1.04 },
+    read: false, effect: { REALTY: 1.07, BANK: 1.08, ECOM: 1.04 },
   },
   {
     id: 'a6-11', dayIdx: 25,
@@ -506,7 +509,7 @@ const ARC_REAL_ESTATE_CONSUMER: News[] = [
     id: 'a6-13', dayIdx: 29,
     title: { en: 'Urban Real Estate Revival Fueled by Return-to-Office Trend', ko: '출근 복귀 추세에 도심 부동산 시장 회복 가속' },
     content: { en: 'A growing return-to-office trend reversed urban real estate weakness, with demand for city-center residential and mixed-use properties climbing to pre-pandemic levels. Banks reported a sharp uptick in commercial property loans as developers rushed to capitalize on renewed urban demand.', ko: '출근 복귀 추세가 확산되면서 도심 부동산 약세가 반전됐다. 도심 주거용·복합 시설 수요가 팬데믹 이전 수준으로 회복됐다. 개발업체들이 새로운 도심 수요를 선점하기 위해 나서면서 은행들의 상업용 부동산 대출이 급증했다.' },
-    read: false, effect: { REALTY: 1.12, BANK: 1.09, TECH: 1.04 },
+    read: false, effect: { REALTY: 1.08, BANK: 1.09, TECH: 1.04 },
   },
 ];
 
@@ -556,7 +559,7 @@ const ARC_SUPPLEMENTAL: News[] = [
   },
 ];
 
-// Merge all arcs and sort by dayIdx for proper game sequencing
+// Merge all arcs and boost content, sort by dayIdx for proper game sequencing
 export const ADVANCED_NEWS: News[] = [
   ...ARC_AI_REVOLUTION,
   ...ARC_HEALTH_CRISIS,
@@ -565,4 +568,7 @@ export const ADVANCED_NEWS: News[] = [
   ...ARC_GEOPOLITICAL,
   ...ARC_REAL_ESTATE_CONSUMER,
   ...ARC_SUPPLEMENTAL,
+  ...BOOST_DAYS_1_10,
+  ...BOOST_DAYS_11_20,
+  ...BOOST_DAYS_21_30,
 ].sort((a, b) => a.dayIdx - b.dayIdx);
