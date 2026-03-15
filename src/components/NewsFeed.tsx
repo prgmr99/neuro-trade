@@ -1,19 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useGameStore } from '../store/gameStore';
 import { ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { useTranslation } from '../i18n/translations';
 
 const NewsFeed: React.FC = () => {
-  const { dayState, readNews } = useGameStore();
-  const [expandedNews, setExpandedNews] = useState<string[]>([]);
+  const { dayState, readNews, expandedNews, toggleNewsExpanded } = useGameStore();
   const { t, language } = useTranslation();
 
   const handleNewsClick = (id: string, isRead: boolean) => {
-    setExpandedNews(prev => 
-      prev.includes(id) 
-        ? prev.filter(newsId => newsId !== id)
-        : [...prev, id]
-    );
+    toggleNewsExpanded(id);
     if (!isRead) readNews(id);
   };
 

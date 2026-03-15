@@ -8,10 +8,13 @@ interface GameState {
   stocks: Record<StockSymbol, Stock>;
   history: { day: number; portfolioValue: number }[]; // Track history for charts
   
+  expandedNews: string[];
+
   // Actions
   buyStock: (symbol: StockSymbol, quantity: number) => void;
   sellStock: (symbol: StockSymbol, quantity: number) => void;
   readNews: (newsId: string) => void;
+  toggleNewsExpanded: (newsId: string) => void;
   nextDay: () => void;
   setInitialState: (stocks: Record<StockSymbol, Stock>, news: News[], maxDays: number, startingCash?: number) => void;
 }
@@ -29,6 +32,7 @@ export const useGameStore = create<GameState>((set) => ({
   allNews: [],
   stocks: {},
   history: [{ day: 1, portfolioValue: 10000 }],
+  expandedNews: [],
 
   buyStock: (symbol, quantity) => set((state) => {
     if (quantity <= 0) return state;
@@ -85,6 +89,12 @@ export const useGameStore = create<GameState>((set) => ({
         n.id === newsId ? { ...n, read: true } : n
       ),
     },
+  })),
+
+  toggleNewsExpanded: (newsId) => set((state) => ({
+    expandedNews: state.expandedNews.includes(newsId)
+      ? state.expandedNews.filter(id => id !== newsId)
+      : [...state.expandedNews, newsId],
   })),
 
   nextDay: () => set((state) => {
