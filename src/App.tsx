@@ -1,15 +1,24 @@
 import { useState } from 'react';
 import { useGameStore } from './store/gameStore';
+import { useLanguageStore } from './store/useLanguageStore';
 import { SCENARIOS, GameMode } from './data';
 import Layout from './components/Layout';
 import GameOverScreen from './components/GameOverScreen';
+import RankingBoard from './components/RankingBoard';
 import { useTranslation } from './i18n/translations';
+import { Globe } from 'lucide-react';
 
 function App() {
   const [started, setStarted] = useState(false);
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
+  const [showRankings, setShowRankings] = useState(false);
   const { setInitialState, dayState } = useGameStore();
+  const { language, setLanguage } = useLanguageStore();
   const { t } = useTranslation();
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'ko' : 'en');
+  };
 
   const startGame = () => {
     if (!selectedMode) return;
@@ -18,10 +27,30 @@ function App() {
     setStarted(true);
   };
 
+  if (showRankings) {
+    return (
+      <div className="splash-screen">
+        <div className="splash-content glass-card" style={{ maxWidth: '700px', width: '95%' }}>
+          <RankingBoard />
+          <button className="start-btn" onClick={() => setShowRankings(false)} style={{ width: '100%', marginTop: '1.5rem' }}>
+            {t('ranking.back')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!started) {
     return (
       <div className="splash-screen">
-        <div className="splash-content glass-card">
+        <div className="splash-content glass-card" style={{ position: 'relative' }}>
+          <button
+            onClick={toggleLanguage}
+            className="splash-lang-btn"
+          >
+            <Globe size={14} />
+            {language === 'en' ? '한국어' : 'English'}
+          </button>
           <h1>{t('app.title')}</h1>
           <p className="subtitle">{t('app.subtitle')}</p>
 
@@ -53,20 +82,28 @@ function App() {
             </div>
           )}
 
-          <button
-            className="start-btn"
-            onClick={startGame}
-            disabled={!selectedMode}
-          >
-            {t('app.start')}
-          </button>
+          <div className="splash-actions">
+            <button
+              className="start-btn"
+              onClick={startGame}
+              disabled={!selectedMode}
+            >
+              {t('app.start')}
+            </button>
+            <button
+              className="ranking-link-btn"
+              onClick={() => setShowRankings(true)}
+            >
+              {t('ranking.viewRankings')}
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   if (started && dayState.currentDay > dayState.maxDays) {
-    return <GameOverScreen onRestart={() => { setStarted(false); setSelectedMode(null); }} />;
+    return <GameOverScreen mode={selectedMode!} onRestart={() => { setStarted(false); setSelectedMode(null); }} />;
   }
 
   return (

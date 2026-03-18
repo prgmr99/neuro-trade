@@ -44,3 +44,14 @@ export interface DayState {
   maxDays: number;
   dailyNews: News[];
 }
+
+export interface RankingEntry {
+  id: string;
+  player_name: string;
+  message: string;
+  return_pct: number;
+  final_value: number;
+  initial_value: number;
+  mode: string;
+  created_at: string;
+}

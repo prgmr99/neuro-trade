@@ -53,6 +53,27 @@ body {
   animation: fadeIn 0.8s ease-out;
 }
 
+.splash-lang-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.splash-lang-btn:hover {
+  background-color: var(--bg-hover, rgba(255, 255, 255, 0.1));
+}
+
 .splash-content h1 {
   font-size: 3.5rem;
   font-weight: 800;
@@ -64,6 +85,7 @@ body {
   font-size: 1.25rem;
   color: var(--text-secondary);
   margin-bottom: 2rem;
+  min-height: 1.6em;
 }
 
 .instructions {
@@ -71,6 +93,7 @@ body {
   margin-bottom: 2rem;
   color: var(--text-secondary);
   line-height: 1.6;
+  min-height: 5.5em;
 }
 
 .mode-select-label {
@@ -123,25 +146,35 @@ body {
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-primary);
+  min-height: 2.9em;
 }
 
 .mode-card .mode-detail {
   margin: 0;
   font-size: 0.85rem;
   color: var(--text-secondary);
+  min-height: 2.5em;
+}
+
+.splash-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .start-btn {
   background: var(--accent-color);
   color: white;
   border: none;
-  padding: 1.25rem 2.5rem;
-  font-size: 1.25rem;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
   border-radius: 16px;
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
   transition: all 0.2s;
+  width: 100%;
 }
 
 .start-btn:disabled {
@@ -878,6 +911,286 @@ body {
   display: none;
 }
 
+/* Game Over Form */
+.gameover-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.form-field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.875rem 1rem;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  outline: none;
+  resize: none;
+  transition: border-color 0.2s;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: var(--accent-color);
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.skip-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.75rem 1.5rem;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.skip-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.ranking-link-btn {
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 1rem 2.5rem;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.ranking-link-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background: var(--surface-color);
+}
+
+/* Ranking Board */
+.ranking-board {
+  width: 100%;
+}
+
+.ranking-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.ranking-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.ranking-filter-btn {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ranking-filter-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.ranking-filter-btn.active {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+.ranking-loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.ranking-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.ranking-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 3rem 1rem;
+  font-size: 1rem;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.ranking-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--surface-light);
+  border-radius: 16px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.ranking-row.highlighted {
+  background: rgba(49, 130, 246, 0.08);
+  border-color: var(--accent-color);
+}
+
+.ranking-row.top-1 {
+  background: rgba(255, 215, 0, 0.06);
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.ranking-row.top-2 {
+  background: rgba(192, 192, 192, 0.06);
+  border-color: rgba(192, 192, 192, 0.3);
+}
+
+.ranking-row.top-3 {
+  background: rgba(205, 127, 50, 0.06);
+  border-color: rgba(205, 127, 50, 0.3);
+}
+
+.ranking-rank {
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.rank-medal {
+  font-size: 1.5rem;
+}
+
+.rank-number {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.ranking-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ranking-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ranking-player-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.ranking-you-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--accent-color);
+  color: white;
+  padding: 0.1rem 0.5rem;
+  border-radius: 8px;
+}
+
+.ranking-mode-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: var(--surface-color);
+  color: var(--text-secondary);
+  padding: 0.1rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.ranking-message {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ranking-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+
+.ranking-return {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.ranking-value {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.ranking-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -1097,11 +1410,7 @@ body {
     padding: 1.25rem;
   }
 
-  .start-btn {
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    width: 100%;
-  }
+
 
   /* News feed */
   .newsfeed-header {
