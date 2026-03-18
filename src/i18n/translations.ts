@@ -72,7 +72,30 @@ export const translations = {
       title: "Simulation Complete",
       finalBalance: "Final Portfolio Value",
       returnRate: "Total Return",
-      playAgain: "Return to Title"
+      playAgain: "Return to Title",
+      nameLabel: "Your Name",
+      namePlaceholder: "Enter your name",
+      messageLabel: "Leave a Message",
+      messagePlaceholder: "Share your strategy or thoughts...",
+      submitAndRank: "Submit & View Rankings",
+      skipToRank: "Skip & View Rankings"
+    },
+    ranking: {
+      title: "Leaderboard",
+      rank: "#",
+      name: "Name",
+      returnRate: "Return",
+      finalValue: "Final Value",
+      mode: "Mode",
+      date: "Date",
+      message: "Message",
+      classic: "Classic",
+      advanced: "Advanced",
+      all: "All",
+      empty: "No rankings yet. Be the first to play!",
+      you: "YOU",
+      viewRankings: "View Rankings",
+      back: "Back"
     }
   },
   ko: {
@@ -146,7 +169,30 @@ export const translations = {
       title: "시뮬레이션 종료",
       finalBalance: "최종 포트폴리오 가치",
       returnRate: "총 수익률",
-      playAgain: "처음으로 돌아가기"
+      playAgain: "처음으로 돌아가기",
+      nameLabel: "이름",
+      namePlaceholder: "이름을 입력하세요",
+      messageLabel: "한마디 남기기",
+      messagePlaceholder: "전략이나 소감을 공유해보세요...",
+      submitAndRank: "제출하고 랭킹 보기",
+      skipToRank: "건너뛰고 랭킹 보기"
+    },
+    ranking: {
+      title: "랭킹 보드",
+      rank: "#",
+      name: "이름",
+      returnRate: "수익률",
+      finalValue: "최종 자산",
+      mode: "모드",
+      date: "날짜",
+      message: "한마디",
+      classic: "클래식",
+      advanced: "어드밴스드",
+      all: "전체",
+      empty: "아직 랭킹이 없습니다. 첫 번째 플레이어가 되어보세요!",
+      you: "나",
+      viewRankings: "랭킹 보기",
+      back: "돌아가기"
     }
   }
 };

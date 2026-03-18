@@ -3,11 +3,13 @@ import { useGameStore } from './store/gameStore';
 import { SCENARIOS, GameMode } from './data';
 import Layout from './components/Layout';
 import GameOverScreen from './components/GameOverScreen';
+import RankingBoard from './components/RankingBoard';
 import { useTranslation } from './i18n/translations';
 
 function App() {
   const [started, setStarted] = useState(false);
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
+  const [showRankings, setShowRankings] = useState(false);
   const { setInitialState, dayState } = useGameStore();
   const { t } = useTranslation();
 
@@ -17,6 +19,19 @@ function App() {
     setInitialState(scenario.stocks, scenario.news, scenario.maxDays, scenario.startingCash);
     setStarted(true);
   };
+
+  if (showRankings) {
+    return (
+      <div className="splash-screen">
+        <div className="splash-content glass-card" style={{ maxWidth: '700px', width: '95%' }}>
+          <RankingBoard />
+          <button className="start-btn" onClick={() => setShowRankings(false)} style={{ width: '100%', marginTop: '1.5rem' }}>
+            {t('ranking.back')}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!started) {
     return (
@@ -60,13 +75,19 @@ function App() {
           >
             {t('app.start')}
           </button>
+          <button
+            className="ranking-link-btn"
+            onClick={() => setShowRankings(true)}
+          >
+            {t('ranking.viewRankings')}
+          </button>
         </div>
       </div>
     );
   }
 
   if (started && dayState.currentDay > dayState.maxDays) {
-    return <GameOverScreen onRestart={() => { setStarted(false); setSelectedMode(null); }} />;
+    return <GameOverScreen mode={selectedMode!} onRestart={() => { setStarted(false); setSelectedMode(null); }} />;
   }
 
   return (

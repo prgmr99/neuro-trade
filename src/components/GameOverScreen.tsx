@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useTranslation } from '../i18n/translations';
+import { supabase } from '../lib/supabase';
+import { GameMode } from '../data';
+import RankingBoard from './RankingBoard';
 
 interface Props {
+  mode: GameMode;
   onRestart: () => void;
 }
 
-const GameOverScreen: React.FC<Props> = ({ onRestart }) => {
+type Phase = 'result' | 'ranking';
+
+const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
   const { history } = useGameStore();
   const { t } = useTranslation();
 
@@ -14,6 +20,50 @@ const GameOverScreen: React.FC<Props> = ({ onRestart }) => {
   const finalValue = history[history.length - 1].portfolioValue;
   const returnPct = ((finalValue - initialValue) / initialValue) * 100;
   const isPositive = returnPct >= 0;
+
+  const [phase, setPhase] = useState<Phase>('result');
+  const [playerName, setPlayerName] = useState('');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submittedId, setSubmittedId] = useState<string | undefined>();
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    const name = playerName.trim() || 'Anonymous';
+    const { data } = await supabase
+      .from('rankings')
+      .insert({
+        player_name: name.slice(0, 20),
+        message: message.trim().slice(0, 100),
+        return_pct: Math.round(returnPct * 100) / 100,
+        final_value: Math.round(finalValue * 100) / 100,
+        initial_value: initialValue,
+        mode,
+      })
+      .select('id')
+      .single();
+
+    setSubmittedId(data?.id);
+    setSubmitting(false);
+    setPhase('ranking');
+  };
+
+  const handleSkip = () => {
+    setPhase('ranking');
+  };
+
+  if (phase === 'ranking') {
+    return (
+      <div className="splash-screen">
+        <div className="splash-content glass-card" style={{ maxWidth: '700px', width: '95%' }}>
+          <RankingBoard highlightId={submittedId} initialMode={mode} />
+          <button className="start-btn" onClick={onRestart} style={{ width: '100%', marginTop: '1.5rem' }}>
+            {t('gameOver.playAgain')}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="splash-screen">
@@ -31,9 +81,43 @@ const GameOverScreen: React.FC<Props> = ({ onRestart }) => {
             </span>
           </div>
         </div>
-        <button className="start-btn" onClick={onRestart} style={{ width: '100%' }}>
-          {t('gameOver.playAgain')}
-        </button>
+
+        <div className="gameover-form">
+          <div className="form-field">
+            <label>{t('gameOver.nameLabel')}</label>
+            <input
+              type="text"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              placeholder={t('gameOver.namePlaceholder')}
+              maxLength={20}
+            />
+          </div>
+          <div className="form-field">
+            <label>{t('gameOver.messageLabel')}</label>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder={t('gameOver.messagePlaceholder')}
+              maxLength={100}
+              rows={2}
+            />
+          </div>
+          <button
+            className="start-btn"
+            onClick={handleSubmit}
+            disabled={submitting}
+            style={{ width: '100%' }}
+          >
+            {submitting ? '...' : t('gameOver.submitAndRank')}
+          </button>
+          <button
+            className="skip-btn"
+            onClick={handleSkip}
+          >
+            {t('gameOver.skipToRank')}
+          </button>
+        </div>
       </div>
     </div>
   );
