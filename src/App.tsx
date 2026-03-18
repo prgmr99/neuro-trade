@@ -68,19 +68,21 @@ function App() {
             </div>
           )}
 
-          <button
-            className="start-btn"
-            onClick={startGame}
-            disabled={!selectedMode}
-          >
-            {t('app.start')}
-          </button>
-          <button
-            className="ranking-link-btn"
-            onClick={() => setShowRankings(true)}
-          >
-            {t('ranking.viewRankings')}
-          </button>
+          <div className="splash-actions">
+            <button
+              className="start-btn"
+              onClick={startGame}
+              disabled={!selectedMode}
+            >
+              {t('app.start')}
+            </button>
+            <button
+              className="ranking-link-btn"
+              onClick={() => setShowRankings(true)}
+            >
+              {t('ranking.viewRankings')}
+            </button>
+          </div>
         </div>
       </div>
     );
