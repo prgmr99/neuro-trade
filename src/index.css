@@ -53,6 +53,27 @@ body {
   animation: fadeIn 0.8s ease-out;
 }
 
+.splash-lang-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.splash-lang-btn:hover {
+  background-color: var(--bg-hover, rgba(255, 255, 255, 0.1));
+}
+
 .splash-content h1 {
   font-size: 3.5rem;
   font-weight: 800;
@@ -64,6 +85,7 @@ body {
   font-size: 1.25rem;
   color: var(--text-secondary);
   margin-bottom: 2rem;
+  min-height: 1.6em;
 }
 
 .instructions {
@@ -71,6 +93,7 @@ body {
   margin-bottom: 2rem;
   color: var(--text-secondary);
   line-height: 1.6;
+  min-height: 5.5em;
 }
 
 .mode-select-label {
@@ -123,12 +146,14 @@ body {
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-primary);
+  min-height: 2.9em;
 }
 
 .mode-card .mode-detail {
   margin: 0;
   font-size: 0.85rem;
   color: var(--text-secondary);
+  min-height: 2.5em;
 }
 
 .splash-actions {
