@@ -10,9 +10,14 @@
     <meta name="theme-color" content="#0f172a" />
     <meta name="color-scheme" content="dark" />
 
+    <!-- i18n -->
+    <link rel="alternate" hreflang="en" href="https://neuro-game.yeomniverse.com/" />
+    <link rel="alternate" hreflang="ko" href="https://neuro-game.yeomniverse.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://neuro-game.yeomniverse.com/" />
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
     <!-- Open Graph -->
     <meta property="og:title" content="NeuroTrade - Simulated Financial Trading Game" />
@@ -22,16 +27,44 @@
     <meta property="og:site_name" content="NeuroTrade" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:locale:alternate" content="ko_KR" />
+    <meta property="og:image" content="https://neuro-game.yeomniverse.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="NeuroTrade - Simulated Financial Trading Game" />
     <meta name="twitter:description" content="Analyze breaking news, predict market movements, and build your portfolio in 5 days." />
+    <meta name="twitter:image" content="https://neuro-game.yeomniverse.com/og-image.png" />
 
     <!-- Web App -->
     <link rel="manifest" href="/manifest.json" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "NeuroTrade",
+      "description": "Analyze breaking news, predict market movements, and build your portfolio in 5 days. A simulated financial trading game that tests your information analysis skills.",
+      "url": "https://neuro-game.yeomniverse.com/",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Web",
+      "inLanguage": ["en", "ko"],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
   </head>
   <body>
+    <noscript>
+      <div style="padding: 2rem; text-align: center; color: #e2e8f0; background: #0f172a; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+        <p>NeuroTrade requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGameStore } from './store/gameStore';
 import { useLanguageStore } from './store/useLanguageStore';
 import { SCENARIOS, GameMode } from './data';
@@ -14,6 +14,10 @@ function App() {
   const [showRankings, setShowRankings] = useState(false);
   const { setInitialState, dayState } = useGameStore();
   const { language, setLanguage } = useLanguageStore();
+
+  useEffect(() => {
+    document.documentElement.lang = language === 'ko' ? 'ko' : 'en';
+  }, [language]);
   const { t } = useTranslation();
 
   const toggleLanguage = () => {
