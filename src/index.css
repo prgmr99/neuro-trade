@@ -1644,3 +1644,442 @@ body {
     font-size: 0.6rem;
   }
 }
+
+/* ===================== Flash Round ===================== */
+
+.flash-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  padding: 1rem;
+}
+
+.flash-overlay-win {
+  background-color: rgba(240, 68, 82, 0.04);
+}
+
+.flash-overlay-lose {
+  background-color: rgba(49, 130, 246, 0.04);
+}
+
+.flash-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 2rem 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.flash-back-btn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.flash-back-btn:hover {
+  color: var(--text-primary);
+}
+
+/* Ready phase header */
+.flash-ready-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flash-badge {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.flash-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent-color);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.flash-tagline {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Stats row */
+.flash-stats-row {
+  display: flex;
+  justify-content: space-between;
+  background: var(--surface-light);
+  border-radius: 16px;
+  padding: 1rem 0.75rem;
+}
+
+.flash-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.flash-stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.flash-stat-win { color: var(--positive); }
+.flash-stat-lose { color: var(--negative); }
+.flash-stat-streak { color: #f59e0b; }
+
+.flash-stat-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+/* Start button */
+.flash-start-btn {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 1rem;
+  font-size: 1.05rem;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.flash-start-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+/* Timer */
+.flash-timer {
+  position: relative;
+  height: 6px;
+  background: var(--surface-light);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.flash-timer-bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 1s linear, background 0.3s;
+}
+
+.flash-timer-label {
+  position: absolute;
+  right: 0;
+  top: 10px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.flash-timer-urgent .flash-timer-label {
+  color: var(--positive);
+}
+
+/* Stock info */
+.flash-stock-info {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.flash-symbol {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--accent-color);
+  letter-spacing: 0.02em;
+}
+
+.flash-stock-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.flash-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+/* News card */
+.flash-news-card {
+  background: var(--surface-light);
+  border-radius: 16px;
+  padding: 1.25rem 1.25rem 1.5rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.flash-news-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.flash-news-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--positive);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.flash-news-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.6rem;
+  line-height: 1.4;
+}
+
+.flash-news-content {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Choice buttons */
+.flash-choice-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.flash-btn {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  border-radius: 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+
+.flash-btn:hover {
+  transform: translateY(-2px);
+}
+
+.flash-btn-allin {
+  background: var(--accent-color);
+  color: white;
+}
+
+.flash-btn-allin:hover {
+  background: var(--accent-hover);
+}
+
+.flash-btn-pass {
+  background: var(--surface-light);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.flash-btn-pass:hover {
+  background: #e5e8ec;
+  color: var(--text-primary);
+}
+
+/* Result phase */
+.flash-outcome-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 16px;
+  font-weight: 800;
+}
+
+.flash-outcome-win {
+  background: rgba(240, 68, 82, 0.1);
+  color: var(--positive);
+}
+
+.flash-outcome-lose {
+  background: rgba(49, 130, 246, 0.1);
+  color: var(--negative);
+}
+
+.flash-outcome-icon {
+  font-size: 1.5rem;
+}
+
+.flash-outcome-label {
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+}
+
+.flash-streak-badge {
+  background: #f59e0b;
+  color: white;
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+/* Price result */
+.flash-price-result {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--surface-light);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+}
+
+.flash-price-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.flash-price-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.flash-price-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.flash-price-arrow {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+/* Big percentage */
+.flash-big-pct {
+  text-align: center;
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  animation: pctPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pctPop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* Narrative */
+.flash-narrative {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: -0.5rem 0;
+}
+
+.flash-narrative strong {
+  color: var(--text-primary);
+}
+
+/* Result news recap */
+.flash-result-news {
+  background: var(--surface-light);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+.flash-result-news-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Result actions */
+.flash-result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.flash-back-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem;
+  text-align: center;
+  transition: color 0.2s;
+}
+
+.flash-back-link:hover {
+  color: var(--text-primary);
+}
+
+/* Flash mode card on splash */
+.mode-card-flash {
+  border-color: #f59e0b;
+}
+
+.mode-card-flash.selected {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+.mode-card-flash:hover {
+  border-color: #f59e0b;
+}
+
+@media (max-width: 480px) {
+  .flash-card {
+    padding: 1.5rem 1.25rem 2rem;
+  }
+
+  .flash-big-pct {
+    font-size: 2.5rem;
+  }
+
+  .flash-stats-row {
+    gap: 0.25rem;
+  }
+}
