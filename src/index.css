@@ -1677,6 +1677,9 @@ body {
 
 .flash-back-btn {
   align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
   background: none;
   border: none;
   color: var(--text-secondary);
