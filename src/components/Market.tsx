@@ -81,17 +81,17 @@ const Market: React.FC = () => {
                     buyStock(stock.symbol, qty);
                     handleQuantityChange(stock.symbol, '');
                   }}
-                  disabled={qty <= 0 || portfolio.cash < (qty * stock.price)}
+                  disabled={qty > 0 && portfolio.cash < (qty * stock.price)}
                 >
                   {t('market.buy')}
                 </button>
-                <button 
+                <button
                   className="sell-btn"
                   onClick={() => {
                     sellStock(stock.symbol, qty);
                     handleQuantityChange(stock.symbol, '');
                   }}
-                  disabled={qty <= 0 || holdingQty < qty}
+                  disabled={qty > 0 && holdingQty < qty}
                 >
                   {t('market.sell')}
                 </button>

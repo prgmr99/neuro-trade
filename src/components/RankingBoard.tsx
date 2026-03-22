@@ -13,6 +13,7 @@ const RankingBoard: React.FC<Props> = ({ highlightId, initialMode }) => {
   const [rankings, setRankings] = useState<RankingEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [modeFilter, setModeFilter] = useState<string>(initialMode ?? 'all');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchRankings();
@@ -94,7 +95,15 @@ const RankingBoard: React.FC<Props> = ({ highlightId, initialMode }) => {
                     <span className="ranking-mode-badge">{t(`ranking.${entry.mode}` as any)}</span>
                   </div>
                   {entry.message && (
-                    <p className="ranking-message">"{entry.message}"</p>
+                    <div
+                      className={`ranking-message ${expandedId === entry.id ? 'expanded' : ''}`}
+                      onClick={() => setExpandedId(expandedId === entry.id ? null : entry.id)}
+                    >
+                      <span className="ranking-message-text">"{entry.message}"</span>
+                      {expandedId !== entry.id && entry.message.length > 30 && (
+                        <span className="ranking-message-more">{language === 'ko' ? '더보기' : 'more'}</span>
+                      )}
+                    </div>
                   )}
                 </div>
                 <div className="ranking-stats">

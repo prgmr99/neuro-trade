@@ -69,7 +69,7 @@ const Layout: React.FC = () => {
             className="nav-btn"
             style={{ width: 'auto', padding: '0.4rem 0.8rem', fontSize: '0.8rem', borderRadius: '20px', backgroundColor: 'var(--bg-card)' }}
           >
-            <Globe size={14} style={{ marginRight: '6px' }} />
+            <Globe size={14} />
             {language === 'en' ? '한국어' : 'English'}
           </button>
         </div>

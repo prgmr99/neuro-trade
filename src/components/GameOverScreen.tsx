@@ -4,6 +4,8 @@ import { useTranslation } from '../i18n/translations';
 import { supabase } from '../lib/supabase';
 import { GameMode } from '../data';
 import RankingBoard from './RankingBoard';
+import { generateGameShareText } from '../lib/shareText';
+import { useLanguageStore } from '../store/useLanguageStore';
 
 interface Props {
   mode: GameMode;
@@ -13,8 +15,9 @@ interface Props {
 type Phase = 'result' | 'ranking';
 
 const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
-  const { history } = useGameStore();
+  const { history, stocks, dayState } = useGameStore();
   const { t } = useTranslation();
+  const { language } = useLanguageStore();
 
   const initialValue = history[0]?.portfolioValue ?? 10000;
   const finalValue = history[history.length - 1].portfolioValue;
@@ -26,6 +29,35 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | undefined>();
+  const [copyLabel, setCopyLabel] = useState<'idle' | 'copied'>('idle');
+
+  const handleShare = async () => {
+    const text = generateGameShareText({
+      mode,
+      maxDays: dayState.maxDays,
+      stocks,
+      finalValue,
+      initialValue,
+      language,
+    });
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ text });
+        return;
+      } catch {
+        // Fall through to clipboard
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyLabel('copied');
+      setTimeout(() => setCopyLabel('idle'), 2000);
+    } catch {
+      // Clipboard unavailable — silently ignore
+    }
+  };
 
   const handleSubmit = async () => {
     setSubmitting(true);
@@ -81,6 +113,26 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
             </span>
           </div>
         </div>
+
+        <button
+          onClick={handleShare}
+          style={{
+            width: '100%',
+            marginBottom: '1rem',
+            padding: '0.75rem 1.5rem',
+            background: 'transparent',
+            border: '1.5px solid var(--accent-color)',
+            color: 'var(--accent-color)',
+            borderRadius: '12px',
+            fontSize: '1rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          {copyLabel === 'copied'
+            ? (language === 'ko' ? '복사됨! ✓' : 'Copied! ✓')
+            : (language === 'ko' ? '결과 공유하기' : 'Copy Results')}
+        </button>
 
         <div className="gameover-form">
           <div className="form-field">

@@ -1,13 +1,16 @@
 import { create } from 'zustand';
 import { DayState, News, Portfolio, Stock, StockSymbol } from '../types';
+import { mulberry32 } from '../lib/prng';
 
 interface GameState {
   portfolio: Portfolio;
   dayState: DayState;
   allNews: News[];
   stocks: Record<StockSymbol, Stock>;
-  history: { day: number; portfolioValue: number }[]; // Track history for charts
-  
+  history: { day: number; portfolioValue: number }[];
+  seed: number;
+  prngState: number;
+
   expandedNews: string[];
 
   // Actions
@@ -16,12 +19,12 @@ interface GameState {
   readNews: (newsId: string) => void;
   toggleNewsExpanded: (newsId: string) => void;
   nextDay: () => void;
-  setInitialState: (stocks: Record<StockSymbol, Stock>, news: News[], maxDays: number, startingCash?: number) => void;
+  setInitialState: (stocks: Record<StockSymbol, Stock>, news: News[], maxDays: number, startingCash?: number, seed?: number) => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
   portfolio: {
-    cash: 10000, // Initial cash
+    cash: 10000,
     holdings: {},
   },
   dayState: {
@@ -32,6 +35,8 @@ export const useGameStore = create<GameState>((set) => ({
   allNews: [],
   stocks: {},
   history: [{ day: 1, portfolioValue: 10000 }],
+  seed: 0,
+  prngState: 0,
   expandedNews: [],
 
   buyStock: (symbol, quantity) => set((state) => {
@@ -98,13 +103,16 @@ export const useGameStore = create<GameState>((set) => ({
   })),
 
   nextDay: () => set((state) => {
+    // Create PRNG from stored state for deterministic sequence
+    const rng = mulberry32(state.prngState + state.dayState.currentDay * 1000);
+
     // 1. Calculate new stock prices based on current day's news effects + random volatility
     const newStocks = { ...state.stocks };
     const affectedStocks = new Set<string>();
-    
+
     // First, snapshot previousPrice for all stocks at the start of the day
     Object.keys(newStocks).forEach(symbol => {
-      newStocks[symbol] = { ...newStocks[symbol] }; // clone
+      newStocks[symbol] = { ...newStocks[symbol] };
       newStocks[symbol].previousPrice = newStocks[symbol].price;
     });
 
@@ -113,8 +121,8 @@ export const useGameStore = create<GameState>((set) => ({
       Object.entries(news.effect).forEach(([symbol, multiplier]) => {
         if (newStocks[symbol]) {
           affectedStocks.add(symbol);
-          const baseChange = multiplier; 
-          const noise = 1 + (Math.random() - 0.5) * newStocks[symbol].volatility;
+          const baseChange = multiplier;
+          const noise = 1 + (rng() - 0.5) * newStocks[symbol].volatility;
           newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * baseChange * noise);
         }
       });
@@ -124,17 +132,17 @@ export const useGameStore = create<GameState>((set) => ({
     Object.keys(newStocks).forEach(symbol => {
       const stock = newStocks[symbol];
       const openPrice = stock.previousPrice;
-      
+
       if (!affectedStocks.has(symbol)) {
-        const noise = 1 + (Math.random() - 0.5) * stock.volatility * 0.5; // less volatility on no news
+        const noise = 1 + (rng() - 0.5) * stock.volatility * 0.5;
         stock.price = Math.max(0.01, stock.price * noise);
       }
-      
+
       const closePrice = stock.price;
       const volMultiplier = affectedStocks.has(symbol) ? 1 : 0.2;
-      
-      const highPrice = Math.max(openPrice, closePrice) * (1 + Math.random() * stock.volatility * volMultiplier);
-      const lowPrice = Math.min(openPrice, closePrice) * (1 - Math.random() * stock.volatility * volMultiplier);
+
+      const highPrice = Math.max(openPrice, closePrice) * (1 + rng() * stock.volatility * volMultiplier);
+      const lowPrice = Math.min(openPrice, closePrice) * (1 - rng() * stock.volatility * volMultiplier);
 
       stock.priceHistory = [
         ...stock.priceHistory,
@@ -150,7 +158,7 @@ export const useGameStore = create<GameState>((set) => ({
 
     // 2. Advance day
     const nextDayNum = state.dayState.currentDay + 1;
-    
+
     // 3. Calculate portfolio value for history
     let portfolioValue = state.portfolio.cash;
     Object.values(state.portfolio.holdings).forEach(h => {
@@ -168,20 +176,23 @@ export const useGameStore = create<GameState>((set) => ({
     };
   }),
 
-  setInitialState: (stocks, news, maxDays, startingCash = 10000) => {
+  setInitialState: (stocks, news, maxDays, startingCash = 10000, seed?: number) => {
+    const gameSeed = seed ?? Date.now();
+    const rng = mulberry32(gameSeed);
+
     // Generate some fake past history so Day 1 has a chart (e.g. Day -5 to Day 0)
     const initializedStocks = { ...stocks };
     Object.keys(initializedStocks).forEach(symbol => {
       const stock = initializedStocks[symbol];
-      let currentSimPrice = stock.price * 0.8; // Start lower in the past randomly
+      let currentSimPrice = stock.price * 0.8;
       const history = [];
       for (let i = -5; i <= 0; i++) {
-        const noise = 1 + (Math.random() - 0.5) * stock.volatility;
+        const noise = 1 + (rng() - 0.5) * stock.volatility;
         const openPrice = currentSimPrice;
         const closePrice = openPrice * noise;
-        const highPrice = Math.max(openPrice, closePrice) * (1 + Math.random() * stock.volatility);
-        const lowPrice = Math.min(openPrice, closePrice) * (1 - Math.random() * stock.volatility);
-        
+        const highPrice = Math.max(openPrice, closePrice) * (1 + rng() * stock.volatility);
+        const lowPrice = Math.min(openPrice, closePrice) * (1 - rng() * stock.volatility);
+
         history.push({
           day: i,
           open: openPrice,
@@ -191,7 +202,7 @@ export const useGameStore = create<GameState>((set) => ({
         });
         currentSimPrice = closePrice;
       }
-      stock.price = currentSimPrice; // set to current simulated
+      stock.price = currentSimPrice;
       stock.previousPrice = history[history.length - 2]?.close || currentSimPrice;
       stock.priceHistory = history;
     });
@@ -209,6 +220,8 @@ export const useGameStore = create<GameState>((set) => ({
         holdings: {},
       },
       history: [{ day: 1, portfolioValue: startingCash }],
+      seed: gameSeed,
+      prngState: gameSeed,
     });
   },
 }));
