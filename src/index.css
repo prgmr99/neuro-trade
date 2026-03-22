@@ -1214,9 +1214,31 @@ body {
   font-size: 0.825rem;
   color: var(--text-secondary);
   font-style: italic;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.ranking-message-text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.ranking-message.expanded .ranking-message-text {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.ranking-message-more {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-style: normal;
+  color: var(--accent-color);
+  opacity: 0.8;
 }
 
 .ranking-stats {
