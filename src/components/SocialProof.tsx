@@ -109,20 +109,21 @@ export default function SocialProof() {
         gap: '0.5rem',
         flexWrap: 'wrap',
         fontSize: '0.78rem',
-        color: 'var(--text-secondary)',
-        margin: '0.5rem 0 0.25rem',
+        color: 'var(--text-primary)',
+        fontWeight: 500,
+        opacity: 0.7,
+        margin: '0.5rem 0 1rem',
         lineHeight: 1.4,
       }}
     >
       <span>
-        🎮{' '}
-        {t('app.socialProofTraders', { count: totalTraders.toLocaleString() })}
+        🎉 {t('app.socialProofTraders', { count: totalTraders.toLocaleString() })}
       </span>
       {returnStr !== null && (
         <>
           <span style={{ opacity: 0.4 }}>|</span>
           <span>
-            📊 {t('app.socialProofAvgReturn', { pct: returnStr })}
+            {t('app.socialProofAvgReturn', { pct: returnStr })}
           </span>
         </>
       )}

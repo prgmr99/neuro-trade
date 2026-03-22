@@ -54,9 +54,6 @@ body {
 }
 
 .splash-lang-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -113,7 +110,7 @@ body {
 
 .mode-card {
   flex: 1;
-  padding: 1.5rem;
+  padding: 1rem 1.25rem;
   border: 2px solid var(--border-color);
   border-radius: 16px;
   background: var(--surface-light);
@@ -142,18 +139,18 @@ body {
 }
 
 .mode-card .mode-desc {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.25rem 0;
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-primary);
-  min-height: 2.9em;
+  min-height: unset;
 }
 
 .mode-card .mode-detail {
   margin: 0;
   font-size: 0.85rem;
   color: var(--text-secondary);
-  min-height: 2.5em;
+  min-height: unset;
 }
 
 .splash-actions {
@@ -995,6 +992,61 @@ body {
   border-color: var(--accent-color);
   color: var(--accent-color);
   background: var(--surface-color);
+}
+
+/* Splash sub-actions (chips) */
+.splash-sub-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.splash-chip {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.splash-chip:hover {
+  color: var(--accent-color);
+  background: rgba(49, 130, 246, 0.08);
+}
+
+.splash-chip-divider {
+  color: var(--text-secondary);
+  opacity: 0.3;
+  font-size: 0.85rem;
+}
+
+.splash-ranking-btn {
+  display: block;
+  margin: 0.5rem auto 0;
+  background: linear-gradient(135deg, #0d9488, #2dd4bf, #34d399);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.6rem 2rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
+}
+
+.splash-ranking-btn:hover {
+  background: linear-gradient(135deg, #0f766e, #14b8a6, #2dd4bf);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+  color: #fff;
 }
 
 /* Ranking Board */
@@ -2061,16 +2113,20 @@ body {
 
 /* Flash mode card on splash */
 .mode-card-flash {
-  border-color: #f59e0b;
-}
-
-.mode-card-flash.selected {
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+  background: rgba(245, 158, 11, 0.06);
 }
 
 .mode-card-flash:hover {
-  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+}
+
+/* Daily challenge card on splash */
+.mode-card-daily {
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.mode-card-daily:hover {
+  background: rgba(99, 102, 241, 0.12);
 }
 
 @media (max-width: 480px) {
