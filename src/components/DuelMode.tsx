@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQueryState } from 'nuqs';
 import { useGameStore } from '../store/gameStore';
 import { useTranslation } from '../i18n/translations';
-import { SCENARIOS } from '../data';
+import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../data';
 import { supabase } from '../lib/supabase';
 import { getPlayerId } from '../lib/identity';
 import Layout from './Layout';
@@ -66,7 +66,8 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
 
   const startGame = () => {
     const scenario = SCENARIOS.classic;
-    setInitialState(scenario.stocks, scenario.news, scenario.maxDays, scenario.startingCash, seed);
+    const arc = selectClassicArc(CLASSIC_ARCS, seed);
+    setInitialState(scenario.stocks, arc.news, scenario.maxDays, scenario.startingCash, seed);
     setDuelState('playing');
   };
 

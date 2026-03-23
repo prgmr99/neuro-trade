@@ -2,6 +2,8 @@ import { News, Stock, StockSymbol } from '../types';
 import { CLASSIC_STOCKS, CLASSIC_NEWS } from './classic';
 import { ADVANCED_STOCKS } from './advanced/stocks';
 import { ADVANCED_NEWS } from './advanced/news';
+export { CLASSIC_ARCS } from './classic';
+export { selectClassicArc } from './classic-arcs';
 
 export type GameMode = 'classic' | 'advanced';
 

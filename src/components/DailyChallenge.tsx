@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { SCENARIOS } from '../data';
+import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../data';
 import { dateSeed } from '../lib/prng';
 import { supabase } from '../lib/supabase';
 import { getPlayerId } from '../lib/identity';
@@ -141,12 +141,14 @@ export default function DailyChallenge({ onBack }: Props) {
   }, [portfolio, stocks, todayStr, storageKey, fetchLeaderboard]);
 
   const startChallenge = useCallback(() => {
+    const seed = dateSeed();
+    const arc = selectClassicArc(CLASSIC_ARCS, seed);
     setInitialState(
       SCENARIOS.classic.stocks,
-      SCENARIOS.classic.news,
+      arc.news,
       5,
       10000,
-      dateSeed()
+      seed
     );
     setPhase('playing');
   }, [setInitialState]);

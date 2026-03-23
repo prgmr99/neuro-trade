@@ -1,4 +1,7 @@
 import { News, Stock, StockSymbol } from '../types';
+import { ClassicScenarioArc } from './classic-arcs';
+import { TRADE_WAR_ARC } from './classic-arc-trade-war';
+import { TECH_BUBBLE_ARC } from './classic-arc-tech-bubble';
 
 export const CLASSIC_STOCKS: Record<StockSymbol, Stock> = {
   'TECH': {
@@ -223,4 +226,16 @@ export const CLASSIC_NEWS: News[] = [
     content: { en: 'Consumer confidence surveys show massive optimism for the coming year.', ko: '최신 소비자 신뢰 지수 조사에서 다가올 새해에 대한 경제주체들의 엄청난 낙관론이 감지되었습니다.' },
     read: false, effect: { 'AERO': 1.03, 'ECOM': 1.04 }
   },
+];
+
+export const PANDEMIC_ARC: ClassicScenarioArc = {
+  id: 'pandemic',
+  name: { en: 'Pandemic Arc', ko: '팬데믹 시나리오' },
+  news: CLASSIC_NEWS,
+};
+
+export const CLASSIC_ARCS: ClassicScenarioArc[] = [
+  PANDEMIC_ARC,
+  TRADE_WAR_ARC,
+  TECH_BUBBLE_ARC,
 ];
