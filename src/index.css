@@ -823,6 +823,27 @@ body {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
+.modal-content.summary-modal {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.summary-modal .news-impact-list {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.summary-modal .news-impact-list::-webkit-scrollbar {
+  display: none;
+}
+
+.summary-modal .modal-actions {
+  flex-shrink: 0;
+}
+
 .summary-modal::-webkit-scrollbar {
   display: none;
 }

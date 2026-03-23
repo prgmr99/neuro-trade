@@ -165,14 +165,16 @@ export const useGameStore = create<GameState>((set) => ({
       portfolioValue += h.quantity * newStocks[h.symbol].price;
     });
 
+    const nextDayNews = state.allNews.filter(n => n.dayIdx === nextDayNum);
     return {
       stocks: newStocks,
       dayState: {
         ...state.dayState,
         currentDay: nextDayNum,
-        dailyNews: state.allNews.filter(n => n.dayIdx === nextDayNum),
+        dailyNews: nextDayNews,
       },
       history: [...state.history, { day: nextDayNum, portfolioValue }],
+      expandedNews: nextDayNews.map(n => n.id),
     };
   }),
 
@@ -207,13 +209,14 @@ export const useGameStore = create<GameState>((set) => ({
       stock.priceHistory = history;
     });
 
+    const day1News = news.filter(n => n.dayIdx === 1);
     set({
       stocks: initializedStocks,
       allNews: news,
       dayState: {
         currentDay: 1,
         maxDays,
-        dailyNews: news.filter(n => n.dayIdx === 1),
+        dailyNews: day1News,
       },
       portfolio: {
         cash: startingCash,
@@ -222,6 +225,7 @@ export const useGameStore = create<GameState>((set) => ({
       history: [{ day: 1, portfolioValue: startingCash }],
       seed: gameSeed,
       prngState: gameSeed,
+      expandedNews: day1News.map(n => n.id),
     });
   },
 }));
