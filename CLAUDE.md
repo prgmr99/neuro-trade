@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- **Dev server:** `npm run dev` (Vite, default port 5173)
-- **Build:** `npm run build` (runs `tsc -b && vite build`, output in `dist/`)
-- **Lint:** `npm run lint` (ESLint)
-- **Preview production build:** `npm run preview`
+- **Dev server:** `pnpm dev` (Vite, default port 5173)
+- **Build:** `pnpm build` (runs `tsc -b && vite build`, output in `dist/`)
+- **Lint:** `pnpm lint` (ESLint)
+- **Preview production build:** `pnpm preview`
 
 No test framework is configured.
 
