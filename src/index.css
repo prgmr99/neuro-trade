@@ -328,7 +328,13 @@ body {
   flex: 1;
   padding: 2.5rem;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   animation: fadeIn 0.4s ease-out;
+}
+
+.main-content::-webkit-scrollbar {
+  display: none;
 }
 
 /* News Feed */
@@ -812,7 +818,13 @@ body {
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.summary-modal::-webkit-scrollbar {
+  display: none;
 }
 
 .summary-modal h2 {
@@ -1123,6 +1135,12 @@ body {
   gap: 0.75rem;
   max-height: 500px;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.ranking-list::-webkit-scrollbar {
+  display: none;
 }
 
 .ranking-row {
@@ -1460,6 +1478,8 @@ body {
     padding: 1rem;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
   /* Splash screen */

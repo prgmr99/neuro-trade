@@ -106,13 +106,30 @@ const AttendanceModal: React.FC<Props> = ({ isNewDay, streakBroken, onClose }) =
         .attendance-modal {
           background: var(--surface-color, #ffffff);
           border-radius: 20px;
-          padding: 28px 24px 24px;
+          display: flex;
+          flex-direction: column;
           width: 100%;
           max-width: 420px;
           max-height: 90vh;
-          overflow-y: auto;
           box-shadow: 0 8px 40px rgba(0, 0, 0, 0.14);
           font-family: 'Outfit', sans-serif;
+        }
+
+        .attendance-scroll {
+          flex: 1;
+          overflow-y: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          padding: 28px 24px 0;
+        }
+
+        .attendance-scroll::-webkit-scrollbar {
+          display: none;
+        }
+
+        .attendance-bottom {
+          padding: 16px 24px 24px;
+          flex-shrink: 0;
         }
 
         .attendance-header {
@@ -334,6 +351,7 @@ const AttendanceModal: React.FC<Props> = ({ isNewDay, streakBroken, onClose }) =
 
       <div className="attendance-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
         <div className="attendance-modal">
+          <div className="attendance-scroll">
           <div className="attendance-header">
             <h2 className="attendance-title">{title}</h2>
             <p className="attendance-month">{monthName}</p>
@@ -424,10 +442,13 @@ const AttendanceModal: React.FC<Props> = ({ isNewDay, streakBroken, onClose }) =
               );
             })}
           </div>
+          </div>
 
-          <button className="attendance-continue-btn" onClick={onClose}>
-            {continueLabel}
-          </button>
+          <div className="attendance-bottom">
+            <button className="attendance-continue-btn" onClick={onClose}>
+              {continueLabel}
+            </button>
+          </div>
         </div>
       </div>
     </>
