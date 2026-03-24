@@ -115,7 +115,7 @@ const Market: React.FC = () => {
               <p className="stock-description" style={{ marginTop: '1rem' }}>{stock.description[language]}</p>
 
               {/* Buy / Sell Buttons */}
-              <div className="trade-action-buttons">
+              <div className={`trade-action-buttons ${panel ? 'as-tabs' : ''}`}>
                 <button
                   className={`trade-action-btn buy-action ${isBuyPanel ? 'active' : ''}`}
                   onClick={() => togglePanel(stock.symbol, 'buy')}
@@ -132,7 +132,7 @@ const Market: React.FC = () => {
 
               {/* Expandable Trade Panel */}
               {panel && (
-                <div className="trade-panel" key={panel}>
+                <div className="trade-panel" key={stock.symbol}>
                   {/* Info Bar */}
                   <div className="trade-info-bar">
                     {isBuyPanel ? (
@@ -189,11 +189,11 @@ const Market: React.FC = () => {
                     />
                     {isBuyPanel ? (
                       <button className="buy-btn" onClick={() => handleBuy(stock.symbol, qty, stock.price)} disabled={!canBuy}>
-                        {t('market.buy')} {qty > 0 && canBuy ? `$${(qty * stock.price).toFixed(0)}` : ''}
+                        {qty > 0 && canBuy ? `$${(qty * stock.price).toFixed(0)}` : ''} {t('market.buy')}
                       </button>
                     ) : (
                       <button className="sell-btn" onClick={() => handleSell(stock.symbol, qty, stock.price)} disabled={!canSell}>
-                        {t('market.sell')} {qty > 0 && canSell ? `$${(qty * stock.price).toFixed(0)}` : ''}
+                        {qty > 0 && canSell ? `$${(qty * stock.price).toFixed(0)}` : ''} {t('market.sell')}
                       </button>
                     )}
                   </div>

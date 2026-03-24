@@ -787,21 +787,21 @@ body {
 }
 
 .buy-btn {
-  background: rgba(240, 68, 82, 0.1);
-  color: var(--positive);
+  background: var(--positive);
+  color: white;
 }
 
 .buy-btn:hover:not(:disabled) {
-  background: rgba(240, 68, 82, 0.15);
+  opacity: 0.88;
 }
 
 .sell-btn {
-  background: rgba(49, 130, 246, 0.1);
-  color: var(--negative);
+  background: var(--negative);
+  color: white;
 }
 
 .sell-btn:hover:not(:disabled) {
-  background: rgba(49, 130, 246, 0.15);
+  opacity: 0.88;
 }
 
 .buy-btn:disabled, .sell-btn:disabled {
@@ -914,6 +914,36 @@ body {
 .trade-action-btn.sell-action.active {
   background: var(--negative);
   box-shadow: 0 2px 8px rgba(49, 130, 246, 0.3);
+}
+
+/* Tab mode: when panel is expanded, shrink buttons into compact pill tabs */
+.trade-action-buttons.as-tabs {
+  background: var(--surface-light);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 3px;
+  margin-bottom: 0.5rem;
+}
+
+.trade-action-buttons.as-tabs .trade-action-btn {
+  padding: 0.4rem;
+  font-size: 0.82rem;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+
+.trade-action-buttons.as-tabs .trade-action-btn.buy-action.active {
+  background: white;
+  color: var(--positive);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.trade-action-buttons.as-tabs .trade-action-btn.sell-action.active {
+  background: white;
+  color: var(--negative);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 /* Trade Panel (expandable) */
