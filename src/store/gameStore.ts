@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { DayState, News, Portfolio, Stock, StockSymbol } from '../types';
+import { DayState, LocalizedString, News, Portfolio, Stock, StockSymbol } from '../types';
 import { mulberry32 } from '../lib/prng';
 
 interface GameState {
@@ -10,6 +10,7 @@ interface GameState {
   history: { day: number; portfolioValue: number }[];
   seed: number;
   prngState: number;
+  arcName: LocalizedString | null;
 
   expandedNews: string[];
 
@@ -19,7 +20,7 @@ interface GameState {
   readNews: (newsId: string) => void;
   toggleNewsExpanded: (newsId: string) => void;
   nextDay: () => void;
-  setInitialState: (stocks: Record<StockSymbol, Stock>, news: News[], maxDays: number, startingCash?: number, seed?: number) => void;
+  setInitialState: (stocks: Record<StockSymbol, Stock>, news: News[], maxDays: number, startingCash?: number, seed?: number, arcName?: LocalizedString | null) => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -37,6 +38,7 @@ export const useGameStore = create<GameState>((set) => ({
   history: [{ day: 1, portfolioValue: 10000 }],
   seed: 0,
   prngState: 0,
+  arcName: null,
   expandedNews: [],
 
   buyStock: (symbol, quantity) => set((state) => {
@@ -178,7 +180,7 @@ export const useGameStore = create<GameState>((set) => ({
     };
   }),
 
-  setInitialState: (stocks, news, maxDays, startingCash = 10000, seed?: number) => {
+  setInitialState: (stocks, news, maxDays, startingCash = 10000, seed?: number, arcName?: LocalizedString | null) => {
     const gameSeed = seed ?? Date.now();
     const rng = mulberry32(gameSeed);
 
@@ -225,6 +227,7 @@ export const useGameStore = create<GameState>((set) => ({
       history: [{ day: 1, portfolioValue: startingCash }],
       seed: gameSeed,
       prngState: gameSeed,
+      arcName: arcName ?? null,
       expandedNews: day1News.map(n => n.id),
     });
   },

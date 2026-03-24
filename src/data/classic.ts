@@ -230,7 +230,7 @@ export const CLASSIC_NEWS: News[] = [
 
 export const PANDEMIC_ARC: ClassicScenarioArc = {
   id: 'pandemic',
-  name: { en: 'Pandemic Arc', ko: '팬데믹 시나리오' },
+  name: { en: 'Pandemic', ko: '팬데믹' },
   news: CLASSIC_NEWS,
 };
 
