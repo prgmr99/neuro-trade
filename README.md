@@ -1,6 +1,8 @@
 # NeuroTrade: A Simulated Financial Trading Game
 
-NeuroTrade is a web-based educational trading simulator where players analyze fictional news events to predict market movements and manage a digital portfolio over a fixed period. 
+> **Play now:** [neuro-trade.yeomniverse.com](https://neuro-trade.yeomniverse.com)
+
+NeuroTrade is a web-based educational trading simulator where players analyze fictional news events to predict market movements and manage a digital portfolio over a fixed period.
 
 ## Overview
 
@@ -26,44 +28,6 @@ At the end of the simulation, players receive a summary of their final portfolio
 *   **Charting:** Recharts (Customized to emulate candlestick behavior using ComposedChart and Bar overlays)
 *   **Icons:** Lucide-React
 *   **URL State Management:** nuqs
-
-## Installation and Setup
-
-### Prerequisites
-
-Ensure you have Node.js and npm installed on your system.
-
-### Running the Project
-
-1.  Clone the repository and navigate to the project directory:
-
-    ```bash
-    cd trading-game
-    ```
-
-2.  Install dependencies:
-
-    ```bash
-    npm install
-    ```
-
-3.  Start the development server:
-
-    ```bash
-    npm run dev
-    ```
-
-    The application should now be accessible at `http://localhost:5173` (or your configured Vite port).
-
-### Building for Production
-
-To create an optimized production build, run:
-
-```bash
-npm run build
-```
-
-This will run the TypeScript compiler and Vite's production build step. The output will be located in the `dist` directory.
 
 ## Project Structure
 
