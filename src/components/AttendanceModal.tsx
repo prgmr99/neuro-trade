@@ -92,6 +92,16 @@ const AttendanceModal: React.FC<Props> = ({ isNewDay, streakBroken, onClose }) =
   return (
     <>
       <style>{`
+        @keyframes attendance-overlay-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes attendance-modal-in {
+          from { opacity: 0; transform: translateY(24px) scale(0.96); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
         .attendance-overlay {
           position: fixed;
           inset: 0;
@@ -101,6 +111,7 @@ const AttendanceModal: React.FC<Props> = ({ isNewDay, streakBroken, onClose }) =
           justify-content: center;
           z-index: 9999;
           padding: 16px;
+          animation: attendance-overlay-in 0.25s ease-out;
         }
 
         .attendance-modal {
@@ -113,6 +124,7 @@ const AttendanceModal: React.FC<Props> = ({ isNewDay, streakBroken, onClose }) =
           max-height: 90vh;
           box-shadow: 0 8px 40px rgba(0, 0, 0, 0.14);
           font-family: 'Outfit', sans-serif;
+          animation: attendance-modal-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .attendance-scroll {
@@ -186,7 +198,9 @@ const AttendanceModal: React.FC<Props> = ({ isNewDay, streakBroken, onClose }) =
         .calendar-grid {
           display: grid;
           grid-template-columns: repeat(7, 1fr);
-          gap: 4px;
+          gap: 3px;
+          max-width: 280px;
+          margin: 0 auto;
         }
 
         .calendar-weekday {
@@ -198,15 +212,17 @@ const AttendanceModal: React.FC<Props> = ({ isNewDay, streakBroken, onClose }) =
         }
 
         .calendar-cell {
-          aspect-ratio: 1;
+          width: 32px;
+          height: 32px;
           display: flex;
           align-items: center;
           justify-content: center;
           border-radius: 50%;
-          font-size: 0.78rem;
+          font-size: 0.75rem;
           font-weight: 500;
           color: var(--text-primary, #191f28);
           position: relative;
+          margin: 0 auto;
         }
 
         .calendar-cell.visited {
@@ -239,28 +255,37 @@ const AttendanceModal: React.FC<Props> = ({ isNewDay, streakBroken, onClose }) =
           flex: 1;
           background: var(--surface-light, #f2f4f6);
           border-radius: 12px;
-          padding: 14px 12px;
+          padding: 10px 12px;
           text-align: center;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .streak-icon {
+          font-size: 1.2rem;
+          line-height: 1;
+          flex-shrink: 0;
+        }
+
+        .streak-text {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
         }
 
         .streak-number {
-          font-size: 2rem;
+          font-size: 1.4rem;
           font-weight: 800;
           color: var(--accent-color, #3182f6);
           line-height: 1;
-          margin-bottom: 4px;
-        }
-
-        .streak-fire {
-          font-size: 1.6rem;
-          line-height: 1;
-          margin-bottom: 4px;
         }
 
         .streak-label {
-          font-size: 0.72rem;
+          font-size: 0.7rem;
           color: var(--text-secondary, #8b95a1);
           font-weight: 500;
+          margin-top: 2px;
         }
 
         /* Rewards */
@@ -400,15 +425,20 @@ const AttendanceModal: React.FC<Props> = ({ isNewDay, streakBroken, onClose }) =
           {/* Streak stats */}
           <div className="streak-stats">
             <div className="streak-card">
-              <div className="streak-fire">🔥</div>
-              <div className="streak-number">{currentStreak}</div>
-              <div className="streak-label">{streakLabel}</div>
+              <div className="streak-icon">🔥</div>
+              <div className="streak-text">
+                <div className="streak-number">{currentStreak}</div>
+                <div className="streak-label">{streakLabel}</div>
+              </div>
             </div>
             <div className="streak-card">
-              <div className="streak-number" style={{ color: 'var(--text-primary, #191f28)' }}>
-                {longestStreak}
+              <div className="streak-icon">🏆</div>
+              <div className="streak-text">
+                <div className="streak-number" style={{ color: 'var(--text-primary, #191f28)' }}>
+                  {longestStreak}
+                </div>
+                <div className="streak-label">{longestLabel}</div>
               </div>
-              <div className="streak-label">{longestLabel}</div>
             </div>
           </div>
 

@@ -83,12 +83,18 @@ export const translations = {
       buy: "Buy",
       sell: "Sell",
       estimatedCost: "Estimated Cost: $",
+      estimatedRevenue: "Estimated Revenue: $",
       youOwn: "You own: {qty} shares",
       all: "All",
       half: "Half",
       one: "1",
       buyPreset: "Buy",
-      sellPreset: "Sell"
+      sellPreset: "Sell",
+      availableCash: "Cash",
+      maxBuyable: "Max",
+      sharesUnit: " shares",
+      holdingQty: "Holding",
+      holdingValue: "Value"
     },
     portfolio: {
       title: "Your Portfolio",
@@ -288,12 +294,18 @@ export const translations = {
       buy: "매수",
       sell: "매도",
       estimatedCost: "예상 비용: $",
+      estimatedRevenue: "예상 수익: $",
       youOwn: "보유량: {qty}주",
       all: "전량",
       half: "절반",
       one: "1주",
       buyPreset: "매수",
-      sellPreset: "매도"
+      sellPreset: "매도",
+      availableCash: "잔고",
+      maxBuyable: "최대",
+      sharesUnit: "주",
+      holdingQty: "보유",
+      holdingValue: "평가액"
     },
     portfolio: {
       title: "내 포트폴리오",
