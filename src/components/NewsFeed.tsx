@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp, Globe, TrendingUp, TrendingDown, Eye } from 'lu
 import { useTranslation } from '../i18n/translations';
 import { News } from '../types';
 
-const HintBadges: React.FC<{ news: News; t: (key: string) => string }> = ({ news, t }) => {
+const HintBadges: React.FC<{ news: News }> = ({ news }) => {
   const effects = Object.entries(news.effect);
   if (effects.length === 0) return null;
 
@@ -60,7 +60,7 @@ const NewsFeed: React.FC = () => {
           <div className="news-card-content">
             {!featuredNews.read && <span className="breaking-badge">{t('newsfeed.breaking')}</span>}
             <h2>{featuredNews.title[language]}</h2>
-            {showHints && <HintBadges news={featuredNews} t={t} />}
+            {showHints && <HintBadges news={featuredNews} />}
 
             <div className={`news-body ${expandedNews.includes(featuredNews.id) ? 'expanded' : 'collapsed'}`}>
               <p>{featuredNews.content[language]}</p>
@@ -86,7 +86,7 @@ const NewsFeed: React.FC = () => {
             <div className="news-card-content">
               {!news.read && <span className="new-badge">{t('newsfeed.new')}</span>}
               <h3 className=''>{news.title[language]}</h3>
-              {showHints && <HintBadges news={news} t={t} />}
+              {showHints && <HintBadges news={news} />}
 
               <div className={`news-body ${expandedNews.includes(news.id) ? 'expanded' : 'collapsed'}`}>
                 <p>{news.content[language]}</p>

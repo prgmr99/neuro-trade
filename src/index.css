@@ -230,7 +230,7 @@ body {
   display: inline-block;
   margin-top: 0.35rem;
   padding: 0.2rem 0.6rem;
-  background: rgba(var(--accent-rgb, 99, 102, 241), 0.1);
+  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
   border: 1px solid var(--accent-color);
   border-radius: 12px;
   font-size: 0.75rem;
@@ -515,21 +515,21 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
-  padding: 0.15rem 0.45rem;
+  padding: 0.2rem 0.5rem;
   border-radius: 6px;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
 .hint-badge.bullish {
-  background: rgba(240, 68, 82, 0.1);
-  color: var(--positive);
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
 }
 
 .hint-badge.bearish {
-  background: rgba(49, 130, 246, 0.1);
-  color: var(--negative);
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
 }
 
 /* Insider preview (attendance reward) */
@@ -539,6 +539,16 @@ body {
   background: var(--bg-card);
   border: 1px dashed var(--accent-color);
   border-radius: 12px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .insider-preview { animation: none; }
 }
 
 .insider-header {
@@ -546,13 +556,13 @@ body {
   align-items: center;
   gap: 0.4rem;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   color: var(--accent-color);
   margin-bottom: 0.25rem;
 }
 
 .insider-subtitle {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
   margin-bottom: 0.75rem;
 }
@@ -815,24 +825,25 @@ body {
 }
 
 .preset-label {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
   white-space: nowrap;
-  min-width: 2rem;
+  min-width: 2.2rem;
 }
 
 .preset-btn {
   flex: 1;
-  padding: 0.3rem 0.4rem;
+  min-height: 36px;
+  padding: 0.4rem 0.5rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: var(--surface-color);
   color: var(--text-primary);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background 0.15s ease-out, color 0.15s ease-out, border-color 0.15s ease-out;
   white-space: nowrap;
   font-family: inherit;
 }
@@ -843,8 +854,17 @@ body {
   border-color: var(--accent-color);
 }
 
+.preset-btn:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.preset-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
 .preset-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.38;
   cursor: not-allowed;
 }
 
