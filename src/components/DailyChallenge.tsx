@@ -33,15 +33,16 @@ interface LeaderboardEntry {
 
 function getTodayStr(): string {
   const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`;
 }
 
 function formatTodayNice(language: 'en' | 'ko'): string {
   const now = new Date();
   if (language === 'ko') {
-    return `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일`;
+    return `${now.getUTCFullYear()}년 ${now.getUTCMonth() + 1}월 ${now.getUTCDate()}일`;
   }
-  return now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+    .toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 }
 
 export default function DailyChallenge({ onBack }: Props) {

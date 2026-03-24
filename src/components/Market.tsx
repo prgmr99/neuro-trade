@@ -68,14 +68,14 @@ const Market: React.FC = () => {
               <p className="stock-description" style={{ marginTop: '1rem' }}>{stock.description[language]}</p>
               
               <div className="trade-controls">
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   min="0"
-                  value={qty || ''} 
+                  value={qty || ''}
                   onChange={(e) => handleQuantityChange(stock.symbol, e.target.value)}
                   placeholder={t('market.qtyPlaceholder')}
                 />
-                <button 
+                <button
                   className="buy-btn"
                   onClick={() => {
                     buyStock(stock.symbol, qty);
@@ -95,6 +95,22 @@ const Market: React.FC = () => {
                 >
                   {t('market.sell')}
                 </button>
+              </div>
+              <div className="quick-trade-presets">
+                <div className="preset-group">
+                  <span className="preset-label">{t('market.buyPreset')}</span>
+                  <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, '1')}>{t('market.one')}</button>
+                  <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(Math.max(1, Math.floor(Math.floor(portfolio.cash / stock.price) / 2))))} disabled={portfolio.cash < stock.price}>{t('market.half')}</button>
+                  <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(Math.floor(portfolio.cash / stock.price)))} disabled={portfolio.cash < stock.price}>{t('market.all')} ({Math.floor(portfolio.cash / stock.price)})</button>
+                </div>
+                {holdingQty > 0 && (
+                  <div className="preset-group">
+                    <span className="preset-label">{t('market.sellPreset')}</span>
+                    <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, '1')}>{t('market.one')}</button>
+                    <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(Math.max(1, Math.floor(holdingQty / 2))))}>{t('market.half')}</button>
+                    <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(holdingQty))}>{t('market.all')} ({holdingQty})</button>
+                  </div>
+                )}
               </div>
               <div className="holding-info" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
                 <span style={{color: 'var(--text-secondary)', fontSize: '0.9rem'}}>{t('market.estimatedCost')}{(qty * stock.price).toFixed(2)}</span>

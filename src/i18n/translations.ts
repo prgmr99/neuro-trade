@@ -72,7 +72,8 @@ export const translations = {
       day: "Day",
       cashBalance: "Cash Balance",
       finishGame: "Finish Game",
-      endDay: "End Day"
+      endDay: "End Day",
+      scenario: "Scenario"
     },
     market: {
       overview: "Market Overview",
@@ -82,7 +83,12 @@ export const translations = {
       buy: "Buy",
       sell: "Sell",
       estimatedCost: "Estimated Cost: $",
-      youOwn: "You own: {qty} shares"
+      youOwn: "You own: {qty} shares",
+      all: "All",
+      half: "Half",
+      one: "1",
+      buyPreset: "Buy",
+      sellPreset: "Sell"
     },
     portfolio: {
       title: "Your Portfolio",
@@ -104,7 +110,11 @@ export const translations = {
       sourceGfn: "Source: GFN News Desk",
       sourceMarketWatch: "Source: Market Watch",
       readFull: "Read Full Story",
-      readLess: "Read Less"
+      readLess: "Read Less",
+      hintBullish: "Bullish signal",
+      hintBearish: "Bearish signal",
+      insiderTitle: "Insider Preview",
+      insiderTomorrow: "Tomorrow's Headlines"
     },
     summary: {
       daySummary: "Day {day} Summary",
@@ -267,7 +277,8 @@ export const translations = {
       day: "일차",
       cashBalance: "현금 잔고",
       finishGame: "게임 종료",
-      endDay: "다음 날 진행"
+      endDay: "다음 날 진행",
+      scenario: "시나리오"
     },
     market: {
       overview: "시장 개요",
@@ -277,7 +288,12 @@ export const translations = {
       buy: "매수",
       sell: "매도",
       estimatedCost: "예상 비용: $",
-      youOwn: "보유량: {qty}주"
+      youOwn: "보유량: {qty}주",
+      all: "전량",
+      half: "절반",
+      one: "1주",
+      buyPreset: "매수",
+      sellPreset: "매도"
     },
     portfolio: {
       title: "내 포트폴리오",
@@ -299,7 +315,11 @@ export const translations = {
       sourceGfn: "출처: GFN 뉴스 데스크",
       sourceMarketWatch: "출처: 마켓 워치",
       readFull: "전체 기사 읽기",
-      readLess: "기사 접기"
+      readLess: "기사 접기",
+      hintBullish: "상승 신호",
+      hintBearish: "하락 신호",
+      insiderTitle: "내부자 정보",
+      insiderTomorrow: "내일의 헤드라인"
     },
     summary: {
       daySummary: "{day}일차 요약",

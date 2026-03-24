@@ -226,6 +226,19 @@ body {
   color: var(--text-secondary);
 }
 
+.arc-badge {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(var(--accent-rgb, 99, 102, 241), 0.1);
+  border: 1px solid var(--accent-color);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-color);
+  letter-spacing: 0.02em;
+}
+
 .nav-items {
   flex: 1;
   display: flex;
@@ -490,6 +503,76 @@ body {
   font-weight: 500;
 }
 
+/* Hint badges (attendance reward) */
+.hint-badges {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0;
+}
+
+.hint-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hint-badge.bullish {
+  background: rgba(240, 68, 82, 0.1);
+  color: var(--positive);
+}
+
+.hint-badge.bearish {
+  background: rgba(49, 130, 246, 0.1);
+  color: var(--negative);
+}
+
+/* Insider preview (attendance reward) */
+.insider-preview {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-card);
+  border: 1px dashed var(--accent-color);
+  border-radius: 12px;
+}
+
+.insider-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--accent-color);
+  margin-bottom: 0.25rem;
+}
+
+.insider-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.insider-headlines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.insider-headline {
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-color);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  border-left: 3px solid var(--accent-color);
+}
+
 .expand-btn {
   background: transparent;
   border: 1px solid var(--border-color);
@@ -714,6 +797,55 @@ body {
   color: var(--text-secondary);
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.quick-trade-presets {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.preset-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.preset-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  min-width: 2rem;
+}
+
+.preset-btn {
+  flex: 1;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--surface-color);
+  color: var(--text-primary);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.preset-btn:hover:not(:disabled) {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+.preset-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .holding-info {

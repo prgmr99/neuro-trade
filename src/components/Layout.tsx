@@ -22,7 +22,7 @@ const Layout: React.FC = () => {
   const activeTab = activeTabQuery as Tab;
   const [showSummary, setShowSummary] = useState(false);
 
-  const { dayState, portfolio, nextDay } = useGameStore();
+  const { dayState, portfolio, nextDay, arcName } = useGameStore();
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
 
@@ -46,6 +46,7 @@ const Layout: React.FC = () => {
         <div className="mobile-header-left">
           <h2>{t('app.title')}</h2>
           <span className="day-badge">{t('layout.day')} {dayState.currentDay}/{dayState.maxDays}</span>
+          {arcName && <span className="arc-badge">{arcName[language]}</span>}
         </div>
         <div className="mobile-header-right">
           <span className="mobile-cash">${portfolio.cash.toFixed(0)}</span>
@@ -61,6 +62,7 @@ const Layout: React.FC = () => {
         <div className="sidebar-header">
           <h2>{t('app.title')}</h2>
           <span className="day-badge">{t('layout.day')} {dayState.currentDay} / {dayState.maxDays}</span>
+          {arcName && <span className="arc-badge">{arcName[language]}</span>}
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>

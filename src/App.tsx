@@ -68,7 +68,7 @@ function App() {
     if (selectedMode === 'classic') {
       const seed = Date.now();
       const arc = selectClassicArc(CLASSIC_ARCS, seed);
-      setInitialState(scenario.stocks, arc.news, scenario.maxDays, scenario.startingCash, seed);
+      setInitialState(scenario.stocks, arc.news, scenario.maxDays, scenario.startingCash, seed, arc.name);
     } else {
       setInitialState(scenario.stocks, scenario.news, scenario.maxDays, scenario.startingCash);
     }
@@ -160,7 +160,6 @@ function App() {
           </button>
         </div>
 
-        {/* Daily Challenge - TODO: 고도화 후 활성화
         <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
           <button
             className="mode-card mode-card-daily"
@@ -172,7 +171,6 @@ function App() {
             <p className="mode-detail">{t('app.dailyDetail')}</p>
           </button>
         </div>
-        */}
 
         {selectedMode && (
           <div className="instructions">
