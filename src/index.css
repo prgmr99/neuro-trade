@@ -2039,7 +2039,12 @@ button, a, [role="button"], input, select,
 
   .splash-content {
     padding: 2rem 1.5rem;
-    margin: 0 1rem;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--bg-color);
+    width: 100%;
   }
 
   .splash-content h1 {
