@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { TrendingUp, TrendingDown, BarChart2 } from 'lucide-react';
+import { TrendingUp, TrendingDown, BarChart2, X } from 'lucide-react';
 import StockChart from './StockChart';
 import { useTranslation } from '../i18n/translations';
 import TradeToast, { TradeToastData } from './TradeToast';
@@ -55,6 +55,80 @@ const Market: React.FC = () => {
     addToast({ type: 'sell', symbol, quantity: qty, totalAmount: totalRevenue, cashAfter: portfolio.cash + totalRevenue });
     handleQuantityChange(symbol, '');
   };
+
+  const renderTradePanel = (
+    stock: { symbol: string; price: number },
+    isBuyPanel: boolean,
+    qty: number,
+    maxBuyable: number,
+    holdingQty: number,
+    canBuy: boolean,
+    canSell: boolean,
+  ) => (
+    <>
+      <div className="trade-info-bar">
+        {isBuyPanel ? (
+          <>
+            <span className="trade-info-label">{t('market.availableCash')}</span>
+            <span className="trade-info-value">${portfolio.cash.toFixed(2)}</span>
+            <span className="trade-info-divider">&middot;</span>
+            <span className="trade-info-label">{t('market.maxBuyable')}</span>
+            <span className="trade-info-value trade-info-highlight">{maxBuyable}{t('market.sharesUnit')}</span>
+          </>
+        ) : (
+          <>
+            <span className="trade-info-label">{t('market.holdingQty')}</span>
+            <span className="trade-info-value trade-info-highlight">{holdingQty}{t('market.sharesUnit')}</span>
+            {holdingQty > 0 && (
+              <>
+                <span className="trade-info-divider">&middot;</span>
+                <span className="trade-info-label">{t('market.holdingValue')}</span>
+                <span className="trade-info-value">${(holdingQty * stock.price).toFixed(2)}</span>
+              </>
+            )}
+          </>
+        )}
+      </div>
+      <div className="quick-trade-presets">
+        <div className="preset-group">
+          {isBuyPanel ? (
+            <>
+              <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, '1')} disabled={maxBuyable < 1}>{t('market.one')}</button>
+              <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(Math.max(1, Math.floor(maxBuyable / 2))))} disabled={maxBuyable < 1}>{t('market.half')}</button>
+              <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(maxBuyable))} disabled={maxBuyable < 1}>{t('market.all')} ({maxBuyable})</button>
+            </>
+          ) : (
+            <>
+              <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, '1')} disabled={holdingQty < 1}>{t('market.one')}</button>
+              <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(Math.max(1, Math.floor(holdingQty / 2))))} disabled={holdingQty < 1}>{t('market.half')}</button>
+              <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(holdingQty))} disabled={holdingQty < 1}>{t('market.all')} ({holdingQty})</button>
+            </>
+          )}
+        </div>
+      </div>
+      <div className="trade-controls">
+        <input
+          type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          min="0"
+          max={isBuyPanel ? maxBuyable : holdingQty}
+          value={qty || ''}
+          onChange={(e) => handleQuantityChange(stock.symbol, e.target.value)}
+          placeholder={t('market.qtyPlaceholder')}
+        />
+        {isBuyPanel ? (
+          <button className="buy-btn" onClick={() => handleBuy(stock.symbol, qty, stock.price)} disabled={!canBuy}>
+            {qty > 0 && canBuy ? `$${(qty * stock.price).toFixed(0)}` : ''} {t('market.buy')}
+          </button>
+        ) : (
+          <button className="sell-btn" onClick={() => handleSell(stock.symbol, qty, stock.price)} disabled={!canSell}>
+            {qty > 0 && canSell ? `$${(qty * stock.price).toFixed(0)}` : ''} {t('market.sell')}
+          </button>
+        )}
+      </div>
+    </>
+  );
 
   return (
     <div className="market-container">
@@ -130,74 +204,43 @@ const Market: React.FC = () => {
                 </button>
               </div>
 
-              {/* Expandable Trade Panel */}
+              {/* Trade Panel — inline on desktop, bottom sheet on mobile */}
               {panel && (
-                <div className="trade-panel" key={stock.symbol}>
-                  {/* Info Bar */}
-                  <div className="trade-info-bar">
-                    {isBuyPanel ? (
-                      <>
-                        <span className="trade-info-label">{t('market.availableCash')}</span>
-                        <span className="trade-info-value">${portfolio.cash.toFixed(2)}</span>
-                        <span className="trade-info-divider">&middot;</span>
-                        <span className="trade-info-label">{t('market.maxBuyable')}</span>
-                        <span className="trade-info-value trade-info-highlight">{maxBuyable}{t('market.sharesUnit')}</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="trade-info-label">{t('market.holdingQty')}</span>
-                        <span className="trade-info-value trade-info-highlight">{holdingQty}{t('market.sharesUnit')}</span>
-                        {holdingQty > 0 && (
-                          <>
-                            <span className="trade-info-divider">&middot;</span>
-                            <span className="trade-info-label">{t('market.holdingValue')}</span>
-                            <span className="trade-info-value">${(holdingQty * stock.price).toFixed(2)}</span>
-                          </>
-                        )}
-                      </>
-                    )}
+                <>
+                  {/* Desktop: inline panel */}
+                  <div className="trade-panel trade-panel-inline">
+                    {renderTradePanel(stock, isBuyPanel, qty, maxBuyable, holdingQty, canBuy, canSell)}
                   </div>
-
-                  {/* Quick Presets */}
-                  <div className="quick-trade-presets">
-                    <div className="preset-group">
-                      {isBuyPanel ? (
-                        <>
-                          <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, '1')} disabled={maxBuyable < 1}>{t('market.one')}</button>
-                          <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(Math.max(1, Math.floor(maxBuyable / 2))))} disabled={maxBuyable < 1}>{t('market.half')}</button>
-                          <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(maxBuyable))} disabled={maxBuyable < 1}>{t('market.all')} ({maxBuyable})</button>
-                        </>
-                      ) : (
-                        <>
-                          <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, '1')} disabled={holdingQty < 1}>{t('market.one')}</button>
-                          <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(Math.max(1, Math.floor(holdingQty / 2))))} disabled={holdingQty < 1}>{t('market.half')}</button>
-                          <button className="preset-btn" onClick={() => handleQuantityChange(stock.symbol, String(holdingQty))} disabled={holdingQty < 1}>{t('market.all')} ({holdingQty})</button>
-                        </>
-                      )}
+                  {/* Mobile: bottom sheet */}
+                  <div className="trade-sheet-overlay" onClick={() => togglePanel(stock.symbol, panel)}>
+                    <div className="trade-sheet" onClick={(e) => e.stopPropagation()}>
+                      <div className="trade-sheet-header">
+                        <div>
+                          <strong>{stock.symbol}</strong>
+                          <span className={`trade-sheet-price ${isUp ? 'positive' : 'negative'}`}> ${stock.price.toFixed(2)}</span>
+                        </div>
+                        <button className="trade-sheet-close" onClick={() => togglePanel(stock.symbol, panel)}>
+                          <X size={20} />
+                        </button>
+                      </div>
+                      <div className={`trade-action-buttons as-tabs`}>
+                        <button
+                          className={`trade-action-btn buy-action ${isBuyPanel ? 'active' : ''}`}
+                          onClick={() => togglePanel(stock.symbol, 'buy')}
+                        >
+                          {t('market.buy')}
+                        </button>
+                        <button
+                          className={`trade-action-btn sell-action ${isSellPanel ? 'active' : ''}`}
+                          onClick={() => togglePanel(stock.symbol, 'sell')}
+                        >
+                          {t('market.sell')}
+                        </button>
+                      </div>
+                      {renderTradePanel(stock, isBuyPanel, qty, maxBuyable, holdingQty, canBuy, canSell)}
                     </div>
                   </div>
-
-                  {/* Input + Confirm */}
-                  <div className="trade-controls">
-                    <input
-                      type="number"
-                      min="0"
-                      max={isBuyPanel ? maxBuyable : holdingQty}
-                      value={qty || ''}
-                      onChange={(e) => handleQuantityChange(stock.symbol, e.target.value)}
-                      placeholder={t('market.qtyPlaceholder')}
-                    />
-                    {isBuyPanel ? (
-                      <button className="buy-btn" onClick={() => handleBuy(stock.symbol, qty, stock.price)} disabled={!canBuy}>
-                        {qty > 0 && canBuy ? `$${(qty * stock.price).toFixed(0)}` : ''} {t('market.buy')}
-                      </button>
-                    ) : (
-                      <button className="sell-btn" onClick={() => handleSell(stock.symbol, qty, stock.price)} disabled={!canSell}>
-                        {qty > 0 && canSell ? `$${(qty * stock.price).toFixed(0)}` : ''} {t('market.sell')}
-                      </button>
-                    )}
-                  </div>
-                </div>
+                </>
               )}
 
               {/* Holding info */}

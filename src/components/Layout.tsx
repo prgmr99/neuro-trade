@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useQueryState, parseAsStringLiteral } from 'nuqs';
 import { Newspaper, TrendingUp, Briefcase, ChevronRight, Globe, Play } from 'lucide-react';
@@ -21,10 +21,24 @@ const Layout: React.FC = () => {
   );
   const activeTab = activeTabQuery as Tab;
   const [showSummary, setShowSummary] = useState(false);
+  const scrollPositions = useRef<Record<string, number>>({});
+  const mainContentRef = useRef<HTMLDivElement>(null);
 
   const { dayState, portfolio, nextDay, arcName } = useGameStore();
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
+
+  const switchTab = useCallback((newTab: Tab) => {
+    if (mainContentRef.current) {
+      scrollPositions.current[activeTab] = mainContentRef.current.scrollTop;
+    }
+    setActiveTab(newTab);
+    requestAnimationFrame(() => {
+      if (mainContentRef.current) {
+        mainContentRef.current.scrollTop = scrollPositions.current[newTab] || 0;
+      }
+    });
+  }, [activeTab, setActiveTab]);
 
   const handleNextDay = () => {
     setShowSummary(true);
@@ -79,7 +93,7 @@ const Layout: React.FC = () => {
         <div className="nav-items">
           <button
             className={`nav-btn ${activeTab === 'news' ? 'active' : ''}`}
-            onClick={() => setActiveTab('news')}
+            onClick={() => switchTab('news')}
           >
             <Newspaper size={20} />
             {t('nav.news')}
@@ -87,14 +101,14 @@ const Layout: React.FC = () => {
           </button>
           <button
             className={`nav-btn ${activeTab === 'market' ? 'active' : ''}`}
-            onClick={() => setActiveTab('market')}
+            onClick={() => switchTab('market')}
           >
             <TrendingUp size={20} />
             {t('nav.market')}
           </button>
           <button
             className={`nav-btn ${activeTab === 'portfolio' ? 'active' : ''}`}
-            onClick={() => setActiveTab('portfolio')}
+            onClick={() => switchTab('portfolio')}
           >
             <Briefcase size={20} />
             {t('nav.portfolio')}
@@ -118,7 +132,7 @@ const Layout: React.FC = () => {
       </nav>
 
       {/* Main Content Area */}
-      <main className="main-content">
+      <main className="main-content" ref={mainContentRef}>
         {activeTab === 'news' && <NewsFeed />}
         {activeTab === 'market' && <Market />}
         {activeTab === 'portfolio' && <Portfolio />}
@@ -128,7 +142,7 @@ const Layout: React.FC = () => {
       <nav className="bottom-nav">
         <button
           className={`bottom-nav-item ${activeTab === 'news' ? 'active' : ''}`}
-          onClick={() => setActiveTab('news')}
+          onClick={() => switchTab('news')}
         >
           <Newspaper size={20} />
           {t('nav.news')}
@@ -136,14 +150,14 @@ const Layout: React.FC = () => {
         </button>
         <button
           className={`bottom-nav-item ${activeTab === 'market' ? 'active' : ''}`}
-          onClick={() => setActiveTab('market')}
+          onClick={() => switchTab('market')}
         >
           <TrendingUp size={20} />
           {t('nav.market')}
         </button>
         <button
           className={`bottom-nav-item ${activeTab === 'portfolio' ? 'active' : ''}`}
-          onClick={() => setActiveTab('portfolio')}
+          onClick={() => switchTab('portfolio')}
         >
           <Briefcase size={20} />
           {t('nav.portfolio')}

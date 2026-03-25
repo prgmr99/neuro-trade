@@ -13,7 +13,7 @@ import AttendanceModal from './components/AttendanceModal';
 import AchievementGallery from './components/AchievementGallery';
 import { useAttendanceStore } from './store/attendanceStore';
 import { useTranslation } from './i18n/translations';
-import { Globe, Trophy } from 'lucide-react';
+import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck } from 'lucide-react';
 import SocialProof from './components/SocialProof';
 
 function App() {
@@ -121,13 +121,21 @@ function App() {
   return (
     <div className="splash-screen">
       <div className="splash-content glass-card" style={{ position: 'relative' }}>
-        <div style={{ position: 'absolute', top: '1rem', right: '1rem', display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginBottom: '0.5rem' }}>
+          {/* Desktop: Trophy icon / Mobile: Rankings button */}
           <button
             onClick={() => setShowAchievements(true)}
-            className="splash-lang-btn"
+            className="splash-lang-btn splash-desktop-only"
             title={language === 'en' ? 'Achievements' : '업적'}
           >
             <Trophy size={14} />
+          </button>
+          <button
+            onClick={() => setView('rankings')}
+            className="splash-lang-btn splash-mobile-only"
+          >
+            <Trophy size={14} />
+            {t('ranking.viewRankings')}
           </button>
           <button
             onClick={toggleLanguage}
@@ -146,6 +154,7 @@ function App() {
             className={`mode-card ${selectedMode === 'classic' ? 'selected' : ''}`}
             onClick={() => setSelectedMode('classic')}
           >
+            <TrendingUp size={24} className="mode-card-icon" />
             <h3>{t('app.classicTitle')}</h3>
             <p className="mode-desc">{t('app.classicDesc')}</p>
             <p className="mode-detail">{t('app.classicDetail')}</p>
@@ -154,6 +163,7 @@ function App() {
             className={`mode-card ${selectedMode === 'advanced' ? 'selected' : ''}`}
             onClick={() => setSelectedMode('advanced')}
           >
+            <BarChart3 size={24} className="mode-card-icon" />
             <h3>{t('app.advancedTitle')}</h3>
             <p className="mode-desc">{t('app.advancedDesc')}</p>
             <p className="mode-detail">{t('app.advancedDetail')}</p>
@@ -166,6 +176,7 @@ function App() {
             onClick={() => setView('daily')}
             style={{ textAlign: 'left' }}
           >
+            <CalendarCheck size={24} className="mode-card-icon" />
             <h3>{t('app.dailyTitle')}</h3>
             <p className="mode-desc">{t('app.dailyDesc')}</p>
             <p className="mode-detail">{t('app.dailyDetail')}</p>
@@ -197,15 +208,18 @@ function App() {
           {t('ranking.viewRankings')}
         </button>
 
-        <div className="splash-actions" style={{ marginTop: '1rem' }}>
-          <button
-            className="start-btn"
-            onClick={startGame}
-            disabled={!selectedMode}
-          >
-            {t('app.start')}
-          </button>
-        </div>
+        <div className="splash-actions-spacer" />
+      </div>
+
+      {/* Fixed bottom start button — mobile */}
+      <div className="splash-fixed-bottom">
+        <button
+          className="start-btn"
+          onClick={startGame}
+          disabled={!selectedMode}
+        >
+          {t('app.start')}
+        </button>
       </div>
 
       {attendanceInfo.show && (
