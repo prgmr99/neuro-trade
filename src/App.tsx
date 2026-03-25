@@ -121,7 +121,7 @@ function App() {
   return (
     <div className="splash-screen">
       <div className="splash-content glass-card" style={{ position: 'relative' }}>
-        <div style={{ position: 'absolute', top: '1rem', right: '1rem', display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginBottom: '0.5rem' }}>
           <button
             onClick={() => setShowAchievements(true)}
             className="splash-lang-btn"
