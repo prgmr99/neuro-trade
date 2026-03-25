@@ -999,6 +999,16 @@ body {
   overflow: hidden;
 }
 
+/* Trade sheet overlay — hidden on desktop */
+.trade-sheet-overlay {
+  display: none;
+}
+
+/* Chart touch optimization */
+.stock-chart-container {
+  touch-action: pan-y;
+}
+
 /* Trade Info Bar */
 .trade-info-bar {
   display: flex;
@@ -2283,6 +2293,96 @@ button, a, [role="button"], input, select,
   .empty-state {
     padding: 2rem 1rem;
     text-align: center;
+  }
+
+  /* Trade panel — hide inline, show sheet on mobile */
+  .trade-panel-inline {
+    display: none;
+  }
+
+  .trade-sheet-overlay {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    align-items: flex-end;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .trade-sheet {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 20px 20px 0 0;
+    padding: 1.25rem 1.25rem;
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    max-height: 70vh;
+    overflow-y: auto;
+    animation: trade-sheet-up 0.3s ease-out;
+  }
+
+  @keyframes trade-sheet-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .trade-sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .trade-sheet-header strong {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+  }
+
+  .trade-sheet-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .trade-sheet-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: var(--surface-light);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .trade-sheet .trade-info-bar {
+    margin-bottom: 1rem;
+  }
+
+  .trade-sheet .preset-btn {
+    min-height: 48px;
+    font-size: 0.85rem;
+  }
+
+  .trade-sheet .trade-controls {
+    margin-bottom: 0;
+  }
+
+  .trade-sheet .trade-controls input {
+    width: 100px;
+    min-height: 48px;
+    font-size: 1.1rem;
+  }
+
+  .trade-sheet .buy-btn,
+  .trade-sheet .sell-btn {
+    min-height: 48px;
+    font-size: 1.05rem;
   }
 
   /* Toast — reposition above bottom nav */
