@@ -181,6 +181,8 @@ const Market: React.FC = () => {
                   <div className="trade-controls">
                     <input
                       type="number"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       min="0"
                       max={isBuyPanel ? maxBuyable : holdingQty}
                       value={qty || ''}
