@@ -136,6 +136,15 @@ body {
   box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.15);
 }
 
+.mode-card-icon {
+  color: var(--accent-color);
+  margin-bottom: 0.25rem;
+}
+
+.mode-card.selected .mode-card-icon {
+  color: var(--accent-color);
+}
+
 .mode-card h3 {
   margin: 0 0 0.5rem 0;
   font-size: 1.25rem;
@@ -1125,6 +1134,98 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Holdings cards — mobile layout */
+.holdings-cards {
+  display: none;
+}
+
+.holding-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.holding-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.holding-card-symbol {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.holding-card-return {
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.holding-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.holding-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.holding-card-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.holding-card-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.holding-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.holding-card-total {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Empty state — enhanced */
+.empty-state-icon {
+  color: var(--text-secondary);
+  opacity: 0.4;
+  margin-bottom: 1rem;
+}
+
+.empty-state-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
 .holdings-table {
   width: 100%;
   border-collapse: collapse;
@@ -2045,8 +2146,12 @@ button, a, [role="button"], input, select,
     border-radius: 20px;
   }
 
-  .holdings-table {
-    min-width: 520px;
+  .holdings-cards {
+    display: block;
+  }
+
+  .holdings-table-desktop {
+    display: none;
   }
 
   .holdings-table th,

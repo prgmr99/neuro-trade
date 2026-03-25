@@ -13,7 +13,7 @@ import AttendanceModal from './components/AttendanceModal';
 import AchievementGallery from './components/AchievementGallery';
 import { useAttendanceStore } from './store/attendanceStore';
 import { useTranslation } from './i18n/translations';
-import { Globe, Trophy } from 'lucide-react';
+import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck } from 'lucide-react';
 import SocialProof from './components/SocialProof';
 
 function App() {
@@ -146,6 +146,7 @@ function App() {
             className={`mode-card ${selectedMode === 'classic' ? 'selected' : ''}`}
             onClick={() => setSelectedMode('classic')}
           >
+            <TrendingUp size={24} className="mode-card-icon" />
             <h3>{t('app.classicTitle')}</h3>
             <p className="mode-desc">{t('app.classicDesc')}</p>
             <p className="mode-detail">{t('app.classicDetail')}</p>
@@ -154,6 +155,7 @@ function App() {
             className={`mode-card ${selectedMode === 'advanced' ? 'selected' : ''}`}
             onClick={() => setSelectedMode('advanced')}
           >
+            <BarChart3 size={24} className="mode-card-icon" />
             <h3>{t('app.advancedTitle')}</h3>
             <p className="mode-desc">{t('app.advancedDesc')}</p>
             <p className="mode-detail">{t('app.advancedDetail')}</p>
@@ -166,6 +168,7 @@ function App() {
             onClick={() => setView('daily')}
             style={{ textAlign: 'left' }}
           >
+            <CalendarCheck size={24} className="mode-card-icon" />
             <h3>{t('app.dailyTitle')}</h3>
             <p className="mode-desc">{t('app.dailyDesc')}</p>
             <p className="mode-detail">{t('app.dailyDetail')}</p>
