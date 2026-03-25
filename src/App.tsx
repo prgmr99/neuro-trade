@@ -200,15 +200,18 @@ function App() {
           {t('ranking.viewRankings')}
         </button>
 
-        <div className="splash-actions" style={{ marginTop: '1rem' }}>
-          <button
-            className="start-btn"
-            onClick={startGame}
-            disabled={!selectedMode}
-          >
-            {t('app.start')}
-          </button>
-        </div>
+        <div className="splash-actions-spacer" />
+      </div>
+
+      {/* Fixed bottom start button — mobile */}
+      <div className="splash-fixed-bottom">
+        <button
+          className="start-btn"
+          onClick={startGame}
+          disabled={!selectedMode}
+        >
+          {t('app.start')}
+        </button>
       </div>
 
       {attendanceInfo.show && (
