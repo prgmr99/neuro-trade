@@ -2030,10 +2030,12 @@ button, a, [role="button"], input, select,
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    background: #ffffff;
   }
 
   .splash-screen {
     padding: 0 0 1rem 0;
+    background: #ffffff;
   }
 
   .splash-mobile-only {
@@ -2064,7 +2066,7 @@ button, a, [role="button"], input, select,
     border: none;
     border-radius: 0;
     box-shadow: none;
-    background: var(--bg-color);
+    background: #ffffff;
     width: 100%;
   }
 
