@@ -2027,6 +2027,10 @@ button, a, [role="button"], input, select,
     -ms-overflow-style: none;
   }
 
+  .splash-screen {
+    padding: 0 0 1rem 0;
+  }
+
   /* Splash screen — fixed bottom start button */
   .splash-fixed-bottom {
     display: block;
