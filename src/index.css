@@ -61,8 +61,8 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0.5rem 0.8rem;
-  min-height: 44px;
+  padding: 0.2rem 0.8rem;
+  min-height: 32px;
   font-size: 0.8rem;
   border-radius: 20px;
   border: 1px solid var(--border-color);
@@ -172,6 +172,11 @@ body {
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 0.5rem;
+}
+
+/* Desktop/Mobile visibility toggles for splash */
+.splash-mobile-only {
+  display: none;
 }
 
 /* Spacer to prevent content from hiding behind fixed button on mobile */
@@ -2029,6 +2034,18 @@ button, a, [role="button"], input, select,
 
   .splash-screen {
     padding: 0 0 1rem 0;
+  }
+
+  .splash-mobile-only {
+    display: flex !important;
+  }
+
+  .splash-desktop-only {
+    display: none !important;
+  }
+
+  .splash-ranking-btn {
+    display: none;
   }
 
   /* Splash screen — fixed bottom start button */

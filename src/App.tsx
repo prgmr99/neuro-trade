@@ -122,12 +122,20 @@ function App() {
     <div className="splash-screen">
       <div className="splash-content glass-card" style={{ position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginBottom: '0.5rem' }}>
+          {/* Desktop: Trophy icon / Mobile: Rankings button */}
           <button
             onClick={() => setShowAchievements(true)}
-            className="splash-lang-btn"
+            className="splash-lang-btn splash-desktop-only"
             title={language === 'en' ? 'Achievements' : '업적'}
           >
             <Trophy size={14} />
+          </button>
+          <button
+            onClick={() => setView('rankings')}
+            className="splash-lang-btn splash-mobile-only"
+          >
+            <Trophy size={14} />
+            {t('ranking.viewRankings')}
           </button>
           <button
             onClick={toggleLanguage}
