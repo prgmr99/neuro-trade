@@ -184,7 +184,12 @@ body {
   display: none;
 }
 
-/* Fixed bottom start button */
+/* Start button — desktop inline version */
+.splash-start-desktop {
+  margin-top: 1rem;
+}
+
+/* Start button — mobile fixed bottom version (hidden on desktop) */
 .splash-fixed-bottom {
   position: fixed;
   bottom: 0;
@@ -2076,9 +2081,13 @@ button, a, [role="button"], input, select,
     display: none;
   }
 
-  /* Splash screen — fixed bottom start button */
+  /* Splash screen — fixed bottom start button on mobile */
   .splash-fixed-bottom {
     display: block;
+  }
+
+  .splash-start-desktop {
+    display: none;
   }
 
   .splash-actions-spacer {

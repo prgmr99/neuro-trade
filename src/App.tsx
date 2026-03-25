@@ -208,10 +208,21 @@ function App() {
           {t('ranking.viewRankings')}
         </button>
 
+        {/* Start button — inline on desktop */}
+        <div className="splash-start-desktop">
+          <button
+            className="start-btn"
+            onClick={startGame}
+            disabled={!selectedMode}
+          >
+            {t('app.start')}
+          </button>
+        </div>
+
         <div className="splash-actions-spacer" />
       </div>
 
-      {/* Fixed bottom start button — mobile */}
+      {/* Fixed bottom start button — mobile only */}
       <div className="splash-fixed-bottom">
         <button
           className="start-btn"
