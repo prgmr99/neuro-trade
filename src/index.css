@@ -1890,37 +1890,53 @@ button, a, [role="button"], input, select,
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 1rem;
-    background: var(--surface-color);
+    background: #ffffff;
     border-bottom: 1px solid var(--border-color);
     box-shadow: var(--toss-shadow);
     z-index: 10;
     flex-shrink: 0;
+    gap: 0.5rem;
   }
 
   .mobile-header-left {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    min-width: 0;
+    flex: 1;
   }
 
   .mobile-header-left h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 800;
     color: var(--accent-color);
     letter-spacing: -0.02em;
+    flex-shrink: 0;
   }
 
   .mobile-header .day-badge {
     margin-top: 0;
-    font-size: 0.75rem;
-    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .mobile-header .arc-badge {
+    margin-top: 0;
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
   }
 
   .mobile-header-right {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    flex-shrink: 0;
   }
 
   .mobile-cash {
