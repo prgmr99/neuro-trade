@@ -112,7 +112,7 @@ function App() {
 
     return (
       <div className="app-container">
-        <Layout />
+        <Layout onGoHome={goHome} />
       </div>
     );
   }
