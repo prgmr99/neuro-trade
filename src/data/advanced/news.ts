@@ -1,7 +1,6 @@
 import { News } from '../../types';
 import { BOOST_DAYS_1_10 } from './news-boost-1';
-import { BOOST_DAYS_11_20 } from './news-boost-2';
-import { BOOST_DAYS_21_30 } from './news-boost-3';
+// boost-2 (days 11-20) and boost-3 (days 21-30) removed — arc content remapped to 10 days
 
 // Arc 1: AI Revolution (Days 1-29)
 const ARC_AI_REVOLUTION: News[] = [
@@ -559,7 +558,10 @@ const ARC_SUPPLEMENTAL: News[] = [
   },
 ];
 
-// Merge all arcs and boost content, sort by dayIdx for proper game sequencing
+// Remap 30-day arc content into 10 days: dayIdx ÷ 3, clamped to [1, 10]
+const remapDay = (day: number): number => Math.min(10, Math.max(1, Math.round(day / 3)));
+
+// Merge all arcs (remapped to 10 days) + day 1-10 boost content, sort by dayIdx
 export const ADVANCED_NEWS: News[] = [
   ...ARC_AI_REVOLUTION,
   ...ARC_HEALTH_CRISIS,
@@ -568,7 +570,6 @@ export const ADVANCED_NEWS: News[] = [
   ...ARC_GEOPOLITICAL,
   ...ARC_REAL_ESTATE_CONSUMER,
   ...ARC_SUPPLEMENTAL,
-  ...BOOST_DAYS_1_10,
-  ...BOOST_DAYS_11_20,
-  ...BOOST_DAYS_21_30,
-].sort((a, b) => a.dayIdx - b.dayIdx);
+].map(n => ({ ...n, dayIdx: remapDay(n.dayIdx) }))
+  .concat(BOOST_DAYS_1_10)
+  .sort((a, b) => a.dayIdx - b.dayIdx);

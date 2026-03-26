@@ -24,7 +24,7 @@ export const SCENARIOS: Record<GameMode, ScenarioConfig> = {
   advanced: {
     stocks: ADVANCED_STOCKS,
     news: ADVANCED_NEWS,
-    maxDays: 30,
+    maxDays: 10,
     startingCash: 50000,
   },
 };
