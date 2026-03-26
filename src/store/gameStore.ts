@@ -118,12 +118,31 @@ export const useGameStore = create<GameState>((set) => ({
       newStocks[symbol].previousPrice = newStocks[symbol].price;
     });
 
-    // Accumulate the effects sequentially
+    // Apply whipsaw effects from today's news (reversal fires during this transition)
+    // IMPORTANT: Only call rng() inside the whipsaw guard to preserve classic mode PRNG sequence
+    state.dayState.dailyNews.forEach(news => {
+      if (news.whipsaw) {
+        Object.entries(news.whipsaw.nextDayEffect).forEach(([symbol, multiplier]) => {
+          if (newStocks[symbol]) {
+            affectedStocks.add(symbol);
+            const noise = 1 + (rng() - 0.5) * newStocks[symbol].volatility;
+            newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * multiplier * noise);
+          }
+        });
+      }
+    });
+
+    // Accumulate the effects sequentially (with resilience dampening for negative effects)
     state.dayState.dailyNews.forEach(news => {
       Object.entries(news.effect).forEach(([symbol, multiplier]) => {
         if (newStocks[symbol]) {
           affectedStocks.add(symbol);
-          const baseChange = multiplier;
+          // Resilience dampens negative effects: institutional buyers absorb selling pressure
+          let baseChange = multiplier;
+          const resilience = newStocks[symbol].resilience ?? 0;
+          if (baseChange < 1 && resilience > 0) {
+            baseChange = 1 + (baseChange - 1) * (1 - resilience);
+          }
           const noise = 1 + (rng() - 0.5) * newStocks[symbol].volatility;
           newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * baseChange * noise);
         }

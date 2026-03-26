@@ -14,13 +14,14 @@ const ARC_AI_REVOLUTION: News[] = [
     id: 'a1-2', dayIdx: 2,
     title: { en: 'Enterprise Giants Rush to License Prometheus API', ko: '대기업들, 프로메테우스 API 라이선스 확보 경쟁' },
     content: { en: 'Fortune 500 companies are signing multi-billion dollar licensing agreements with NeoTech just 48 hours after the Prometheus announcement. E-commerce platforms expect to automate up to 40% of logistics and customer service operations.', ko: '프로메테우스 발표 48시간 만에 포천 500대 기업들이 네오테크와 수십억 달러 규모의 라이선스 계약을 체결하고 있습니다. 전자상거래 플랫폼들은 물류 및 고객 서비스 운영의 최대 40%를 자동화할 것으로 기대하고 있습니다.' },
-    read: false, effect: { TECH: 1.08, ECOM: 1.05 },
+    read: false, effect: { TECH: 0.97, ECOM: 1.02 }, prePriced: true,
   },
   {
     id: 'a1-3', dayIdx: 4,
     title: { en: 'Major Banks Announce AI-Driven Trading Desks', ko: '주요 은행들, AI 주도 트레이딩 데스크 도입 발표' },
     content: { en: 'Three of the world\'s largest investment banks announced plans to deploy Prometheus-based autonomous trading systems, projecting 25% efficiency gains. Critics warn the move could amplify market volatility and reduce human oversight.', ko: '세계 3대 투자은행이 프로메테우스 기반 자율 트레이딩 시스템 도입 계획을 발표하며 25% 효율성 향상을 예상했습니다. 비평가들은 이 조치가 시장 변동성을 키우고 인간의 감독을 약화시킬 수 있다고 경고합니다.' },
     read: false, effect: { BANK: 1.07, TECH: 1.03 },
+    whipsaw: { nextDayEffect: { BANK: 0.91, TECH: 0.97 } },
   },
   {
     id: 'a1-4', dayIdx: 5,
@@ -38,7 +39,7 @@ const ARC_AI_REVOLUTION: News[] = [
     id: 'a1-6', dayIdx: 8,
     title: { en: 'Health Sector Embraces AI Diagnostics Pipeline', ko: '의료 부문, AI 진단 파이프라인 적극 도입' },
     content: { en: 'Major hospital networks announced partnerships with NeoTech to deploy Prometheus for early-stage disease detection, with initial trials showing a 34% improvement in diagnostic accuracy. Pharmaceutical firms are also licensing the system to accelerate drug discovery.', ko: '주요 병원 네트워크들이 조기 질병 진단에 프로메테우스를 도입하기 위해 네오테크와 파트너십을 발표했으며, 초기 시험에서 진단 정확도가 34% 향상된 것으로 나타났습니다. 제약사들도 신약 개발 가속화를 위해 시스템 라이선스를 취득하고 있습니다.' },
-    read: false, effect: { HEALTH: 1.06, TECH: 1.02 },
+    read: false, effect: { HEALTH: 0.98, TECH: 0.99 }, prePriced: true,
   },
   {
     id: 'a1-7', dayIdx: 10,
@@ -56,7 +57,8 @@ const ARC_AI_REVOLUTION: News[] = [
     id: 'a1-9', dayIdx: 14,
     title: { en: 'NeoTech Rivals Form "Open AI Alliance" Consortium', ko: '네오테크 경쟁사들, "오픈 AI 얼라이언스" 컨소시엄 결성' },
     content: { en: 'Seven competing technology firms announced a $40 billion consortium to develop open-source alternatives to Prometheus, aiming to prevent monopolistic control of AGI infrastructure. The move was seen as bullish for broad tech sector competition.', ko: '7개 경쟁 기술 기업이 AGI 인프라의 독점적 지배를 막기 위해 프로메테우스의 오픈소스 대안을 개발하는 400억 달러 규모의 컨소시엄을 발표했습니다. 이 조치는 기술 섹터 전반의 경쟁에 긍정적인 신호로 평가되었습니다.' },
-    read: false, effect: { TECH: 1.05 },
+    read: false, effect: { TECH: 1.06 },
+    whipsaw: { nextDayEffect: { TECH: 0.92 } },
   },
   {
     id: 'a1-10', dayIdx: 16,
@@ -80,13 +82,13 @@ const ARC_AI_REVOLUTION: News[] = [
     id: 'a1-13', dayIdx: 23,
     title: { en: 'NeoTech Reaches Regulatory Settlement, Resumes Expansion', ko: '네오테크, 규제 당국과 합의 타결 후 사업 확장 재개' },
     content: { en: 'NeoTech agreed to a landmark consent decree with the DOJ, including licensing Prometheus at regulated rates and submitting to independent safety audits. Markets viewed the resolution as removing the largest overhang on the AI sector.', ko: '네오테크가 법무부와 규제 요율로 프로메테우스를 라이선스하고 독립적인 안전 감사를 수용하는 내용의 획기적인 동의 판결에 합의했습니다. 시장은 이번 해결을 AI 섹터의 가장 큰 불확실성이 제거된 것으로 평가했습니다.' },
-    read: false, effect: { TECH: 1.10, BANK: 1.04 },
+    read: false, effect: { TECH: 0.96, BANK: 1.01 }, prePriced: true,
   },
   {
     id: 'a1-14', dayIdx: 26,
     title: { en: 'AI-Powered Personalization Drives E-Commerce Surge', ko: 'AI 개인화 기술, 전자상거래 급성장 견인' },
     content: { en: 'E-commerce platforms report a 28% increase in conversion rates after deploying Prometheus-based recommendation engines, with one platform attributing $2 billion in incremental quarterly revenue to the technology.', ko: '전자상거래 플랫폼들이 프로메테우스 기반 추천 엔진 도입 후 전환율이 28% 상승했다고 보고하며, 한 플랫폼은 분기 추가 매출 20억 달러를 해당 기술 덕분이라고 밝혔습니다.' },
-    read: false, effect: { ECOM: 1.08, TECH: 1.03 },
+    read: false, effect: { ECOM: 0.97, TECH: 0.98 }, prePriced: true,
   },
   {
     id: 'a1-15', dayIdx: 29,

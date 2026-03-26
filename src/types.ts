@@ -15,8 +15,9 @@ export interface Stock {
   price: number;
   previousPrice: number;
   priceHistory: DayPrice[];
-  volatility: number; 
+  volatility: number;
   description: LocalizedString;
+  resilience?: number; // 0-1, dampens negative news effects (institutional accumulation)
 }
 
 export interface News {
@@ -26,6 +27,8 @@ export interface News {
   content: LocalizedString;
   read: boolean;
   effect: Record<StockSymbol, number>; // How this news influences stock prices (multiplier: e.g. 1.05 for +5%)
+  prePriced?: boolean; // Headline sentiment doesn't match actual effect (advanced mode)
+  whipsaw?: { nextDayEffect: Record<StockSymbol, number> }; // Reversal effect applied next day
 }
 
 export interface Holding {
