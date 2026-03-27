@@ -70,7 +70,7 @@ function App() {
       const arc = selectClassicArc(CLASSIC_ARCS, seed);
       setInitialState(scenario.stocks, arc.news, scenario.maxDays, scenario.startingCash, seed, arc.name);
     } else {
-      setInitialState(scenario.stocks, scenario.news, scenario.maxDays, scenario.startingCash);
+      setInitialState(scenario.stocks, scenario.news, scenario.maxDays, scenario.startingCash, undefined, null, scenario.preApplyRatio ?? 0, scenario.marketGravity ?? 0, scenario.effectScale ?? 1);
     }
     setModeParam(selectedMode);
     setView('game');

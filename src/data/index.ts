@@ -12,6 +12,9 @@ export interface ScenarioConfig {
   news: News[];
   maxDays: number;
   startingCash: number;
+  preApplyRatio?: number; // 0-1: fraction of news effects applied when news appears (선반영)
+  marketGravity?: number; // 0-1: mean reversion strength — counters net market drift each day
+  effectScale?: number; // 0-1: scales down all news effect magnitudes (1.08 * 0.3 → 1.024)
 }
 
 export const SCENARIOS: Record<GameMode, ScenarioConfig> = {
@@ -26,6 +29,9 @@ export const SCENARIOS: Record<GameMode, ScenarioConfig> = {
     news: ADVANCED_NEWS,
     maxDays: 10,
     startingCash: 50000,
+    preApplyRatio: 0.8, // 80% of news effects already priced in when news appears
+    marketGravity: 0.85, // strong mean reversion — net positive moves get pulled back
+    effectScale: 0.08, // news effects scaled to 8% — realistic smaller moves
   },
 };
 
