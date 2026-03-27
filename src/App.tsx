@@ -9,18 +9,18 @@ import RankingBoard from './components/RankingBoard';
 import FlashRound from './components/FlashRound';
 import DailyChallenge from './components/DailyChallenge';
 import DuelMode from './components/DuelMode';
+import LiveCompetition from './components/LiveCompetition';
 import AttendanceModal from './components/AttendanceModal';
 import AchievementGallery from './components/AchievementGallery';
 import { useAttendanceStore } from './store/attendanceStore';
 import { useTranslation } from './i18n/translations';
-import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck } from 'lucide-react';
+import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users } from 'lucide-react';
 import SocialProof from './components/SocialProof';
 
 function App() {
   const [view, setView] = useQueryState('view');
   const [modeParam, setModeParam] = useQueryState('mode');
   const [duelParam] = useQueryState('duel');
-
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
   const [duelSeed, setDuelSeed] = useState<number | undefined>(undefined);
   const [showAchievements, setShowAchievements] = useState(false);
@@ -88,6 +88,10 @@ function App() {
 
   if (view === 'duel') {
     return <DuelMode onBack={() => { goHome(); setDuelSeed(undefined); }} initialSeed={duelSeed} />;
+  }
+
+  if (view === 'multiplayer') {
+    return <LiveCompetition onBack={goHome} />;
   }
 
   if (view === 'rankings') {
@@ -180,6 +184,19 @@ function App() {
             <h3>{t('app.dailyTitle')}</h3>
             <p className="mode-desc">{t('app.dailyDesc')}</p>
             <p className="mode-detail">{t('app.dailyDetail')}</p>
+          </button>
+        </div>
+
+        <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
+          <button
+            className="mode-card mode-card-daily"
+            onClick={() => setView('multiplayer')}
+            style={{ textAlign: 'left' }}
+          >
+            <Users size={24} className="mode-card-icon" />
+            <h3>{t('multiplayer.title')}</h3>
+            <p className="mode-desc">{t('multiplayer.createDesc')}</p>
+            <p className="mode-detail">{t('multiplayer.joinDesc')}</p>
           </button>
         </div>
 

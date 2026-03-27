@@ -16,9 +16,12 @@ type Tab = typeof tabOptions[number];
 
 interface LayoutProps {
   onGoHome?: () => void;
+  onDayEnd?: () => void;
+  hudOverlay?: React.ReactNode;
+  endDayLabel?: string;
 }
 
-const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
+const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayLabel }) => {
   const [activeTabQuery, setActiveTab] = useQueryState(
     'tab',
     parseAsStringLiteral(tabOptions).withDefault('news')
@@ -45,7 +48,11 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
   }, [activeTab, setActiveTab]);
 
   const handleNextDay = () => {
-    setShowSummary(true);
+    if (onDayEnd) {
+      onDayEnd();
+    } else {
+      setShowSummary(true);
+    }
   };
 
   const closeSummaryAndAdvance = () => {
@@ -59,6 +66,7 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
 
   return (
     <div className="layout">
+      {hudOverlay}
       {/* Mobile Header - visible only on mobile */}
       <header className="mobile-header">
         <div className="mobile-header-left">
@@ -126,10 +134,11 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
           </div>
           <button
             className="next-day-btn"
-            onClick={handleNextDay}
-            disabled={dayState.currentDay >= dayState.maxDays && showSummary}
+            onClick={endDayLabel ? undefined : handleNextDay}
+            disabled={!!endDayLabel || (dayState.currentDay >= dayState.maxDays && showSummary)}
+            style={endDayLabel ? { opacity: 1, cursor: 'default' } : undefined}
           >
-            {dayState.currentDay >= dayState.maxDays ? t('layout.finishGame') : t('layout.endDay')}
+            {endDayLabel || (dayState.currentDay >= dayState.maxDays ? t('layout.finishGame') : t('layout.endDay'))}
             <ChevronRight size={20} />
           </button>
         </div>
@@ -168,11 +177,12 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
         </button>
         <button
           className="bottom-nav-end-day"
-          onClick={handleNextDay}
-          disabled={dayState.currentDay >= dayState.maxDays && showSummary}
+          onClick={endDayLabel ? undefined : handleNextDay}
+          disabled={!!endDayLabel || (dayState.currentDay >= dayState.maxDays && showSummary)}
+          style={endDayLabel ? { opacity: 1, cursor: 'default' } : undefined}
         >
-          <Play size={16} />
-          {dayState.currentDay >= dayState.maxDays ? t('layout.finishGame') : t('layout.endDay')}
+          {!endDayLabel && <Play size={16} />}
+          {endDayLabel || (dayState.currentDay >= dayState.maxDays ? t('layout.finishGame') : t('layout.endDay'))}
         </button>
       </nav>
 
