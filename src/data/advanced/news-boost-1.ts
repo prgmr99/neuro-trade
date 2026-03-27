@@ -214,4 +214,75 @@ export const BOOST_DAYS_1_10: News[] = [
     content: { en: 'A cluster of precision fermentation and cultivated protein startups completed an $8 billion combined fundraise backed by sovereign wealth funds and strategic food conglomerates, signaling confidence in the commercial viability of next-generation protein sources. Traditional food manufacturers face mounting competitive pressure as unit cost curves for lab-grown alternatives continue their steep decline.', ko: '정밀 발효 및 배양 단백질 스타트업 그룹이 국부 펀드와 전략적 식품 대기업이 지원하는 80억 달러 합산 펀드레이즈를 완료하며 차세대 단백질 공급원의 상업적 가능성에 대한 신뢰를 보였습니다. 랩 그로운 대안의 단위 비용 곡선이 계속 가파르게 하락하면서 전통 식품 제조업체들은 증가하는 경쟁 압박에 직면해 있습니다.' },
     read: false, effect: { FOOD: 1.06, TECH: 1.03 },
   },
+
+  // === MACRO EVENTS ===
+
+  // Day 3 — CPI Report
+  {
+    id: 'macro-cpi', dayIdx: 3,
+    title: { en: 'CPI Surges to 5.4%, Exceeding All Forecasts', ko: 'CPI 5.4%로 급등, 모든 전망치 상회' },
+    content: { en: 'The Bureau of Labor Statistics reported consumer prices rose 5.4% year-over-year, well above the 4.1% consensus. Core inflation, excluding food and energy, accelerated to 4.8%. Markets are now pricing in two additional rate hikes this year, with growth stocks facing the steepest repricing.', ko: '노동통계국이 소비자물가가 전년 대비 5.4% 상승했다고 발표하며 컨센서스 4.1%를 크게 상회했습니다. 식품과 에너지를 제외한 근원 인플레이션은 4.8%로 가속화됐습니다. 시장은 올해 두 차례 추가 금리 인상을 반영하기 시작했으며, 성장주가 가장 큰 재조정 압력을 받고 있습니다.' },
+    read: false, effect: { TECH: 0.94, GREEN: 0.93, CRYPTO: 0.91, REALTY: 0.95, BANK: 1.04, FOOD: 1.03 },
+  },
+
+  // Day 6 — FOMC Decision
+  {
+    id: 'macro-fomc', dayIdx: 6,
+    title: { en: 'Fed Surprises with 50bp Rate Cut, Markets Rally', ko: '연준, 깜짝 50bp 금리 인하... 시장 랠리' },
+    content: { en: 'The Federal Reserve delivered an unexpected 50 basis point rate cut, citing deteriorating labor market conditions and softening consumer demand. Chair stated the committee is "prepared to act aggressively" if downside risks materialize. Growth and rate-sensitive sectors surged on the news.', ko: '연방준비제도가 악화되는 고용 시장 상황과 소비 수요 둔화를 이유로 예상 밖의 50bp 금리 인하를 단행했습니다. 의장은 "하방 리스크가 현실화되면 공격적으로 대응할 준비가 되어 있다"고 밝혔습니다. 성장주와 금리 민감 섹터가 급등했습니다.' },
+    read: false, effect: { REALTY: 1.08, GREEN: 1.06, TECH: 1.05, CRYPTO: 1.07, BANK: 0.96 },
+    whipsaw: { nextDayEffect: { REALTY: 0.93, GREEN: 0.95, TECH: 0.96, CRYPTO: 0.90 } },
+  },
+
+  // Day 9 — Employment Data
+  {
+    id: 'macro-jobs', dayIdx: 9,
+    title: { en: 'Nonfarm Payrolls Beat Expectations: +380K Jobs Added', ko: '비농업 고용 예상 상회: +38만 개 일자리 창출' },
+    content: { en: 'The economy added 380,000 jobs in the latest month, far exceeding the 210,000 forecast. Unemployment fell to 3.4%, the lowest in two decades. While the strong labor market signals consumer resilience, it also raises concerns the Fed may reverse its dovish stance. Markets were mixed as investors weighed growth optimism against rate hike fears.', ko: '최근 월 경제에 38만 개의 일자리가 추가되어 21만 개 전망치를 크게 상회했습니다. 실업률은 20년 만에 최저인 3.4%로 하락했습니다. 강한 고용 시장은 소비자 회복력을 시사하지만, 연준이 비둘기파 기조를 뒤집을 수 있다는 우려도 키웠습니다. 성장 낙관론과 금리 인상 우려를 저울질하며 시장은 혼조세를 보였습니다.' },
+    read: false, effect: { ECOM: 1.04, FOOD: 1.03, BANK: 1.02, TECH: 0.97, REALTY: 0.96 },
+  },
+
+  // === SENTIMENT MISMATCHES ===
+
+  // Day 4 — Sounds negative, actually positive (cost cutting = bullish)
+  {
+    id: 'mismatch-1', dayIdx: 4,
+    title: { en: 'StreamVerse Announces 3,000 Layoffs in Restructuring', ko: '스트림버스, 구조조정으로 3,000명 해고 발표' },
+    content: { en: 'StreamVerse will lay off 3,000 employees — roughly 15% of its workforce — as part of a sweeping restructuring plan to prioritize profitability over growth. The company expects to save $1.2 billion annually, with margins projected to expand by 800 basis points. Wall Street reacted positively, viewing the move as a long-overdue shift toward sustainable economics.', ko: '스트림버스가 성장보다 수익성을 우선시하는 대대적인 구조조정 계획의 일환으로 전체 인력의 약 15%인 3,000명을 해고합니다. 회사는 연간 12억 달러의 비용 절감과 800bp의 마진 확대를 예상합니다. 월가는 지속 가능한 경제학으로의 전환으로 평가하며 긍정적으로 반응했습니다.' },
+    read: false, effect: { MEDIA: 1.06 },
+  },
+
+  // Day 7 — Sounds positive, actually negative (overexpansion risk)
+  {
+    id: 'mismatch-2', dayIdx: 7,
+    title: { en: 'EcoEnergy Announces $20B Expansion into 15 New Markets', ko: '에코에너지, 15개 신규 시장에 200억 달러 확장 발표' },
+    content: { en: 'EcoEnergy Corp unveiled an ambitious $20 billion global expansion plan, targeting 15 emerging markets for solar and wind installations. While the company framed the move as transformative, analysts expressed concern over execution risk and balance sheet strain. The company\'s debt-to-equity ratio would climb to 2.8x, well above the industry average of 1.5x.', ko: '에코에너지가 15개 신흥 시장의 태양광 및 풍력 설비를 목표로 200억 달러 규모의 글로벌 확장 계획을 공개했습니다. 회사는 이를 혁신적 조치로 설명했지만 애널리스트들은 실행 리스크와 대차대조표 부담에 대한 우려를 표명했습니다. 부채비율이 업종 평균 1.5배를 크게 넘는 2.8배로 상승할 전망입니다.' },
+    read: false, effect: { GREEN: 0.94 },
+  },
+
+  // Day 5 — Sounds negative, actually positive (undervaluation recognized)
+  {
+    id: 'mismatch-3', dayIdx: 5,
+    title: { en: 'MetroLand Properties Hit by Short-Seller Report', ko: '메트로랜드 부동산, 공매도 리포트에 타격' },
+    content: { en: 'A prominent short-seller published a scathing 80-page report alleging MetroLand Properties has overstated its net asset value by 30%. However, within hours three major institutional investors disclosed increased stakes, citing the report as creating a buying opportunity in an undervalued blue-chip REIT. The institutions collectively added $4.2 billion in position.', ko: '유명 공매도 기관이 메트로랜드 부동산의 순자산가치가 30% 과대평가됐다는 80페이지 보고서를 발표했습니다. 그러나 수 시간 내에 3개 대형 기관투자자가 저평가된 블루칩 리츠의 매수 기회로 보고 지분 확대를 공시했습니다. 기관들은 합계 42억 달러의 포지션을 추가했습니다.' },
+    read: false, effect: { REALTY: 1.05 },
+  },
+
+  // === INTERCONNECTED SIGNAL: Day 8 pair ===
+
+  // Signal A: supply chain disruption
+  {
+    id: 'signal-8a', dayIdx: 8,
+    title: { en: 'Major Semiconductor Fab Fire Disrupts Global Chip Supply', ko: '반도체 대형 공장 화재, 글로벌 칩 공급 차질' },
+    content: { en: 'A fire at the world\'s third-largest semiconductor fabrication plant has halted production of advanced 3nm chips for an estimated 8-12 weeks. The disruption is expected to cascade across consumer electronics, automotive, and AI server markets. Insurance claims alone could exceed $6 billion.', ko: '세계 3위 반도체 제조 공장에서 발생한 화재로 첨단 3nm 칩 생산이 8-12주간 중단될 것으로 예상됩니다. 이 차질은 가전, 자동차, AI 서버 시장으로 연쇄 영향을 미칠 전망입니다. 보험 청구만으로도 60억 달러를 넘길 수 있습니다.' },
+    read: false, effect: { TECH: 0.95, ECOM: 0.97 },
+  },
+
+  // Signal B: domestic beneficiary (read both to spot the opportunity)
+  {
+    id: 'signal-8b', dayIdx: 8,
+    title: { en: 'AeroSpace Dynamics Wins Emergency DoD Contract for Domestic Chips', ko: '에어로스페이스, 국내 칩 긴급 국방부 계약 수주' },
+    content: { en: 'The Department of Defense awarded AeroSpace Dynamics a $3.8 billion emergency contract to establish domestic chip fabrication capacity for defense-critical systems. The contract includes guaranteed margins and a 10-year supply commitment. Analysts note this insulates the company from the broader semiconductor shortage while providing a stable revenue floor.', ko: '국방부가 에어로스페이스 다이내믹스에 방위 핵심 시스템용 국내 칩 제조 역량 구축을 위한 38억 달러 규모의 긴급 계약을 수여했습니다. 계약에는 보장된 마진과 10년 공급 약정이 포함됩니다. 애널리스트들은 이것이 광범위한 반도체 부족으로부터 회사를 격리시키면서 안정적인 매출 하한선을 제공한다고 지적합니다.' },
+    read: false, effect: { AERO: 1.09 },
+  },
 ];

@@ -11,6 +11,9 @@ interface GameState {
   seed: number;
   prngState: number;
   arcName: LocalizedString | null;
+  preApplyRatio: number; // 0-1: fraction of news effects pre-applied when news appears
+  marketGravity: number; // 0-1: mean reversion strength
+  effectScale: number; // 0-1: scales news effect magnitudes
 
   expandedNews: string[];
 
@@ -20,7 +23,7 @@ interface GameState {
   readNews: (newsId: string) => void;
   toggleNewsExpanded: (newsId: string) => void;
   nextDay: () => void;
-  setInitialState: (stocks: Record<StockSymbol, Stock>, news: News[], maxDays: number, startingCash?: number, seed?: number, arcName?: LocalizedString | null) => void;
+  setInitialState: (stocks: Record<StockSymbol, Stock>, news: News[], maxDays: number, startingCash?: number, seed?: number, arcName?: LocalizedString | null, preApplyRatio?: number, marketGravity?: number, effectScale?: number) => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -39,6 +42,9 @@ export const useGameStore = create<GameState>((set) => ({
   seed: 0,
   prngState: 0,
   arcName: null,
+  preApplyRatio: 0,
+  marketGravity: 0,
+  effectScale: 1,
   expandedNews: [],
 
   buyStock: (symbol, quantity) => set((state) => {
@@ -118,28 +124,69 @@ export const useGameStore = create<GameState>((set) => ({
       newStocks[symbol].previousPrice = newStocks[symbol].price;
     });
 
-    // Accumulate the effects sequentially
+    // Apply whipsaw effects from today's news (reversal fires during this transition)
+    // IMPORTANT: Only call rng() inside the whipsaw guard to preserve classic mode PRNG sequence
+    // Whipsaw uses 5x effectScale — traps should hurt significantly more than normal moves
+    const whipsawScale = Math.min(1, state.effectScale * 5);
+    state.dayState.dailyNews.forEach(news => {
+      if (news.whipsaw) {
+        Object.entries(news.whipsaw.nextDayEffect).forEach(([symbol, multiplier]) => {
+          if (newStocks[symbol]) {
+            affectedStocks.add(symbol);
+            const scaledMult = 1 + (multiplier - 1) * whipsawScale;
+            const noise = 1 + (rng() - 0.5) * newStocks[symbol].volatility;
+            newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * scaledMult * noise);
+          }
+        });
+      }
+    });
+
+    // Accumulate the effects sequentially (with resilience dampening for negative effects)
+    // effectScale shrinks magnitudes; remainingRatio applies only what wasn't pre-applied
+    const scale = state.effectScale;
+    const remainingRatio = 1 - state.preApplyRatio;
     state.dayState.dailyNews.forEach(news => {
       Object.entries(news.effect).forEach(([symbol, multiplier]) => {
         if (newStocks[symbol]) {
           affectedStocks.add(symbol);
-          const baseChange = multiplier;
+          // 1.08 * scale=0.3 → 1.024, * remaining=0.2 → 1.0048
+          let baseChange = 1 + (multiplier - 1) * scale * remainingRatio;
+          // Resilience dampens negative effects: institutional buyers absorb selling pressure
+          const resilience = newStocks[symbol].resilience ?? 0;
+          if (baseChange < 1 && resilience > 0) {
+            baseChange = 1 + (baseChange - 1) * (1 - resilience);
+          }
           const noise = 1 + (rng() - 0.5) * newStocks[symbol].volatility;
           newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * baseChange * noise);
         }
       });
     });
 
-    // Add noise to unaffected stocks, and generate chart data for ALL
+    // Add noise to unaffected stocks
+    Object.keys(newStocks).forEach(symbol => {
+      if (!affectedStocks.has(symbol)) {
+        const noise = 1 + (rng() - 0.5) * newStocks[symbol].volatility * 0.5;
+        newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * noise);
+      }
+    });
+
+    // Market gravity: mean reversion counters net market drift
+    if (state.marketGravity > 0) {
+      const symbols = Object.keys(newStocks);
+      const avgChange = symbols.reduce((sum, s) =>
+        sum + newStocks[s].price / newStocks[s].previousPrice, 0) / symbols.length;
+      // If market moved net positive, pull all stocks back; if negative, push up slightly
+      const drift = avgChange - 1; // e.g. +0.05 means market up 5%
+      const gravityForce = 1 - drift * state.marketGravity;
+      symbols.forEach(symbol => {
+        newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * gravityForce);
+      });
+    }
+
+    // Generate chart data for ALL stocks
     Object.keys(newStocks).forEach(symbol => {
       const stock = newStocks[symbol];
       const openPrice = stock.previousPrice;
-
-      if (!affectedStocks.has(symbol)) {
-        const noise = 1 + (rng() - 0.5) * stock.volatility * 0.5;
-        stock.price = Math.max(0.01, stock.price * noise);
-      }
-
       const closePrice = stock.price;
       const volMultiplier = affectedStocks.has(symbol) ? 1 : 0.2;
 
@@ -168,6 +215,24 @@ export const useGameStore = create<GameState>((set) => ({
     });
 
     const nextDayNews = state.allNews.filter(n => n.dayIdx === nextDayNum);
+
+    // Pre-apply next day's news effects so prices already reflect the news when shown
+    if (state.preApplyRatio > 0) {
+      nextDayNews.forEach(news => {
+        Object.entries(news.effect).forEach(([symbol, multiplier]) => {
+          if (newStocks[symbol]) {
+            let preEffect = 1 + (multiplier - 1) * scale * state.preApplyRatio;
+            // Apply resilience dampening to pre-applied negative effects too
+            const res = newStocks[symbol].resilience ?? 0;
+            if (preEffect < 1 && res > 0) {
+              preEffect = 1 + (preEffect - 1) * (1 - res);
+            }
+            newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * preEffect);
+          }
+        });
+      });
+    }
+
     return {
       stocks: newStocks,
       dayState: {
@@ -180,7 +245,7 @@ export const useGameStore = create<GameState>((set) => ({
     };
   }),
 
-  setInitialState: (stocks, news, maxDays, startingCash = 10000, seed?: number, arcName?: LocalizedString | null) => {
+  setInitialState: (stocks, news, maxDays, startingCash = 10000, seed?: number, arcName?: LocalizedString | null, preApplyRatio = 0, marketGravity = 0, effectScale = 1) => {
     const gameSeed = seed ?? Date.now();
     const rng = mulberry32(gameSeed);
 
@@ -212,6 +277,23 @@ export const useGameStore = create<GameState>((set) => ({
     });
 
     const day1News = news.filter(n => n.dayIdx === 1);
+
+    // Pre-apply day 1 news effects so prices already reflect the news
+    if (preApplyRatio > 0) {
+      day1News.forEach(newsItem => {
+        Object.entries(newsItem.effect).forEach(([symbol, multiplier]) => {
+          if (initializedStocks[symbol]) {
+            let preEffect = 1 + (multiplier - 1) * effectScale * preApplyRatio;
+            const res = initializedStocks[symbol].resilience ?? 0;
+            if (preEffect < 1 && res > 0) {
+              preEffect = 1 + (preEffect - 1) * (1 - res);
+            }
+            initializedStocks[symbol].price = Math.max(0.01, initializedStocks[symbol].price * preEffect);
+          }
+        });
+      });
+    }
+
     set({
       stocks: initializedStocks,
       allNews: news,
@@ -228,6 +310,9 @@ export const useGameStore = create<GameState>((set) => ({
       seed: gameSeed,
       prngState: gameSeed,
       arcName: arcName ?? null,
+      preApplyRatio,
+      marketGravity,
+      effectScale,
       expandedNews: day1News.map(n => n.id),
     });
   },

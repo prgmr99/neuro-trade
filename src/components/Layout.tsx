@@ -14,7 +14,11 @@ import NewsFeed from './NewsFeed';
 const tabOptions = ['news', 'market', 'portfolio'] as const;
 type Tab = typeof tabOptions[number];
 
-const Layout: React.FC = () => {
+interface LayoutProps {
+  onGoHome?: () => void;
+}
+
+const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
   const [activeTabQuery, setActiveTab] = useQueryState(
     'tab',
     parseAsStringLiteral(tabOptions).withDefault('news')
@@ -58,7 +62,7 @@ const Layout: React.FC = () => {
       {/* Mobile Header - visible only on mobile */}
       <header className="mobile-header">
         <div className="mobile-header-left">
-          <h2>{t('app.title')}</h2>
+          <h2 onClick={onGoHome} style={{ cursor: onGoHome ? 'pointer' : undefined }}>{t('app.title')}</h2>
           <span className="day-badge">{t('layout.day')} {dayState.currentDay}/{dayState.maxDays}</span>
           {arcName && <span className="arc-badge">{arcName[language]}</span>}
         </div>
@@ -74,7 +78,7 @@ const Layout: React.FC = () => {
       {/* Sidebar Navigation - hidden on mobile */}
       <nav className="sidebar">
         <div className="sidebar-header">
-          <h2>{t('app.title')}</h2>
+          <h2 onClick={onGoHome} style={{ cursor: onGoHome ? 'pointer' : undefined }}>{t('app.title')}</h2>
           <span className="day-badge">{t('layout.day')} {dayState.currentDay} / {dayState.maxDays}</span>
           {arcName && <span className="arc-badge">{arcName[language]}</span>}
         </div>
