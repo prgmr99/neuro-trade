@@ -31,7 +31,7 @@ export const SCENARIOS: Record<GameMode, ScenarioConfig> = {
     startingCash: 50000,
     preApplyRatio: 0.8, // 80% of news effects already priced in when news appears
     marketGravity: 0.85, // strong mean reversion — net positive moves get pulled back
-    effectScale: 0.08, // news effects scaled to 8% — realistic smaller moves
+    effectScale: 0.10, // news effects scaled to 10% — balanced difficulty
   },
 };
 

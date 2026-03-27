@@ -126,13 +126,16 @@ export const useGameStore = create<GameState>((set) => ({
 
     // Apply whipsaw effects from today's news (reversal fires during this transition)
     // IMPORTANT: Only call rng() inside the whipsaw guard to preserve classic mode PRNG sequence
+    // Whipsaw uses 5x effectScale — traps should hurt significantly more than normal moves
+    const whipsawScale = Math.min(1, state.effectScale * 5);
     state.dayState.dailyNews.forEach(news => {
       if (news.whipsaw) {
         Object.entries(news.whipsaw.nextDayEffect).forEach(([symbol, multiplier]) => {
           if (newStocks[symbol]) {
             affectedStocks.add(symbol);
+            const scaledMult = 1 + (multiplier - 1) * whipsawScale;
             const noise = 1 + (rng() - 0.5) * newStocks[symbol].volatility;
-            newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * multiplier * noise);
+            newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * scaledMult * noise);
           }
         });
       }
@@ -218,7 +221,12 @@ export const useGameStore = create<GameState>((set) => ({
       nextDayNews.forEach(news => {
         Object.entries(news.effect).forEach(([symbol, multiplier]) => {
           if (newStocks[symbol]) {
-            const preEffect = 1 + (multiplier - 1) * scale * state.preApplyRatio;
+            let preEffect = 1 + (multiplier - 1) * scale * state.preApplyRatio;
+            // Apply resilience dampening to pre-applied negative effects too
+            const res = newStocks[symbol].resilience ?? 0;
+            if (preEffect < 1 && res > 0) {
+              preEffect = 1 + (preEffect - 1) * (1 - res);
+            }
             newStocks[symbol].price = Math.max(0.01, newStocks[symbol].price * preEffect);
           }
         });
@@ -275,7 +283,11 @@ export const useGameStore = create<GameState>((set) => ({
       day1News.forEach(newsItem => {
         Object.entries(newsItem.effect).forEach(([symbol, multiplier]) => {
           if (initializedStocks[symbol]) {
-            const preEffect = 1 + (multiplier - 1) * effectScale * preApplyRatio;
+            let preEffect = 1 + (multiplier - 1) * effectScale * preApplyRatio;
+            const res = initializedStocks[symbol].resilience ?? 0;
+            if (preEffect < 1 && res > 0) {
+              preEffect = 1 + (preEffect - 1) * (1 - res);
+            }
             initializedStocks[symbol].price = Math.max(0.01, initializedStocks[symbol].price * preEffect);
           }
         });

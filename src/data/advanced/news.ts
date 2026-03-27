@@ -563,8 +563,8 @@ const ARC_SUPPLEMENTAL: News[] = [
 // Remap 30-day arc content into 10 days: dayIdx ÷ 3, clamped to [1, 10]
 const remapDay = (day: number): number => Math.min(10, Math.max(1, Math.round(day / 3)));
 
-// Merge all arcs (remapped to 10 days) + day 1-10 boost content, sort by dayIdx
-export const ADVANCED_NEWS: News[] = [
+// Merge all arcs (remapped to 10 days) + day 1-10 boost content
+const ALL_NEWS: News[] = [
   ...ARC_AI_REVOLUTION,
   ...ARC_HEALTH_CRISIS,
   ...ARC_ENERGY_TRANSITION,
@@ -575,3 +575,36 @@ export const ADVANCED_NEWS: News[] = [
 ].map(n => ({ ...n, dayIdx: remapDay(n.dayIdx) }))
   .concat(BOOST_DAYS_1_10)
   .sort((a, b) => a.dayIdx - b.dayIdx);
+
+// Cap news density to MAX_PER_DAY items per day
+// Priority: macro/whipsaw/prePriced/mismatch items first (boost ids), then arc items
+const MAX_PER_DAY = 7;
+function capNewsDensity(news: News[]): News[] {
+  const byDay = new Map<number, News[]>();
+  for (const n of news) {
+    const arr = byDay.get(n.dayIdx) || [];
+    arr.push(n);
+    byDay.set(n.dayIdx, arr);
+  }
+  const result: News[] = [];
+  for (const [, items] of byDay) {
+    if (items.length <= MAX_PER_DAY) {
+      result.push(...items);
+    } else {
+      // Prioritize: macro/signal/mismatch (boost ids starting with macro-/mismatch-/signal-),
+      // then whipsaw items, then prePriced, then boost, then arc
+      const priority = (n: News): number => {
+        if (n.id.startsWith('macro-') || n.id.startsWith('signal-') || n.id.startsWith('mismatch-')) return 0;
+        if (n.whipsaw) return 1;
+        if (n.prePriced) return 2;
+        if (n.id.startsWith('b')) return 3; // boost
+        return 4; // arc
+      };
+      items.sort((a, b) => priority(a) - priority(b));
+      result.push(...items.slice(0, MAX_PER_DAY));
+    }
+  }
+  return result.sort((a, b) => a.dayIdx - b.dayIdx);
+}
+
+export const ADVANCED_NEWS: News[] = capNewsDensity(ALL_NEWS);

@@ -73,7 +73,11 @@ function preApplyEffects(stocks: Record<StockSymbol, Stock>, news: News[]): void
   for (const n of news) {
     for (const [symbol, multiplier] of Object.entries(n.effect)) {
       if (stocks[symbol]) {
-        const preEffect = 1 + (multiplier - 1) * scale * ratio;
+        let preEffect = 1 + (multiplier - 1) * scale * ratio;
+        const res = stocks[symbol].resilience ?? 0;
+        if (preEffect < 1 && res > 0) {
+          preEffect = 1 + (preEffect - 1) * (1 - res);
+        }
         stocks[symbol].price = Math.max(0.01, stocks[symbol].price * preEffect);
       }
     }
@@ -97,14 +101,16 @@ function simulateDay(
     stocks[symbol].previousPrice = stocks[symbol].price;
   }
 
-  // Whipsaw from today's news
+  // Whipsaw from today's news (5x effectScale — traps hurt more)
+  const whipsawScale = Math.min(1, getEffectScale() * 5);
   for (const news of dailyNews) {
     if (news.whipsaw) {
       for (const [symbol, multiplier] of Object.entries(news.whipsaw.nextDayEffect)) {
         if (stocks[symbol]) {
           affectedStocks.add(symbol);
+          const scaledMult = 1 + (multiplier - 1) * whipsawScale;
           const noise = 1 + (rng() - 0.5) * stocks[symbol].volatility;
-          stocks[symbol].price = Math.max(0.01, stocks[symbol].price * multiplier * noise);
+          stocks[symbol].price = Math.max(0.01, stocks[symbol].price * scaledMult * noise);
         }
       }
     }
@@ -246,11 +252,10 @@ function runSimulation(seed: number, strategy: Strategy): SimResult {
 const NUM_SEEDS = 200;
 const strategies: Strategy[] = ['naive', 'skilled', 'hold'];
 const testConfigs = [
-  { scale: 0.12, gravity: 0.7, label: 'scale=0.12, gravity=0.7' },
-  { scale: 0.10, gravity: 0.7, label: 'scale=0.10, gravity=0.7' },
-  { scale: 0.08, gravity: 0.7, label: 'scale=0.08, gravity=0.7' },
-  { scale: 0.10, gravity: 0.85, label: 'scale=0.10, gravity=0.85' },
-  { scale: 0.08, gravity: 0.85, label: 'scale=0.08, gravity=0.85' },
+  { scale: 0.08, gravity: 0.85, label: 'scale=0.08, gravity=0.85 (whipsaw 5x)' },
+  { scale: 0.10, gravity: 0.85, label: 'scale=0.10, gravity=0.85 (whipsaw 5x)' },
+  { scale: 0.12, gravity: 0.85, label: 'scale=0.12, gravity=0.85 (whipsaw 5x)' },
+  { scale: 0.10, gravity: 0.70, label: 'scale=0.10, gravity=0.70 (whipsaw 5x)' },
 ];
 
 for (const cfg of testConfigs) {
