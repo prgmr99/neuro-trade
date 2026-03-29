@@ -19,9 +19,10 @@ interface LayoutProps {
   onDayEnd?: () => void;
   hudOverlay?: React.ReactNode;
   endDayLabel?: string;
+  dayLabel?: string;
 }
 
-const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayLabel }) => {
+const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayLabel, dayLabel }) => {
   const [activeTabQuery, setActiveTab] = useQueryState(
     'tab',
     parseAsStringLiteral(tabOptions).withDefault('news')
@@ -70,7 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
       <header className="mobile-header">
         <div className="mobile-header-left">
           <h2 onClick={onGoHome} style={{ cursor: onGoHome ? 'pointer' : undefined }}>{t('app.title')}</h2>
-          <span className="day-badge">{t('layout.day')} {dayState.currentDay}/{dayState.maxDays}</span>
+          <span className="day-badge">{dayLabel || `${t('layout.day')} ${dayState.currentDay}/${dayState.maxDays}`}</span>
           {arcName && <span className="arc-badge">{arcName[language]}</span>}
         </div>
         <div className="mobile-header-right">
@@ -86,7 +87,7 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
       <nav className="sidebar">
         <div className="sidebar-header">
           <h2 onClick={onGoHome} style={{ cursor: onGoHome ? 'pointer' : undefined }}>{t('app.title')}</h2>
-          <span className="day-badge">{t('layout.day')} {dayState.currentDay} / {dayState.maxDays}</span>
+          <span className="day-badge">{dayLabel || `${t('layout.day')} ${dayState.currentDay} / ${dayState.maxDays}`}</span>
           {arcName && <span className="arc-badge">{arcName[language]}</span>}
         </div>
 

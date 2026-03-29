@@ -191,8 +191,20 @@ function App() {
           <button
             className="mode-card mode-card-daily"
             onClick={() => setView('multiplayer')}
-            style={{ textAlign: 'left' }}
+            style={{ textAlign: 'left', position: 'relative' }}
           >
+            <span style={{
+              position: 'absolute',
+              top: '0.6rem',
+              right: '0.6rem',
+              background: 'var(--accent-color)',
+              color: '#fff',
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              padding: '0.15rem 0.5rem',
+              borderRadius: '999px',
+              letterSpacing: '0.03em',
+            }}>Beta</span>
             <Users size={24} className="mode-card-icon" />
             <h3>{t('multiplayer.title')}</h3>
             <p className="mode-desc">{t('multiplayer.createDesc')}</p>
