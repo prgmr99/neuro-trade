@@ -16,9 +16,13 @@ type Tab = typeof tabOptions[number];
 
 interface LayoutProps {
   onGoHome?: () => void;
+  onDayEnd?: () => void;
+  hudOverlay?: React.ReactNode;
+  endDayLabel?: string;
+  dayLabel?: string;
 }
 
-const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
+const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayLabel, dayLabel }) => {
   const [activeTabQuery, setActiveTab] = useQueryState(
     'tab',
     parseAsStringLiteral(tabOptions).withDefault('news')
@@ -45,7 +49,11 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
   }, [activeTab, setActiveTab]);
 
   const handleNextDay = () => {
-    setShowSummary(true);
+    if (onDayEnd) {
+      onDayEnd();
+    } else {
+      setShowSummary(true);
+    }
   };
 
   const closeSummaryAndAdvance = () => {
@@ -63,7 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
       <header className="mobile-header">
         <div className="mobile-header-left">
           <h2 onClick={onGoHome} style={{ cursor: onGoHome ? 'pointer' : undefined }}>{t('app.title')}</h2>
-          <span className="day-badge">{t('layout.day')} {dayState.currentDay}/{dayState.maxDays}</span>
+          <span className="day-badge">{dayLabel || `${t('layout.day')} ${dayState.currentDay}/${dayState.maxDays}`}</span>
           {arcName && <span className="arc-badge">{arcName[language]}</span>}
         </div>
         <div className="mobile-header-right">
@@ -79,7 +87,7 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
       <nav className="sidebar">
         <div className="sidebar-header">
           <h2 onClick={onGoHome} style={{ cursor: onGoHome ? 'pointer' : undefined }}>{t('app.title')}</h2>
-          <span className="day-badge">{t('layout.day')} {dayState.currentDay} / {dayState.maxDays}</span>
+          <span className="day-badge">{dayLabel || `${t('layout.day')} ${dayState.currentDay} / ${dayState.maxDays}`}</span>
           {arcName && <span className="arc-badge">{arcName[language]}</span>}
         </div>
 
@@ -119,6 +127,8 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
           </button>
         </div>
 
+        {hudOverlay}
+
         <div className="sidebar-footer">
           <div className="portfolio-summary">
             <span className="label">{t('layout.cashBalance')}</span>
@@ -126,10 +136,11 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
           </div>
           <button
             className="next-day-btn"
-            onClick={handleNextDay}
-            disabled={dayState.currentDay >= dayState.maxDays && showSummary}
+            onClick={endDayLabel ? undefined : handleNextDay}
+            disabled={!!endDayLabel || (dayState.currentDay >= dayState.maxDays && showSummary)}
+            style={endDayLabel ? { opacity: 1, cursor: 'default' } : undefined}
           >
-            {dayState.currentDay >= dayState.maxDays ? t('layout.finishGame') : t('layout.endDay')}
+            {endDayLabel || (dayState.currentDay >= dayState.maxDays ? t('layout.finishGame') : t('layout.endDay'))}
             <ChevronRight size={20} />
           </button>
         </div>
@@ -168,11 +179,12 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome }) => {
         </button>
         <button
           className="bottom-nav-end-day"
-          onClick={handleNextDay}
-          disabled={dayState.currentDay >= dayState.maxDays && showSummary}
+          onClick={endDayLabel ? undefined : handleNextDay}
+          disabled={!!endDayLabel || (dayState.currentDay >= dayState.maxDays && showSummary)}
+          style={endDayLabel ? { opacity: 1, cursor: 'default' } : undefined}
         >
-          <Play size={16} />
-          {dayState.currentDay >= dayState.maxDays ? t('layout.finishGame') : t('layout.endDay')}
+          {!endDayLabel && <Play size={16} />}
+          {endDayLabel || (dayState.currentDay >= dayState.maxDays ? t('layout.finishGame') : t('layout.endDay'))}
         </button>
       </nav>
 

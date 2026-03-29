@@ -2327,8 +2327,7 @@ button, a, [role="button"], input, select,
     background: #ffffff;
     border-radius: 20px 20px 0 0;
     padding: 1.25rem 1.25rem;
-    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
-    max-height: 70vh;
+    max-height: 75vh;
     overflow-y: auto;
     animation: trade-sheet-up 0.3s ease-out;
   }
