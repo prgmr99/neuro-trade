@@ -18,7 +18,7 @@ interface Props {
 
 function getSlotInfo() {
   const now = Date.now();
-  const timeSlot = Math.floor(now / 300000);
+  const timeSlot = Math.floor(now / 60000);
   const cycleNumber = Math.floor(timeSlot / 5);
   const dayInCycle = (timeSlot % 5) + 1;
   return { timeSlot, cycleNumber, dayInCycle };
@@ -60,12 +60,12 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
   }, [portfolio, stocks]);
 
   // Local countdown timer (ticks every second) + auto-advance
-  const [countdown, setCountdown] = useState(() => 300 - (Math.floor(Date.now() / 1000) % 300));
+  const [countdown, setCountdown] = useState(() => 60 - (Math.floor(Date.now() / 1000) % 60));
 
   useEffect(() => {
     if (!entered) return;
     const interval = setInterval(() => {
-      const remaining = 300 - (Math.floor(Date.now() / 1000) % 300);
+      const remaining = 60 - (Math.floor(Date.now() / 1000) % 60);
       setCountdown(remaining);
 
       // Detect slot change for auto-advance
@@ -183,9 +183,6 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
         endDayLabel={`${t('multiplayer.nextRefresh')} ${formatCountdown(countdown)}`}
         hudOverlay={
           <MultiplayerHUD
-            currentDay={market.dayInCycle}
-            maxDays={5}
-            timeRemaining={countdown}
             totalPlayers={Math.max(1, market.players.length)}
             leaderboard={market.players}
             currentPlayerId={userId ?? ''}

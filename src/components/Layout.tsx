@@ -66,7 +66,6 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
 
   return (
     <div className="layout">
-      {hudOverlay}
       {/* Mobile Header - visible only on mobile */}
       <header className="mobile-header">
         <div className="mobile-header-left">
@@ -126,6 +125,8 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
             {t('nav.portfolio')}
           </button>
         </div>
+
+        {hudOverlay}
 
         <div className="sidebar-footer">
           <div className="portfolio-summary">

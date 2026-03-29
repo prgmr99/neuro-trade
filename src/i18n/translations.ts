@@ -108,7 +108,7 @@ export const translations = {
       nextRefresh: "Next refresh in",
       activePlayers: "Active traders",
       leaveMarket: "Leave Market",
-      autoAdvance: "Market auto-updates every 5 min",
+      autoAdvance: "Market auto-updates every minute",
       cycle: "Cycle",
     },
     nav: {
@@ -368,7 +368,7 @@ export const translations = {
       nextRefresh: "다음 갱신까지",
       activePlayers: "활성 트레이더",
       leaveMarket: "시장 나가기",
-      autoAdvance: "시장은 5분마다 자동 업데이트됩니다",
+      autoAdvance: "시장은 1분마다 자동 업데이트됩니다",
       cycle: "사이클",
     },
     nav: {

@@ -32,14 +32,14 @@ export interface UseLiveMarketReturn {
 
 function getSlotInfo() {
   const now = Date.now();
-  const timeSlot = Math.floor(now / 300000);
+  const timeSlot = Math.floor(now / 60000);
   const cycleNumber = Math.floor(timeSlot / 5);
   const dayInCycle = (timeSlot % 5) + 1;
   return { timeSlot, cycleNumber, dayInCycle };
 }
 
 function computeTimeToNextRefresh(): number {
-  return 300 - (Math.floor(Date.now() / 1000) % 300);
+  return 60 - (Math.floor(Date.now() / 1000) % 60);
 }
 
 // ---------------------------------------------------------------------------
