@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { useLiveMarket } from '../hooks/useLiveMarket';
+import { useLiveMarket, LiveMarketState } from '../hooks/useLiveMarket';
 import { useGameStore } from '../store/gameStore';
 import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../data';
-import { hashSeed } from '../lib/prng';
 import MultiplayerHUD from './MultiplayerHUD';
 import Layout from './Layout';
 import { useTranslation } from '../i18n/translations';
@@ -15,14 +14,6 @@ interface Props {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function getSlotInfo() {
-  const now = Date.now();
-  const timeSlot = Math.floor(now / 60000);
-  const cycleNumber = Math.floor(timeSlot / 5);
-  const dayInCycle = (timeSlot % 5) + 1;
-  return { timeSlot, cycleNumber, dayInCycle };
-}
 
 function formatCountdown(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -46,8 +37,8 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
 
   const startingCash = SCENARIOS.classic.startingCash;
 
-  // Track the time slot we last initialized/advanced to
-  const lastSlotRef = useRef<number>(-1);
+  // Track the previous market state to detect changes
+  const prevStateRef = useRef<LiveMarketState | null>(null);
 
   // Compute portfolio value
   const computePortfolioValue = useCallback(() => {
@@ -59,56 +50,48 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
     return total;
   }, [portfolio, stocks]);
 
-  // Local countdown timer (ticks every second) + auto-advance
+  // Simplified countdown (purely cosmetic)
   const [countdown, setCountdown] = useState(() => 60 - (Math.floor(Date.now() / 1000) % 60));
 
   useEffect(() => {
     if (!entered) return;
     const interval = setInterval(() => {
-      const remaining = 60 - (Math.floor(Date.now() / 1000) % 60);
-      setCountdown(remaining);
-
-      // Detect slot change for auto-advance
-      if (lastSlotRef.current !== -1) {
-        const { timeSlot, cycleNumber, dayInCycle } = getSlotInfo();
-        if (timeSlot !== lastSlotRef.current) {
-          if (dayInCycle === 1) {
-            const seed = hashSeed(String(cycleNumber));
-            const arc = selectClassicArc(CLASSIC_ARCS, seed);
-            setInitialState(SCENARIOS.classic.stocks, arc.news, 999, startingCash, seed);
-          } else {
-            nextDay();
-          }
-          lastSlotRef.current = timeSlot;
-
-          const value = computePortfolioValue();
-          const returnPct = ((value - startingCash) / startingCash) * 100;
-          market.broadcastPortfolio(value, returnPct);
-        }
-      }
+      setCountdown(60 - (Math.floor(Date.now() / 1000) % 60));
     }, 1000);
     return () => clearInterval(interval);
-  }, [entered, computePortfolioValue, market, nextDay, setInitialState, startingCash]);
-
-  // Initialize game when entering the market
-  useEffect(() => {
-    if (!entered) return;
-    const { timeSlot, cycleNumber, dayInCycle } = getSlotInfo();
-
-    if (lastSlotRef.current === -1) {
-      const seed = hashSeed(String(cycleNumber));
-      const arc = selectClassicArc(CLASSIC_ARCS, seed);
-      setInitialState(SCENARIOS.classic.stocks, arc.news, 999, startingCash, seed);
-      // Fast-forward to current day in cycle
-      for (let d = 1; d < dayInCycle; d++) {
-        nextDay();
-      }
-      lastSlotRef.current = timeSlot;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entered]);
 
-  // (Auto-advance is handled by the local countdown timer above)
+  // React to server market state changes
+  useEffect(() => {
+    if (!entered || !market.marketState) return;
+    const { cycleNumber, day, seed } = market.marketState;
+    const prev = prevStateRef.current;
+
+    if (!prev) {
+      // First load -- initialize game with server state
+      const arc = selectClassicArc(CLASSIC_ARCS, seed);
+      setInitialState(SCENARIOS.classic.stocks, arc.news, 999, startingCash, seed);
+      // Fast-forward to current day
+      for (let d = 1; d < day; d++) {
+        nextDay();
+      }
+    } else if (cycleNumber !== prev.cycleNumber) {
+      // New cycle -- reinitialize
+      const arc = selectClassicArc(CLASSIC_ARCS, seed);
+      setInitialState(SCENARIOS.classic.stocks, arc.news, 999, startingCash, seed);
+    } else if (day !== prev.day) {
+      // Same cycle, new day -- advance
+      nextDay();
+    }
+
+    prevStateRef.current = market.marketState;
+
+    // Broadcast portfolio after any change
+    const value = computePortfolioValue();
+    const returnPct = ((value - startingCash) / startingCash) * 100;
+    market.broadcastPortfolio(value, returnPct);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entered, market.marketState]);
 
   const handleLeave = useCallback(() => {
     market.leave();
@@ -170,6 +153,17 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
               {t('multiplayer.back')}
             </button>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Loading market state ---
+  if (!market.marketState) {
+    return (
+      <div className="splash-screen">
+        <div className="splash-content glass-card" style={{ maxWidth: '500px', width: '95%', textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-secondary)' }}>{t('multiplayer.waiting')}</p>
         </div>
       </div>
     );
