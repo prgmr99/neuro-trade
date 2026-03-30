@@ -126,7 +126,13 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.portfolio) {
+        if (
+          parsed.portfolio &&
+          typeof parsed.portfolio.cash === 'number' &&
+          parsed.portfolio.cash >= 0 &&
+          typeof parsed.portfolio.holdings === 'object' &&
+          parsed.portfolio.holdings !== null
+        ) {
           useGameStore.setState({
             portfolio: {
               cash: parsed.portfolio.cash,
@@ -146,7 +152,7 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
       const returnPct = ((value - startingCash) / startingCash) * 100;
       market.broadcastPortfolio(value, returnPct);
     }, 1500); // slight delay for channel to connect
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally run only when `entered` changes; other deps are stable refs or store functions
   }, [entered]);
 
   // Timer: countdown + detect slot change for auto-advance

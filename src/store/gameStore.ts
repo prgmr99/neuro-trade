@@ -120,7 +120,7 @@ export const useGameStore = create<GameState>((set) => ({
 
     // First, snapshot previousPrice for all stocks at the start of the day
     Object.keys(newStocks).forEach(symbol => {
-      newStocks[symbol] = { ...newStocks[symbol] };
+      newStocks[symbol] = { ...newStocks[symbol], priceHistory: [...newStocks[symbol].priceHistory] };
       newStocks[symbol].previousPrice = newStocks[symbol].price;
     });
 

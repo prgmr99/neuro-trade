@@ -20,7 +20,7 @@ const formatDateFromOffset = (offset: number) => {
   return `${date.getMonth() + 1}/${date.getDate()}`;
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ payload: DayPrice }>; label?: string | number }) => {
   if (active && payload && payload.length) {
     const data: DayPrice = payload[0].payload;
     const isUp = data.close >= data.open;
@@ -70,12 +70,15 @@ const StockChart: React.FC<StockChartProps> = ({ data }) => {
   const maxHigh = Math.max(...data.map(d => d.high));
   const buffer = (maxHigh - minLow) * 0.1;
 
-  const CustomCandle = (props: any) => {
-    const {
-      x, y, width, height,
-      low, high,
-      isUp
-    } = props;
+  // Recharts injects these props at runtime via the custom shape API
+  const CustomCandle = (props: Record<string, number | boolean>) => {
+    const x = props.x as number;
+    const y = props.y as number;
+    const width = props.width as number;
+    const height = props.height as number;
+    const low = props.low as number;
+    const high = props.high as number;
+    const isUp = props.isUp as boolean;
 
     // In some Recharts versions, yAxis and scale might not be available
     // on the custom shape props natively without explicit configuration or
@@ -88,8 +91,10 @@ const StockChart: React.FC<StockChartProps> = ({ data }) => {
     // but the easiest way to find the pixel Y for a value is to interpolate
     // relative to the known pixels (y, height) and data values (top, bottom).
     
-    const topVal = Math.max(props.open, props.close);
-    const bottomVal = Math.min(props.open, props.close);
+    const open = props.open as number;
+    const close = props.close as number;
+    const topVal = Math.max(open, close);
+    const bottomVal = Math.min(open, close);
     
     let highY = y;
     let lowY = y + height;
