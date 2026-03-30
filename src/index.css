@@ -21,6 +21,11 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: 'Outfit', 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
@@ -28,7 +33,6 @@ body {
   background-color: var(--bg-color);
   color: var(--text-primary);
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
 /* Clean Card Utilities */
