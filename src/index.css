@@ -22,6 +22,10 @@
 }
 
 html, body {
+  height: 100%;
+}
+
+.app-container {
   overflow: hidden;
   height: 100%;
 }
