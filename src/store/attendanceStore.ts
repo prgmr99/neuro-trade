@@ -123,8 +123,11 @@ export const useAttendanceStore = create<AttendanceState>()(
 
         const newLongest = Math.max(state.longestStreak, newStreak);
 
+        // Keep only last 90 days to prevent unbounded localStorage growth
+        const recentDates = state.visitDates.slice(-89);
+
         set({
-          visitDates: [...state.visitDates, today],
+          visitDates: [...recentDates, today],
           currentStreak: newStreak,
           longestStreak: newLongest,
           lastVisitDate: today,

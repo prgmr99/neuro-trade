@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useTranslation } from '../i18n/translations';
 
@@ -7,13 +7,10 @@ interface Props {
 }
 
 const DayEndSummary: React.FC<Props> = ({ onClose }) => {
-  const { dayState } = useGameStore();
+  const { dayState, allNews } = useGameStore();
   const { t, language } = useTranslation();
 
   const prevDay = dayState.currentDay - 1; // It's showing the summary of the day that just ended
-  // We need to fetch the news that influenced this day
-  // BUT the state is already advanced, so we look at the news for `prevDay`
-  const { allNews } = useGameStore.getState();
   const summaryNews = allNews.filter(n => n.dayIdx === prevDay);
 
   return (

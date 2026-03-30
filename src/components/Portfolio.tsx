@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useTranslation } from '../i18n/translations';
 import { Briefcase } from 'lucide-react';

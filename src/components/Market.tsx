@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useGameStore } from '../store/gameStore';
 import { TrendingUp, TrendingDown, BarChart2, X } from 'lucide-react';
@@ -14,6 +14,7 @@ const Market: React.FC = () => {
   const [expandedCharts, setExpandedCharts] = useState<string[]>(stockSymbols);
   const { t, language } = useTranslation();
   const [toasts, setToasts] = useState<TradeToastData[]>([]);
+  const toastIdRef = useRef(0);
   const [activePanel, setActivePanel] = useState<Record<string, 'buy' | 'sell' | null>>({});
 
   const handleQuantityChange = (symbol: string, value: string) => {
@@ -26,7 +27,7 @@ const Market: React.FC = () => {
   }, []);
 
   const addToast = (data: Omit<TradeToastData, 'id'>) => {
-    setToasts(prev => [...prev, { ...data, id: Date.now() }]);
+    setToasts(prev => [...prev, { ...data, id: ++toastIdRef.current }]);
   };
 
   const togglePanel = (symbol: string, mode: 'buy' | 'sell') => {

@@ -123,7 +123,7 @@ export default function DailyChallenge({ onBack }: Props) {
     // Submit to Supabase
     setSubmitting(true);
     try {
-      await supabase.from('daily_challenges').insert({
+      const { error } = await supabase.from('daily_challenges').insert({
         date: todayStr,
         player_id: getPlayerId(),
         player_name: playerName,
@@ -131,8 +131,9 @@ export default function DailyChallenge({ onBack }: Props) {
         final_value: finalValue,
         mode: 'daily',
       });
-    } catch {
-      // Silently ignore submit errors
+      if (error) console.error('Failed to submit daily challenge:', error.message);
+    } catch (err) {
+      console.error('Daily challenge submit error:', err);
     } finally {
       setSubmitting(false);
     }

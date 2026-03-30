@@ -62,11 +62,12 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
   const handleSubmit = async () => {
     setSubmitting(true);
     const name = playerName.trim() || 'Anonymous';
-    const { data } = await supabase
+    const sanitize = (s: string) => s.replace(/[<>&"']/g, '');
+    const { data, error } = await supabase
       .from('rankings')
       .insert({
-        player_name: name.slice(0, 20),
-        message: message.trim().slice(0, 100),
+        player_name: sanitize(name.slice(0, 20)),
+        message: sanitize(message.trim().slice(0, 100)),
         return_pct: Math.round(returnPct * 100) / 100,
         final_value: Math.round(finalValue * 100) / 100,
         initial_value: initialValue,
@@ -75,6 +76,9 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
       .select('id')
       .single();
 
+    if (error) {
+      console.error('Failed to submit ranking:', error.message);
+    }
     setSubmittedId(data?.id);
     setSubmitting(false);
     setPhase('ranking');

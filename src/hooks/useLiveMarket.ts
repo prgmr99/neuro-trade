@@ -79,6 +79,10 @@ export function useLiveMarket(
   const marketStateRef = useRef<LiveMarketState | null>(null);
   marketStateRef.current = marketState;
 
+  // Keep playerName in a ref to avoid channel reconnection on name changes
+  const playerNameRef = useRef(playerName);
+  playerNameRef.current = playerName;
+
   // --- Broadcast portfolio ---
   const broadcastPortfolio = useCallback(
     (value: number, returnPct: number) => {
@@ -91,13 +95,13 @@ export function useLiveMarket(
         event: 'portfolio_update',
         payload: {
           playerId: userId,
-          playerName,
+          playerName: playerNameRef.current,
           portfolioValue: value,
           returnPct,
         },
       });
     },
-    [userId, playerName],
+    [userId],
   );
 
   // --- Leave ---
@@ -249,7 +253,7 @@ export function useLiveMarket(
         setIsConnected(true);
         await channel.track({
           playerId: userId,
-          playerName,
+          playerName: playerNameRef.current,
           portfolioValue: 0,
           returnPct: 0,
           joinedAt: Date.now(),
@@ -305,8 +309,9 @@ export function useLiveMarket(
       supabase.removeChannel(dbChannel);
       dbChannelRef.current = null;
     };
+    // playerName is tracked via playerNameRef to avoid channel reconnection on name changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, playerName]);
+  }, [userId]);
 
   return {
     players,

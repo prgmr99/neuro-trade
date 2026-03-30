@@ -41,6 +41,23 @@ export default function FlashRound({ onBack }: Props) {
   const [newsRevealed, setNewsRevealed] = useState<boolean>(false);
   const [copyLabel, setCopyLabel] = useState<'idle' | 'copied'>('idle');
 
+  const handleChoice = useCallback(
+    (c: 'allin' | 'pass') => {
+      if (!scenario || phase !== 'playing') return;
+      setPhase('result');
+
+      const actualMultiplier = applyNoise(scenario.news.effect, scenario.stock.volatility);
+      setFinalMultiplier(actualMultiplier);
+      setChoice(c);
+
+      const priceWentUp = actualMultiplier > 1;
+      const playerWon = c === 'allin' ? priceWentUp : !priceWentUp;
+      setWon(playerWon);
+      recordFlashResult(playerWon);
+    },
+    [scenario, phase, recordFlashResult]
+  );
+
   // Timer effect
   useEffect(() => {
     if (phase !== 'playing') return;
@@ -51,7 +68,7 @@ export default function FlashRound({ onBack }: Props) {
     }
     const id = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearTimeout(id);
-  }, [phase, timeLeft]);
+  }, [phase, timeLeft, handleChoice]);
 
   // Reveal news with a short delay after playing starts
   useEffect(() => {
@@ -98,23 +115,6 @@ export default function FlashRound({ onBack }: Props) {
     setTimeLeft(TIMER_SECONDS);
     setPhase('playing');
   }, []);
-
-  const handleChoice = useCallback(
-    (c: 'allin' | 'pass') => {
-      if (!scenario || phase !== 'playing') return;
-      setPhase('result');
-
-      const actualMultiplier = applyNoise(scenario.news.effect, scenario.stock.volatility);
-      setFinalMultiplier(actualMultiplier);
-      setChoice(c);
-
-      const priceWentUp = actualMultiplier > 1;
-      const playerWon = c === 'allin' ? priceWentUp : !priceWentUp;
-      setWon(playerWon);
-      recordFlashResult(playerWon);
-    },
-    [scenario, phase, recordFlashResult]
-  );
 
   const movePct = ((finalMultiplier - 1) * 100).toFixed(1);
   const isPositive = finalMultiplier > 1;

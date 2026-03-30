@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQueryState } from 'nuqs';
 import { useGameStore } from '../store/gameStore';
 import { useTranslation } from '../i18n/translations';
@@ -50,7 +50,7 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
   const [savedResult, setSavedResult] = useState<{ finalValue: number; returnPct: number } | null>(null);
   const [opponentData, setOpponentData] = useState<DuelRow | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [_isPlayer1, setIsPlayer1] = useState(true);
+  const isPlayer1Ref = useRef(true);
 
   const shareLink = `${window.location.origin}?duel=${seed}`;
 
@@ -106,7 +106,7 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
 
     if (!existing) {
       // We are Player 1 — create the row
-      setIsPlayer1(true);
+      isPlayer1Ref.current = true;
       const { error } = await supabase.from('duels').insert({
         seed,
         player1_id: playerId,
@@ -117,7 +117,7 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
       if (error) setSaveError(error.message);
     } else if (!existing.player2_id || existing.player2_id === playerId) {
       // We are Player 2 (or filling in the second slot)
-      setIsPlayer1(false);
+      isPlayer1Ref.current = false;
       const { error } = await supabase
         .from('duels')
         .update({
