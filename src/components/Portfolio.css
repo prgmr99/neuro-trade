@@ -1,0 +1,235 @@
+/* Portfolio/Holdings */
+.portfolio-container h2 {
+  margin-top: 0;
+  font-size: 2.25rem;
+  margin-bottom: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.portfolio-summary-cards {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.summary-card {
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  border-radius: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: var(--toss-shadow);
+}
+
+.summary-card .label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-card .value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Holdings cards — mobile layout */
+.holdings-cards {
+  display: none;
+}
+
+.holding-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.holding-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.holding-card-symbol {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.holding-card-return {
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.holding-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.holding-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.holding-card-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.holding-card-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.holding-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.holding-card-total {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Empty state — enhanced */
+.empty-state-icon {
+  color: var(--text-secondary);
+  opacity: 0.4;
+  margin-bottom: 1rem;
+}
+
+.empty-state-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.holdings-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface-color);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--toss-shadow);
+}
+
+.holdings-table th, .holdings-table td {
+  padding: 1rem 1.5rem;
+  text-align: left;
+}
+
+.holdings-table th {
+  background: var(--surface-light);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.holdings-table tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.holdings-table tr:last-child {
+  border-bottom: none;
+}
+
+.positive { color: var(--positive); }
+.negative { color: var(--negative); }
+
+/* ===== Responsive: Tablet (<=1024px) ===== */
+@media (max-width: 1024px) {
+  .portfolio-container h2 {
+    font-size: 1.75rem;
+  }
+
+  .summary-card .value {
+    font-size: 2rem;
+  }
+}
+
+/* ===== Responsive: Mobile (<=768px) ===== */
+@media (max-width: 768px) {
+  .portfolio-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .portfolio-summary-cards {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .summary-card {
+    padding: 1.25rem;
+  }
+
+  .summary-card .value {
+    font-size: 1.75rem;
+  }
+
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 20px;
+  }
+
+  .holdings-cards {
+    display: block;
+  }
+
+  .holdings-table-desktop {
+    display: none;
+  }
+
+  .holdings-table th,
+  .holdings-table td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+
+  /* Empty state */
+  .empty-state {
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+}
+
+/* ===== Responsive: Small mobile (<=480px) ===== */
+@media (max-width: 480px) {
+  .portfolio-container h2 {
+    font-size: 1.3rem;
+  }
+
+  .summary-card .value {
+    font-size: 1.5rem;
+  }
+}

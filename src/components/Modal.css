@@ -1,0 +1,185 @@
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.modal-content.summary-modal {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.summary-modal .news-impact-list {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.summary-modal .news-impact-list::-webkit-scrollbar {
+  display: none;
+}
+
+.summary-modal .modal-actions {
+  flex-shrink: 0;
+}
+
+.summary-modal::-webkit-scrollbar {
+  display: none;
+}
+
+.summary-modal h2 {
+  margin-top: 0;
+  font-size: 2.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.summary-intro {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.news-impact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.impact-card {
+  background: var(--surface-light);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.impact-card h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.impact-card p {
+  color: var(--text-secondary);
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+}
+
+.effect-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.effect-chip {
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.effect-chip.positive {
+  background: rgba(240, 68, 82, 0.1);
+  color: var(--positive);
+}
+
+.effect-chip.negative {
+  background: rgba(49, 130, 246, 0.1);
+  color: var(--negative);
+}
+
+.modal-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.primary-btn {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.primary-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* ===== Responsive: Mobile (<=768px) ===== */
+@media (max-width: 768px) {
+  /* Modal — fullscreen on mobile */
+  .modal-overlay {
+    align-items: stretch;
+    background: none;
+    backdrop-filter: none;
+  }
+
+  .modal-content {
+    margin: 0;
+    padding: 1.5rem;
+    padding-top: 1rem;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    background: #ffffff;
+    max-height: 100%;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-content::before {
+    display: none;
+  }
+
+  .summary-modal h2 {
+    font-size: 1.5rem;
+  }
+
+  .impact-card {
+    padding: 1rem;
+  }
+
+  .impact-card h4 {
+    font-size: 1.05rem;
+  }
+
+  .primary-btn {
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    min-height: 44px;
+  }
+}

@@ -1,0 +1,94 @@
+/* Trade Toast */
+.trade-toast-container {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.trade-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: var(--toss-shadow), 0 8px 24px rgba(0, 0, 0, 0.08);
+  font-family: 'Outfit', sans-serif;
+  min-width: 240px;
+  max-width: 320px;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+.trade-toast.visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.trade-toast-buy {
+  border-left: 3px solid var(--positive);
+}
+
+.trade-toast-sell {
+  border-left: 3px solid var(--negative);
+}
+
+.trade-toast-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.trade-toast-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.trade-toast-action {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.trade-toast-buy .trade-toast-action {
+  color: var(--positive);
+}
+
+.trade-toast-sell .trade-toast-action {
+  color: var(--negative);
+}
+
+.trade-toast-detail {
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.trade-toast-balance {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+/* ===== Responsive: Mobile (<=768px) ===== */
+@media (max-width: 768px) {
+  /* Toast — reposition above bottom nav */
+  .trade-toast-container {
+    top: auto;
+    bottom: calc(80px + env(safe-area-inset-bottom));
+    right: 1rem;
+    left: 1rem;
+  }
+
+  .trade-toast {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
