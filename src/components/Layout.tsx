@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { useQueryState, parseAsStringLiteral } from 'nuqs';
-import { Newspaper, TrendingUp, Briefcase, ChevronRight, Globe, Play } from 'lucide-react';
+import { Newspaper, TrendingUp, Briefcase, ChevronRight, Globe, Play, Trophy } from 'lucide-react';
 import { useTranslation } from '../i18n/translations';
 import { useLanguageStore } from '../store/useLanguageStore';
 
@@ -35,6 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
   const { dayState, portfolio, nextDay, arcName } = useGameStore();
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
+  const [showMobileRanking, setShowMobileRanking] = useState(false);
 
   const switchTab = useCallback((newTab: Tab) => {
     if (mainContentRef.current) {
@@ -76,12 +77,34 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
         </div>
         <div className="mobile-header-right">
           <span className="mobile-cash">${portfolio.cash.toFixed(0)}</span>
+          {hudOverlay && (
+            <button
+              className={`mobile-ranking-btn ${showMobileRanking ? 'active' : ''}`}
+              onClick={() => setShowMobileRanking(v => !v)}
+              aria-label="Leaderboard"
+            >
+              <Trophy size={14} />
+            </button>
+          )}
           <button className="mobile-lang-btn" onClick={toggleLanguage}>
             <Globe size={12} />
             {language === 'en' ? 'KO' : 'EN'}
           </button>
         </div>
       </header>
+
+      {/* Mobile Ranking Panel */}
+      {hudOverlay && (
+        <>
+          <div
+            className={`mobile-ranking-backdrop ${showMobileRanking ? 'visible' : ''}`}
+            onClick={() => setShowMobileRanking(false)}
+          />
+          <div className={`mobile-ranking-panel ${showMobileRanking ? 'open' : ''}`}>
+            {hudOverlay}
+          </div>
+        </>
+      )}
 
       {/* Sidebar Navigation - hidden on mobile */}
       <nav className="sidebar">

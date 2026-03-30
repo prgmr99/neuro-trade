@@ -1440,6 +1440,11 @@ body {
   display: none;
 }
 
+.mobile-ranking-backdrop,
+.mobile-ranking-panel {
+  display: none;
+}
+
 /* ===== Bottom Navigation (hidden on desktop) ===== */
 .bottom-nav {
   display: none;
@@ -1889,6 +1894,11 @@ button, a, [role="button"], input, select,
 
 /* ===== Responsive: Mobile (≤768px) ===== */
 @media (max-width: 768px) {
+  /* Prevent Safari auto-zoom on input focus (requires font-size >= 16px) */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
   /* Layout restructure: sidebar hidden, column layout */
   .layout {
     flex-direction: column;
@@ -2053,12 +2063,87 @@ button, a, [role="button"], input, select,
     cursor: not-allowed;
   }
 
+  /* Mobile Ranking Toggle Button */
+  .mobile-ranking-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .mobile-ranking-btn.active {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.4);
+    color: #f59e0b;
+  }
+
+  /* Mobile Ranking Backdrop */
+  .mobile-ranking-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 49;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .mobile-ranking-backdrop.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Mobile Ranking Panel (slide down from header) */
+  .mobile-ranking-panel {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: var(--surface-color);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    padding-top: calc(0.75rem + env(safe-area-inset-top));
+    padding-bottom: 0.75rem;
+    max-height: 70dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-ranking-panel::after {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border-color);
+    margin: 0.75rem auto 0;
+  }
+
+  .mobile-ranking-panel.open {
+    transform: translateY(0);
+  }
+
   /* Main content adjustments */
   .main-content {
     flex: 1;
     padding: 1rem;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
     background: #ffffff;
@@ -2317,16 +2402,18 @@ button, a, [role="button"], input, select,
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+    z-index: 9999;
     align-items: flex-end;
     animation: fadeIn 0.2s ease-out;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
 
   .trade-sheet {
     width: 100%;
     background: #ffffff;
     border-radius: 20px 20px 0 0;
-    padding: 1.25rem 1.25rem;
+    padding: 1.25rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom));
     max-height: 75vh;
     overflow-y: auto;
     animation: trade-sheet-up 0.3s ease-out;

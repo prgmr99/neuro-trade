@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { useGameStore } from '../store/gameStore';
 import { TrendingUp, TrendingDown, BarChart2, X } from 'lucide-react';
 import StockChart from './StockChart';
@@ -212,34 +213,37 @@ const Market: React.FC = () => {
                     {renderTradePanel(stock, isBuyPanel, qty, maxBuyable, holdingQty, canBuy, canSell)}
                   </div>
                   {/* Mobile: bottom sheet */}
-                  <div className="trade-sheet-overlay" onClick={() => togglePanel(stock.symbol, panel)}>
-                    <div className="trade-sheet" onClick={(e) => e.stopPropagation()}>
-                      <div className="trade-sheet-header">
-                        <div>
-                          <strong>{stock.symbol}</strong>
-                          <span className={`trade-sheet-price ${isUp ? 'positive' : 'negative'}`}> ${stock.price.toFixed(2)}</span>
+                  {ReactDOM.createPortal(
+                    <div className="trade-sheet-overlay" onClick={() => togglePanel(stock.symbol, panel)}>
+                      <div className="trade-sheet" onClick={(e) => e.stopPropagation()}>
+                        <div className="trade-sheet-header">
+                          <div>
+                            <strong>{stock.symbol}</strong>
+                            <span className={`trade-sheet-price ${isUp ? 'positive' : 'negative'}`}> ${stock.price.toFixed(2)}</span>
+                          </div>
+                          <button className="trade-sheet-close" onClick={() => togglePanel(stock.symbol, panel)}>
+                            <X size={20} />
+                          </button>
                         </div>
-                        <button className="trade-sheet-close" onClick={() => togglePanel(stock.symbol, panel)}>
-                          <X size={20} />
-                        </button>
+                        <div className={`trade-action-buttons as-tabs`}>
+                          <button
+                            className={`trade-action-btn buy-action ${isBuyPanel ? 'active' : ''}`}
+                            onClick={() => togglePanel(stock.symbol, 'buy')}
+                          >
+                            {t('market.buy')}
+                          </button>
+                          <button
+                            className={`trade-action-btn sell-action ${isSellPanel ? 'active' : ''}`}
+                            onClick={() => togglePanel(stock.symbol, 'sell')}
+                          >
+                            {t('market.sell')}
+                          </button>
+                        </div>
+                        {renderTradePanel(stock, isBuyPanel, qty, maxBuyable, holdingQty, canBuy, canSell)}
                       </div>
-                      <div className={`trade-action-buttons as-tabs`}>
-                        <button
-                          className={`trade-action-btn buy-action ${isBuyPanel ? 'active' : ''}`}
-                          onClick={() => togglePanel(stock.symbol, 'buy')}
-                        >
-                          {t('market.buy')}
-                        </button>
-                        <button
-                          className={`trade-action-btn sell-action ${isSellPanel ? 'active' : ''}`}
-                          onClick={() => togglePanel(stock.symbol, 'sell')}
-                        >
-                          {t('market.sell')}
-                        </button>
-                      </div>
-                      {renderTradePanel(stock, isBuyPanel, qty, maxBuyable, holdingQty, canBuy, canSell)}
-                    </div>
-                  </div>
+                    </div>,
+                    document.body
+                  )}
                 </>
               )}
 
