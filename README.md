@@ -17,25 +17,29 @@ At the end of the simulation, players receive a summary of their final portfolio
 *   **Detailed Portfolio Management:** An interactive dashboard allows players to monitor their available cash balance, unrealized returns, and average cost basis for all held assets.
 *   **Historical Price Context:** Players can view the generated price history through interactive daily candlestick charts to make informed trading decisions.
 *   **Day-End Summaries:** An end-of-day modal details exactly how that day's news impacted the market, providing immediate feedback on trading decisions.
-*   **Game Over Screen:** A final summary screen calculates the overall performance and provides a quick option to restart the simulation.
+*   **Multiple Game Modes:** Classic mode, Flash Round (single-stock quick decisions), Daily Challenge (seeded daily competitions), Duel Mode (1v1 with shared seeds), and Live Competition (real-time multiplayer).
+*   **Global Ranking Board:** Submit scores to a public leaderboard with filtering by game mode.
+*   **Achievement System:** Unlock achievements based on trading milestones, streaks, and behaviors.
+*   **Daily Attendance:** Check-in streak tracking with reward unlocks.
 
 ## Tech Stack
 
 *   **Framework:** React 18 (with Vite)
 *   **Language:** TypeScript
-*   **State Management:** Zustand (Custom lightweight store with localStorage persistence for translations)
-*   **Styling:** Custom CSS (Modern, clean, flat UI design without external heavy frameworks)
-*   **Charting:** Recharts (Customized to emulate candlestick behavior using ComposedChart and Bar overlays)
+*   **State Management:** Zustand (with localStorage persistence)
+*   **Backend:** Supabase (rankings, daily challenges, duels, real-time presence)
+*   **Styling:** Component-scoped CSS files (modern flat UI, no CSS framework)
+*   **Charting:** Recharts (custom candlestick charts via ComposedChart)
 *   **Icons:** Lucide-React
 *   **URL State Management:** nuqs
 
 ## Project Structure
 
-*   **`src/components/`**: Modular React components (`App`, `Layout`, `Market`, `Portfolio`, `StockChart`, `NewsFeed`, `DayEndSummary`, `GameOverScreen`).
-*   **`src/store/`**: Contains Zustand stores.
-    *   `gameStore.ts`: Handles the core game loop, portfolio logic, day advancement, and news impact calculation.
-    *   `useLanguageStore.ts`: Manages the currently selected language state and local persistence.
-*   **`src/i18n/`**: Contains `translations.ts` and the custom `useTranslation` hook for resolving localized string values.
-*   **`src/data/scenarios.ts`**: The raw data structures containing initial stock profiles, daily news events, and their underlying multipliers affecting the game engine.
-*   **`src/types.ts`**: TypeScript interface definitions for Stocks, News, Portfolios, and Game State.
-*   **`src/index.css`**: Global stylesheet enforcing the clean, solid color design aesthetic.
+*   **`src/components/`**: Modular React components with co-located CSS files. Core views: `Layout`, `Market`, `Portfolio`, `StockChart`, `NewsFeed`, `DayEndSummary`, `GameOverScreen`. Game modes: `FlashRound`, `DailyChallenge`, `DuelMode`, `LiveCompetition`. Social: `RankingBoard`, `AchievementGallery`, `AttendanceModal`.
+*   **`src/store/`**: Zustand stores — `gameStore.ts` (core game engine), `useLanguageStore.ts` (i18n), `achievementStore.ts`, `attendanceStore.ts`.
+*   **`src/hooks/`**: Custom hooks — `useAuth.ts` (Supabase anonymous auth), `useLiveMarket.ts` (real-time multiplayer).
+*   **`src/i18n/`**: `translations.ts` and `useTranslation` hook for localized strings.
+*   **`src/data/`**: Game scenarios, stock profiles, news events, and arc definitions.
+*   **`src/lib/`**: Utilities — `supabase.ts`, `identity.ts`, `prng.ts`, `achievements.ts`, `sounds.ts`, `shareText.ts`.
+*   **`src/types.ts`**: TypeScript interface definitions.
+*   **`src/index.css`**: Global CSS variables, reset, and component CSS imports.
