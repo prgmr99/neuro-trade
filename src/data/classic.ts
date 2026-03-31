@@ -7,6 +7,18 @@ import { AI_REGULATION_ARC } from './classic-arc-ai-regulation';
 import { SPACE_RACE_ARC } from './classic-arc-space-race';
 import { FINANCIAL_CRISIS_ARC } from './classic-arc-financial-crisis';
 import { CLIMATE_SUMMIT_ARC } from './classic-arc-climate-summit';
+import { CHIP_SHORTAGE_ARC } from './classic-arc-chip-shortage';
+import { MEME_STOCK_ARC } from './classic-arc-meme-stock';
+import { CRYPTO_MELTDOWN_ARC } from './classic-arc-crypto-meltdown';
+import { SOVEREIGN_DEBT_ARC } from './classic-arc-sovereign-debt';
+import { NUCLEAR_DISASTER_ARC } from './classic-arc-nuclear-disaster';
+import { CURRENCY_CRISIS_ARC } from './classic-arc-currency-crisis';
+import { OIL_PRICE_WAR_ARC } from './classic-arc-oil-price-war';
+import { SUPPLY_CHAIN_SHOCK_ARC } from './classic-arc-supply-chain-shock';
+import { RATE_HIKE_STORM_ARC } from './classic-arc-rate-hike-storm';
+import { REAL_ESTATE_COLLAPSE_ARC } from './classic-arc-real-estate-collapse';
+import { AVIATION_SAFETY_ARC } from './classic-arc-aviation-safety';
+import { DOTCOM_CRASH_ARC } from './classic-arc-dotcom-crash';
 
 export const CLASSIC_STOCKS: Record<StockSymbol, Stock> = {
   'TECH': {
@@ -248,4 +260,16 @@ export const CLASSIC_ARCS: ClassicScenarioArc[] = [
   SPACE_RACE_ARC,
   FINANCIAL_CRISIS_ARC,
   CLIMATE_SUMMIT_ARC,
+  CHIP_SHORTAGE_ARC,
+  MEME_STOCK_ARC,
+  CRYPTO_MELTDOWN_ARC,
+  SOVEREIGN_DEBT_ARC,
+  NUCLEAR_DISASTER_ARC,
+  CURRENCY_CRISIS_ARC,
+  OIL_PRICE_WAR_ARC,
+  SUPPLY_CHAIN_SHOCK_ARC,
+  RATE_HIKE_STORM_ARC,
+  REAL_ESTATE_COLLAPSE_ARC,
+  AVIATION_SAFETY_ARC,
+  DOTCOM_CRASH_ARC,
 ];
