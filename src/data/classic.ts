@@ -2,6 +2,11 @@ import { News, Stock, StockSymbol } from '../types';
 import { ClassicScenarioArc } from './classic-arcs';
 import { TRADE_WAR_ARC } from './classic-arc-trade-war';
 import { TECH_BUBBLE_ARC } from './classic-arc-tech-bubble';
+import { ENERGY_CRISIS_ARC } from './classic-arc-energy-crisis';
+import { AI_REGULATION_ARC } from './classic-arc-ai-regulation';
+import { SPACE_RACE_ARC } from './classic-arc-space-race';
+import { FINANCIAL_CRISIS_ARC } from './classic-arc-financial-crisis';
+import { CLIMATE_SUMMIT_ARC } from './classic-arc-climate-summit';
 
 export const CLASSIC_STOCKS: Record<StockSymbol, Stock> = {
   'TECH': {
@@ -238,4 +243,9 @@ export const CLASSIC_ARCS: ClassicScenarioArc[] = [
   PANDEMIC_ARC,
   TRADE_WAR_ARC,
   TECH_BUBBLE_ARC,
+  ENERGY_CRISIS_ARC,
+  AI_REGULATION_ARC,
+  SPACE_RACE_ARC,
+  FINANCIAL_CRISIS_ARC,
+  CLIMATE_SUMMIT_ARC,
 ];

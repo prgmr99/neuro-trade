@@ -34,16 +34,8 @@ export interface UseLiveMarketReturn {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function getSlotInfo() {
-  const now = Date.now();
-  const timeSlot = Math.floor(now / 60000);
-  const cycleNumber = Math.floor(timeSlot / 5);
-  const dayInCycle = (timeSlot % 5) + 1;
-  return { timeSlot, cycleNumber, dayInCycle };
-}
-
-function computeTimeToNextRefresh(): number {
-  return 60 - (Math.floor(Date.now() / 1000) % 60);
+function computeSeed(cycleNumber: number): number {
+  return hashSeed(String(cycleNumber));
 }
 
 // ---------------------------------------------------------------------------
@@ -55,22 +47,13 @@ export function useLiveMarket(
   playerName: string,
 ): UseLiveMarketReturn {
   const [players, setPlayers] = useState<LivePlayer[]>([]);
-  // Initialize immediately from wall-clock — no waiting for DB
-  const [marketState, setMarketState] = useState<LiveMarketState | null>(() => {
-    const { cycleNumber, dayInCycle } = getSlotInfo();
-    return {
-      cycleNumber,
-      day: dayInCycle,
-      seed: hashSeed(String(cycleNumber)),
-    };
-  });
-  const [timeToNextRefresh, setTimeToNextRefresh] = useState(computeTimeToNextRefresh);
+  const [marketState, setMarketState] = useState<LiveMarketState | null>(null);
+  const [timeToNextRefresh, setTimeToNextRefresh] = useState(60);
   const [isConnected, setIsConnected] = useState(false);
 
   const channelRef = useRef<RealtimeChannel | null>(null);
   const dbChannelRef = useRef<RealtimeChannel | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const lastAdvancedSlotRef = useRef<number>(-1);
 
   // Store latest broadcast portfolio values keyed by playerId
   const portfolioMapRef = useRef<Map<string, { portfolioValue: number; returnPct: number }>>(new Map());
@@ -83,11 +66,14 @@ export function useLiveMarket(
   const playerNameRef = useRef(playerName);
   playerNameRef.current = playerName;
 
+  // Presence-driven timer state
+  const dayEndsAtRef = useRef<number | null>(null); // epoch ms
+  const playerCountRef = useRef(0);
+
   // --- Broadcast portfolio ---
   const broadcastPortfolio = useCallback(
     (value: number, returnPct: number) => {
       if (!userId) return;
-      // Update local map immediately
       portfolioMapRef.current.set(userId, { portfolioValue: value, returnPct });
 
       channelRef.current?.send({
@@ -125,52 +111,53 @@ export function useLiveMarket(
     setPlayers([]);
     setMarketState(null);
     portfolioMapRef.current.clear();
-    lastAdvancedSlotRef.current = -1;
   }, []);
 
   // --- Channel setup ---
   useEffect(() => {
     if (!userId) return;
 
-    // 1. Fetch current state — if DB is stale, compute and update
-    const { timeSlot, cycleNumber: currentCycle, dayInCycle: currentDay } = getSlotInfo();
-    const currentSeed = currentDay === 1 || true
-      ? hashSeed(String(currentCycle))
-      : 0;
-
+    // 1. Fetch current state from DB and resume timer
     supabase
       .from('live_market_state')
-      .select('cycle_number, day, seed')
+      .select('*')
       .eq('id', 1)
       .single()
       .then(({ data }) => {
-        // Compute what the state SHOULD be based on wall clock
-        const expectedState: LiveMarketState = {
-          cycleNumber: currentCycle,
-          day: currentDay,
-          seed: currentSeed,
+        if (!data) return;
+
+        const state: LiveMarketState = {
+          cycleNumber: data.cycle_number,
+          day: data.day,
+          seed: data.seed || computeSeed(data.cycle_number),
         };
+        setMarketState(state);
+        marketStateRef.current = state;
 
-        if (!data || data.cycle_number !== currentCycle || data.day !== currentDay) {
-          // DB is stale or empty — use computed state and update DB
-          setMarketState(expectedState);
-          marketStateRef.current = expectedState;
-          lastAdvancedSlotRef.current = timeSlot;
-
+        if (data.day_ends_at) {
+          const endsAt = new Date(data.day_ends_at).getTime();
+          if (endsAt > Date.now()) {
+            // Timer still running (other players present)
+            dayEndsAtRef.current = endsAt;
+          } else {
+            // Timer expired while no players — resume with time_remaining
+            const remaining = data.time_remaining || 60;
+            const newEndsAt = Date.now() + remaining * 1000;
+            dayEndsAtRef.current = newEndsAt;
+            supabase.from('live_market_state').update({
+              day_ends_at: new Date(newEndsAt).toISOString(),
+              updated_at: new Date().toISOString(),
+            }).eq('id', 1);
+          }
+        } else {
+          // Paused (no day_ends_at) — resume with time_remaining
+          const remaining = data.time_remaining || 60;
+          const newEndsAt = Date.now() + remaining * 1000;
+          dayEndsAtRef.current = newEndsAt;
           supabase.from('live_market_state').update({
-            cycle_number: currentCycle,
-            day: currentDay,
-            seed: currentSeed,
+            day_ends_at: new Date(newEndsAt).toISOString(),
             updated_at: new Date().toISOString(),
           }).eq('id', 1);
-        } else {
-          // DB is current — use it
-          setMarketState({
-            cycleNumber: data.cycle_number,
-            day: data.day,
-            seed: data.seed,
-          });
-          lastAdvancedSlotRef.current = timeSlot;
         }
       });
 
@@ -181,12 +168,19 @@ export function useLiveMarket(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'live_market_state' },
         (payload) => {
-          const row = payload.new as { cycle_number: number; day: number; seed: number };
-          setMarketState({
+          const row = payload.new as {
+            cycle_number: number; day: number; seed: number; day_ends_at: string | null;
+          };
+          const newState = {
             cycleNumber: row.cycle_number,
             day: row.day,
             seed: row.seed,
-          });
+          };
+          setMarketState(newState);
+          marketStateRef.current = newState;
+          if (row.day_ends_at) {
+            dayEndsAtRef.current = new Date(row.day_ends_at).getTime();
+          }
         },
       )
       .subscribe();
@@ -196,7 +190,7 @@ export function useLiveMarket(
     const channel = supabase.channel('live-competition');
     channelRef.current = channel;
 
-    // Presence sync -> rebuild player list
+    // Presence sync -> rebuild player list + track count
     channel.on('presence', { event: 'sync' }, () => {
       const state = channel.presenceState<{
         playerId: string;
@@ -214,7 +208,6 @@ export function useLiveMarket(
           if (seen.has(p.playerId)) continue;
           seen.add(p.playerId);
 
-          // Merge with latest broadcast data if available
           const broadcast = portfolioMapRef.current.get(p.playerId);
           flat.push({
             playerId: p.playerId,
@@ -228,6 +221,7 @@ export function useLiveMarket(
 
       flat.sort((a, b) => b.returnPct - a.returnPct);
       setPlayers(flat);
+      playerCountRef.current = flat.length;
     });
 
     // Broadcast: portfolio_update
@@ -264,44 +258,57 @@ export function useLiveMarket(
       }
     });
 
-    // 4. Timer: countdown + day advancement attempt
+    // 4. Timer: countdown + presence-gated day advancement
     timerRef.current = setInterval(() => {
-      const remaining = computeTimeToNextRefresh();
+      if (!dayEndsAtRef.current) {
+        setTimeToNextRefresh(60);
+        return;
+      }
+
+      const remaining = Math.max(0, Math.ceil((dayEndsAtRef.current - Date.now()) / 1000));
       setTimeToNextRefresh(remaining);
 
-      // When countdown crosses 0, attempt to advance the day
-      const { timeSlot, cycleNumber, dayInCycle } = getSlotInfo();
-      if (lastAdvancedSlotRef.current !== -1 && timeSlot !== lastAdvancedSlotRef.current) {
-        const currentSeed = marketStateRef.current?.seed ?? 0;
-        const seed = dayInCycle === 1 ? hashSeed(String(cycleNumber)) : currentSeed;
+      // Advance day only when timer expires AND players are present
+      if (remaining <= 0 && playerCountRef.current > 0) {
+        const current = marketStateRef.current;
+        if (!current) return;
 
-        const newState = {
-          cycleNumber,
-          day: dayInCycle,
-          seed,
-        };
+        const newDay = current.day + 1;
+        // Generate a new seed every 5-day phase for news variety
+        const phase = Math.floor((newDay - 1) / 5);
+        const prevPhase = Math.floor((current.day - 1) / 5);
+        const newSeed = phase !== prevPhase ? computeSeed(phase) : current.seed;
 
-        // Update local state immediately (don't wait for Realtime)
+        const newState = { cycleNumber: current.cycleNumber, day: newDay, seed: newSeed };
         setMarketState(newState);
         marketStateRef.current = newState;
 
-        // Persist to Supabase (idempotent — multiple clients can attempt)
+        const newEndsAt = Date.now() + 60000;
+        dayEndsAtRef.current = newEndsAt;
+
         supabase.from('live_market_state').update({
-          cycle_number: cycleNumber,
-          day: dayInCycle,
-          seed: seed,
+          cycle_number: newState.cycleNumber,
+          day: newDay,
+          seed: newSeed,
+          day_ends_at: new Date(newEndsAt).toISOString(),
+          time_remaining: 60,
           updated_at: new Date().toISOString(),
-        }).eq('id', 1).then(({ error }) => {
-          if (error) console.warn('Failed to update live_market_state:', error.message);
-        });
+        }).eq('id', 1);
       }
-      lastAdvancedSlotRef.current = timeSlot;
     }, 1000);
 
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
+      }
+      // Save remaining time on disconnect so next joiner can resume
+      if (dayEndsAtRef.current) {
+        const remaining = Math.max(1, Math.ceil((dayEndsAtRef.current - Date.now()) / 1000));
+        supabase.from('live_market_state').update({
+          time_remaining: remaining,
+          updated_at: new Date().toISOString(),
+        }).eq('id', 1);
       }
       channel.untrack();
       supabase.removeChannel(channel);

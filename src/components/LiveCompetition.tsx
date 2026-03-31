@@ -53,9 +53,9 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
 
   const startingCash = SCENARIOS.classic.startingCash;
 
-  // Track slot for detecting day changes
-  const lastSlotRef = useRef<number>(-1);
   const initializedRef = useRef(false);
+  const lastDayRef = useRef<number>(-1);
+  const lastPhaseRef = useRef<number>(-1);
 
   // Cumulative day counter (never resets)
   const [totalDay, setTotalDay] = useState(() => {
@@ -77,11 +77,10 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
           cash: portfolio.cash,
           holdings: portfolio.holdings,
         },
-        cycleNumber: Math.floor(Math.floor(Date.now() / 60000) / 5),
         totalDay,
       }));
     } catch { /* storage full */ }
-  }, [entered, playerName, portfolio]);
+  }, [entered, playerName, portfolio, totalDay]);
 
   // Persist portfolio on every change
   useEffect(() => {
@@ -100,28 +99,21 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
     return total;
   }, [portfolio, stocks]);
 
-  // Countdown timer + auto-advance (all-in-one)
-  const [countdown, setCountdown] = useState(() => 60 - (Math.floor(Date.now() / 1000) % 60));
-
-  // Initialize game on enter
+  // Initialize game when market state is first available
   useEffect(() => {
-    if (!entered || initializedRef.current) return;
+    if (!entered || !market.marketState || initializedRef.current) return;
 
-    const now = Date.now();
-    const timeSlot = Math.floor(now / 60000);
-    const cycleNumber = Math.floor(timeSlot / 5);
-    const dayInCycle = (timeSlot % 5) + 1;
-    const seed = hashSeed(String(cycleNumber));
+    const { day, seed } = market.marketState;
 
     const arc = selectClassicArc(CLASSIC_ARCS, seed);
     setInitialState(SCENARIOS.classic.stocks, arc.news, 999, startingCash, seed);
 
     // Fast-forward to current day in cycle
-    for (let d = 1; d < dayInCycle; d++) {
+    for (let d = 1; d < day; d++) {
       nextDay();
     }
 
-    // Restore saved portfolio (persists across cycles)
+    // Restore saved portfolio
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -143,7 +135,8 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
       }
     } catch { /* ignore */ }
 
-    lastSlotRef.current = timeSlot;
+    lastDayRef.current = day;
+    lastPhaseRef.current = Math.floor((day - 1) / 5);
     initializedRef.current = true;
 
     // Broadcast initial portfolio so we appear in leaderboard
@@ -151,54 +144,58 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
       const value = computePortfolioValue();
       const returnPct = ((value - startingCash) / startingCash) * 100;
       market.broadcastPortfolio(value, returnPct);
-    }, 1500); // slight delay for channel to connect
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally run only when `entered` changes; other deps are stable refs or store functions
-  }, [entered]);
+    }, 1500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally run only when entered/marketState first becomes available
+  }, [entered, market.marketState]);
 
-  // Timer: countdown + detect slot change for auto-advance
+  // React to day changes from the hook (presence-driven, infinite progression)
   useEffect(() => {
-    if (!entered) return;
+    if (!entered || !initializedRef.current || !market.marketState) return;
+
+    const { day } = market.marketState;
+
+    // Skip if no change
+    if (day === lastDayRef.current) return;
+
+    // Check if we've entered a new 5-day phase — append fresh news
+    const currentPhase = Math.floor((day - 1) / 5);
+    if (currentPhase !== lastPhaseRef.current) {
+      const phaseSeed = hashSeed(String(currentPhase));
+      const arc = selectClassicArc(CLASSIC_ARCS, phaseSeed);
+      // Shift news dayIdx so they align with the current phase
+      const phaseStartDay = currentPhase * 5 + 1;
+      const shiftedNews = arc.news.map(n => ({
+        ...n,
+        id: `${n.id}-phase${currentPhase}`,
+        dayIdx: n.dayIdx + phaseStartDay - 1,
+      }));
+      // Append new news to allNews
+      const currentAllNews = useGameStore.getState().allNews;
+      useGameStore.setState({ allNews: [...currentAllNews, ...shiftedNews] });
+      lastPhaseRef.current = currentPhase;
+    }
+
+    // Advance game day
+    nextDay();
+    lastDayRef.current = day;
+    setTotalDay((prev: number) => prev + 1);
+
+    // Broadcast updated portfolio
+    const value = computePortfolioValue();
+    const returnPct = ((value - startingCash) / startingCash) * 100;
+    market.broadcastPortfolio(value, returnPct);
+  }, [market.marketState?.day]);
+
+  // Periodic portfolio broadcast (every 10 seconds)
+  useEffect(() => {
+    if (!entered || !initializedRef.current) return;
     const interval = setInterval(() => {
-      const now = Date.now();
-      const remaining = 60 - (Math.floor(now / 1000) % 60);
-      setCountdown(remaining);
-
-      // Broadcast portfolio every 10 seconds to keep leaderboard fresh
-      if (Math.floor(now / 1000) % 10 === 0) {
-        const v = computePortfolioValue();
-        const r = ((v - startingCash) / startingCash) * 100;
-        market.broadcastPortfolio(v, r);
-      }
-
-      const timeSlot = Math.floor(now / 60000);
-      if (lastSlotRef.current !== -1 && timeSlot !== lastSlotRef.current) {
-        const cycleNumber = Math.floor(timeSlot / 5);
-        const dayInCycle = (timeSlot % 5) + 1;
-
-        if (dayInCycle === 1) {
-          // New cycle — load new news but KEEP portfolio
-          const savedPortfolio = useGameStore.getState().portfolio;
-          const seed = hashSeed(String(cycleNumber));
-          const arc = selectClassicArc(CLASSIC_ARCS, seed);
-          setInitialState(SCENARIOS.classic.stocks, arc.news, 999, startingCash, seed);
-          // Restore portfolio immediately
-          useGameStore.setState({ portfolio: savedPortfolio });
-        } else {
-          // Same cycle — advance to next day
-          nextDay();
-        }
-        setTotalDay((prev: number) => prev + 1);
-
-        lastSlotRef.current = timeSlot;
-
-        // Broadcast updated portfolio
-        const value = computePortfolioValue();
-        const returnPct = ((value - startingCash) / startingCash) * 100;
-        market.broadcastPortfolio(value, returnPct);
-      }
-    }, 1000);
+      const v = computePortfolioValue();
+      const r = ((v - startingCash) / startingCash) * 100;
+      market.broadcastPortfolio(v, r);
+    }, 10000);
     return () => clearInterval(interval);
-  }, [entered, computePortfolioValue, market, nextDay, setInitialState, startingCash]);
+  }, [entered, computePortfolioValue, market, startingCash]);
 
   const handleLeave = useCallback(() => {
     market.leave();
@@ -304,7 +301,7 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
       <Layout
         onGoHome={handleLeave}
         dayLabel={`${t('multiplayer.day')} ${totalDay}`}
-        endDayLabel={`${t('multiplayer.nextRefresh')} ${formatCountdown(countdown)}`}
+        endDayLabel={`${t('multiplayer.nextRefresh')} ${formatCountdown(market.timeToNextRefresh)}`}
         hudOverlay={
           <MultiplayerHUD
             totalPlayers={Math.max(1, leaderboardWithMe.length)}
