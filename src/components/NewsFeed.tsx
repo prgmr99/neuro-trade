@@ -54,13 +54,16 @@ const NewsFeed: React.FC = () => {
 
       {featuredNews && (
         <div
-          className={`news-card featured ${featuredNews.read ? 'read' : 'unread'}`}
+          className={`news-card featured ${featuredNews.read ? 'read' : 'unread'}${featuredNews.isBridgeNews ? ' bridge-news' : ''}`}
           onClick={() => handleNewsClick(featuredNews.id, featuredNews.read)}
         >
           <div className="news-card-content">
-            {!featuredNews.read && <span className="breaking-badge">{t('newsfeed.breaking')}</span>}
+            {featuredNews.isBridgeNews
+              ? <span className="bridge-badge">{language === 'ko' ? '시장 전환' : 'Market Shift'}</span>
+              : !featuredNews.read && <span className="breaking-badge">{t('newsfeed.breaking')}</span>
+            }
             <h2>{featuredNews.title[language]}</h2>
-            {showHints && <HintBadges news={featuredNews} />}
+            {showHints && !featuredNews.isBridgeNews && <HintBadges news={featuredNews} />}
 
             <div className={`news-body ${expandedNews.includes(featuredNews.id) ? 'expanded' : 'collapsed'}`}>
               <p>{featuredNews.content[language]}</p>

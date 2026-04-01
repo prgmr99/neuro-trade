@@ -3,7 +3,8 @@ import { CLASSIC_STOCKS, CLASSIC_NEWS } from './classic';
 import { ADVANCED_STOCKS } from './advanced/stocks';
 import { ADVANCED_NEWS } from './advanced/news';
 export { CLASSIC_ARCS } from './classic';
-export { selectClassicArc } from './classic-arcs';
+export { selectClassicArc, selectArcFromChain, buildPhaseNews, CLASSIC_CHAINS } from './classic-arcs';
+export type { ArcChain } from './classic-arcs';
 
 export type GameMode = 'classic' | 'advanced';
 
