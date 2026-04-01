@@ -108,8 +108,23 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
     const arc = selectClassicArc(CLASSIC_ARCS, seed);
     setInitialState(SCENARIOS.classic.stocks, arc.news, 999, startingCash, seed);
 
-    // Fast-forward to current day in cycle
+    // Fast-forward to current day in cycle, appending new phase news when crossing boundaries
     for (let d = 1; d < day; d++) {
+      const nextGameDay = d + 1;
+      const nextPhase = Math.floor((nextGameDay - 1) / 5);
+      const prevPhase = Math.floor((d - 1) / 5);
+      if (nextPhase !== prevPhase) {
+        const phaseSeed = hashSeed(String(nextPhase));
+        const phaseArc = selectClassicArc(CLASSIC_ARCS, phaseSeed);
+        const phaseStartDay = nextPhase * 5 + 1;
+        const shiftedNews = phaseArc.news.map(n => ({
+          ...n,
+          id: `${n.id}-phase${nextPhase}`,
+          dayIdx: n.dayIdx + phaseStartDay - 1,
+        }));
+        const currentAllNews = useGameStore.getState().allNews;
+        useGameStore.setState({ allNews: [...currentAllNews, ...shiftedNews] });
+      }
       nextDay();
     }
 

@@ -86,6 +86,15 @@ export function useLiveMarket(
           returnPct,
         },
       });
+
+      // Also update presence so new joiners see current values without needing broadcasts
+      channelRef.current?.track({
+        playerId: userId,
+        playerName: playerNameRef.current,
+        portfolioValue: value,
+        returnPct,
+        joinedAt: Date.now(),
+      });
     },
     [userId],
   );

@@ -250,7 +250,10 @@ export const useGameStore = create<GameState>((set) => ({
     const rng = mulberry32(gameSeed);
 
     // Generate some fake past history so Day 1 has a chart (e.g. Day -5 to Day 0)
-    const initializedStocks = { ...stocks };
+    const initializedStocks: Record<string, typeof stocks[string]> = {};
+    Object.keys(stocks).forEach(symbol => {
+      initializedStocks[symbol] = { ...stocks[symbol] };
+    });
     Object.keys(initializedStocks).forEach(symbol => {
       const stock = initializedStocks[symbol];
       let currentSimPrice = stock.price * 0.8;
@@ -272,7 +275,7 @@ export const useGameStore = create<GameState>((set) => ({
         currentSimPrice = closePrice;
       }
       stock.price = currentSimPrice;
-      stock.previousPrice = history[history.length - 2]?.close || currentSimPrice;
+      stock.previousPrice = currentSimPrice;
       stock.priceHistory = history;
     });
 
