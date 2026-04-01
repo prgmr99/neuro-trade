@@ -98,6 +98,17 @@
   border: 1px solid rgba(59, 130, 246, 0.4);
 }
 
+.bridge-badge {
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.news-card.bridge-news {
+  border-left: 3px solid #a855f7;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.05), transparent);
+}
+
 .news-card h2 {
   font-size: 1.8rem;
   line-height: 1.3;

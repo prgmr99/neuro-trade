@@ -283,12 +283,8 @@ export function useLiveMarket(
         if (!current) return;
 
         const newDay = current.day + 1;
-        // Generate a new seed every 5-day phase for news variety
-        const phase = Math.floor((newDay - 1) / 5);
-        const prevPhase = Math.floor((current.day - 1) / 5);
-        const newSeed = phase !== prevPhase ? computeSeed(phase) : current.seed;
-
-        const newState = { cycleNumber: current.cycleNumber, day: newDay, seed: newSeed };
+        // Keep seed constant — chain system uses seed for chain selection, phase for arc within chain
+        const newState = { cycleNumber: current.cycleNumber, day: newDay, seed: current.seed };
         setMarketState(newState);
         marketStateRef.current = newState;
 
@@ -298,7 +294,7 @@ export function useLiveMarket(
         supabase.from('live_market_state').update({
           cycle_number: newState.cycleNumber,
           day: newDay,
-          seed: newSeed,
+          seed: current.seed,
           day_ends_at: new Date(newEndsAt).toISOString(),
           time_remaining: 60,
           updated_at: new Date().toISOString(),

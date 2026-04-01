@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useLiveMarket } from '../hooks/useLiveMarket';
 import { useGameStore } from '../store/gameStore';
-import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../data';
-import { hashSeed } from '../lib/prng';
+import { SCENARIOS, CLASSIC_ARCS, CLASSIC_CHAINS, selectArcFromChain, buildPhaseNews } from '../data';
 import MultiplayerHUD from './MultiplayerHUD';
 import Layout from './Layout';
 import { useTranslation } from '../i18n/translations';
@@ -105,7 +104,8 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
 
     const { day, seed } = market.marketState;
 
-    const arc = selectClassicArc(CLASSIC_ARCS, seed);
+    // Use chain system: phase 0's arc for initialization
+    const { arc } = selectArcFromChain(CLASSIC_CHAINS, CLASSIC_ARCS, seed, 0);
     setInitialState(SCENARIOS.classic.stocks, arc.news, 999, startingCash, seed);
 
     // Fast-forward to current day in cycle, appending new phase news when crossing boundaries
@@ -114,16 +114,9 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
       const nextPhase = Math.floor((nextGameDay - 1) / 5);
       const prevPhase = Math.floor((d - 1) / 5);
       if (nextPhase !== prevPhase) {
-        const phaseSeed = hashSeed(String(nextPhase));
-        const phaseArc = selectClassicArc(CLASSIC_ARCS, phaseSeed);
-        const phaseStartDay = nextPhase * 5 + 1;
-        const shiftedNews = phaseArc.news.map(n => ({
-          ...n,
-          id: `${n.id}-phase${nextPhase}`,
-          dayIdx: n.dayIdx + phaseStartDay - 1,
-        }));
+        const phaseNews = buildPhaseNews(CLASSIC_ARCS, CLASSIC_CHAINS, seed, nextPhase);
         const currentAllNews = useGameStore.getState().allNews;
-        useGameStore.setState({ allNews: [...currentAllNews, ...shiftedNews] });
+        useGameStore.setState({ allNews: [...currentAllNews, ...phaseNews] });
       }
       nextDay();
     }
@@ -172,21 +165,13 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
     // Skip if no change
     if (day === lastDayRef.current) return;
 
-    // Check if we've entered a new 5-day phase — append fresh news
+    // Check if we've entered a new 5-day phase — append fresh news from chain
     const currentPhase = Math.floor((day - 1) / 5);
     if (currentPhase !== lastPhaseRef.current) {
-      const phaseSeed = hashSeed(String(currentPhase));
-      const arc = selectClassicArc(CLASSIC_ARCS, phaseSeed);
-      // Shift news dayIdx so they align with the current phase
-      const phaseStartDay = currentPhase * 5 + 1;
-      const shiftedNews = arc.news.map(n => ({
-        ...n,
-        id: `${n.id}-phase${currentPhase}`,
-        dayIdx: n.dayIdx + phaseStartDay - 1,
-      }));
-      // Append new news to allNews
+      const { seed } = market.marketState;
+      const phaseNews = buildPhaseNews(CLASSIC_ARCS, CLASSIC_CHAINS, seed, currentPhase);
       const currentAllNews = useGameStore.getState().allNews;
-      useGameStore.setState({ allNews: [...currentAllNews, ...shiftedNews] });
+      useGameStore.setState({ allNews: [...currentAllNews, ...phaseNews] });
       lastPhaseRef.current = currentPhase;
     }
 

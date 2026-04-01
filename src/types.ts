@@ -29,6 +29,7 @@ export interface News {
   effect: Record<StockSymbol, number>; // How this news influences stock prices (multiplier: e.g. 1.05 for +5%)
   prePriced?: boolean; // Headline sentiment doesn't match actual effect (advanced mode)
   whipsaw?: { nextDayEffect: Record<StockSymbol, number> }; // Reversal effect applied next day
+  isBridgeNews?: boolean; // Transition context between arc phases (no price effect)
 }
 
 export interface Holding {
