@@ -31,6 +31,19 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
   const [submittedId, setSubmittedId] = useState<string | undefined>();
   const [copyLabel, setCopyLabel] = useState<'idle' | 'copied'>('idle');
 
+  const handleShareOnX = () => {
+    const text = generateGameShareText({
+      mode,
+      maxDays: dayState.maxDays,
+      stocks,
+      finalValue,
+      initialValue,
+      language,
+    });
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   const handleShare = async () => {
     const text = generateGameShareText({
       mode,
@@ -118,25 +131,42 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
           </div>
         </div>
 
-        <button
-          onClick={handleShare}
-          style={{
-            width: '100%',
-            marginBottom: '1rem',
-            padding: '0.75rem 1.5rem',
-            background: 'transparent',
-            border: '1.5px solid var(--accent-color)',
-            color: 'var(--accent-color)',
-            borderRadius: '12px',
-            fontSize: '1rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-        >
-          {copyLabel === 'copied'
-            ? (language === 'ko' ? '복사됨! ✓' : 'Copied! ✓')
-            : (language === 'ko' ? '결과 공유하기' : 'Copy Results')}
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
+          <button
+            onClick={handleShare}
+            style={{
+              flex: 1,
+              padding: '0.75rem 1rem',
+              background: 'transparent',
+              border: '1.5px solid var(--accent-color)',
+              color: 'var(--accent-color)',
+              borderRadius: '12px',
+              fontSize: '0.95rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            {copyLabel === 'copied'
+              ? (language === 'ko' ? '복사됨! ✓' : 'Copied! ✓')
+              : (language === 'ko' ? '결과 복사' : 'Copy Results')}
+          </button>
+          <button
+            onClick={handleShareOnX}
+            style={{
+              flex: 1,
+              padding: '0.75rem 1rem',
+              background: '#000',
+              border: '1.5px solid #000',
+              color: '#fff',
+              borderRadius: '12px',
+              fontSize: '0.95rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            {language === 'ko' ? 'X에 공유하기' : 'Share on X'}
+          </button>
+        </div>
 
         <div className="gameover-form">
           <div className="form-field">

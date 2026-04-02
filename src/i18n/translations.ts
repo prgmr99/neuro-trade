@@ -26,7 +26,14 @@ export const translations = {
       socialProofGamesToday: "games today",
       dailyTitle: "Daily Challenge",
       dailyDesc: "Same scenario for everyone. One attempt.",
-      dailyDetail: "Compete with traders worldwide on today's market."
+      dailyDetail: "Compete with traders worldwide on today's market.",
+      howToPlayStep1: "Read the News",
+      howToPlayStep1Desc: "Analyze breaking headlines for hidden market signals.",
+      howToPlayStep2: "Make Your Trades",
+      howToPlayStep2Desc: "Buy and sell stocks based on your analysis.",
+      howToPlayStep3: "Beat the Market",
+      howToPlayStep3Desc: "Maximize your portfolio return to top the leaderboard.",
+      dailyExpires: "Today's challenge expires in {hours}h"
     },
     daily: {
       title: "Daily Challenge",
@@ -286,7 +293,14 @@ export const translations = {
       socialProofGamesToday: "판 플레이",
       dailyTitle: "오늘의 도전",
       dailyDesc: "모두 같은 시나리오. 단 한 번의 기회.",
-      dailyDetail: "오늘의 시장에서 전 세계 트레이더와 경쟁하세요."
+      dailyDetail: "오늘의 시장에서 전 세계 트레이더와 경쟁하세요.",
+      howToPlayStep1: "뉴스 읽기",
+      howToPlayStep1Desc: "속보에서 숨겨진 시장 신호를 분석하세요.",
+      howToPlayStep2: "매매하기",
+      howToPlayStep2Desc: "분석을 바탕으로 주식을 사고 파세요.",
+      howToPlayStep3: "시장을 이겨라",
+      howToPlayStep3Desc: "포트폴리오 수익을 극대화하여 순위에 도전하세요.",
+      dailyExpires: "오늘의 도전 마감까지 {hours}시간"
     },
     daily: {
       title: "오늘의 도전",

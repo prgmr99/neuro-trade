@@ -1,4 +1,4 @@
-const SITE_URL = 'neuro-game.yeomniverse.com';
+const SITE_URL = 'https://neuro-game.yeomniverse.com';
 const HASHTAG = '#NeuroTrade';
 
 function getBar(returnPct: number): string {
@@ -8,6 +8,22 @@ function getBar(returnPct: number): string {
   if (returnPct > 0)  return '██░░░';
   if (returnPct > -5) return '█░░░░';
   return '░░░░░';
+}
+
+function getArrow(returnPct: number): string {
+  if (returnPct > 0) return '📈';
+  if (returnPct < 0) return '📉';
+  return '➡️';
+}
+
+function getResultEmoji(returnPct: number): string {
+  if (returnPct >= 50)  return '🚀';
+  if (returnPct >= 20)  return '🔥';
+  if (returnPct >= 10)  return '💪';
+  if (returnPct >= 0)   return '✅';
+  if (returnPct >= -10) return '😬';
+  if (returnPct >= -20) return '📉';
+  return '💀';
 }
 
 export function generateGameShareText(params: {
@@ -22,6 +38,7 @@ export function generateGameShareText(params: {
 
   const returnPct = ((finalValue - initialValue) / initialValue) * 100;
   const returnSign = returnPct >= 0 ? '+' : '';
+  const resultEmoji = getResultEmoji(returnPct);
 
   const modeLabel =
     language === 'ko'
@@ -37,7 +54,6 @@ export function generateGameShareText(params: {
 
   const stockLines = Object.values(stocks).map((stock) => {
     const symbol = stock.symbol;
-    // Find the earliest and latest price history entries within game days (day >= 1)
     const gameDays = stock.priceHistory.filter((d) => d.day >= 1);
     let stockReturn = 0;
     if (gameDays.length >= 1) {
@@ -48,19 +64,23 @@ export function generateGameShareText(params: {
       }
     }
     const bar = getBar(stockReturn);
+    const arrow = getArrow(stockReturn);
     const sign = stockReturn >= 0 ? '+' : '';
     const pct = `${sign}${stockReturn.toFixed(1)}%`;
-    // Pad symbol to 6 chars for alignment
     const paddedSymbol = symbol.padEnd(6, ' ');
-    return `${paddedSymbol} ${bar}  ${pct}`;
+    return `${arrow} ${paddedSymbol} ${bar}  ${pct}`;
   });
 
-  const finalLabel = language === 'ko' ? '최종' : 'Final';
-  const finalLine = `${finalLabel}: $${finalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} (${returnSign}${returnPct.toFixed(1)}%)`;
+  const finalLabel = language === 'ko' ? '최종 수익' : 'Return';
+  const finalLine =
+    `${resultEmoji} ${finalLabel}: ${returnSign}${returnPct.toFixed(1)}%  ($${finalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })})`;
 
-  const trophyLine = language === 'ko' ? `🏆 ${HASHTAG}` : `🏆 ${HASHTAG}`;
+  const ctaLine =
+    language === 'ko'
+      ? `뉴스로 주식을 예측하는 트레이딩 게임`
+      : `Can you beat the market?`;
 
-  return [header, divider, ...stockLines, divider, finalLine, trophyLine, SITE_URL].join('\n');
+  return [header, divider, ...stockLines, divider, finalLine, '', ctaLine, `${SITE_URL}  ${HASHTAG}`].join('\n');
 }
 
 export function generateFlashShareText(params: {
@@ -83,8 +103,9 @@ export function generateFlashShareText(params: {
     return [
       `NeuroTrade 플래시 ⚡`,
       `${stockSymbol}: ${choiceLabel} → ${pct} ${outcome}${streakLabel}`,
-      HASHTAG,
-      SITE_URL,
+      '',
+      `뉴스로 주식을 예측하는 트레이딩 게임`,
+      `${SITE_URL}  ${HASHTAG}`,
     ].join('\n');
   }
 
@@ -93,7 +114,8 @@ export function generateFlashShareText(params: {
   return [
     `NeuroTrade Flash ⚡`,
     `${stockSymbol}: ${choiceLabel} → ${pct} ${outcome}${streakLabel}`,
-    HASHTAG,
-    SITE_URL,
+    '',
+    `Can you beat the market?`,
+    `${SITE_URL}  ${HASHTAG}`,
   ].join('\n');
 }

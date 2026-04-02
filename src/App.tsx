@@ -14,8 +14,9 @@ import AttendanceModal from './components/AttendanceModal';
 import AchievementGallery from './components/AchievementGallery';
 import { useAttendanceStore } from './store/attendanceStore';
 import { useTranslation } from './i18n/translations';
-import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users } from 'lucide-react';
+import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users, Newspaper } from 'lucide-react';
 import SocialProof from './components/SocialProof';
+import MarketTicker from './components/MarketTicker';
 
 function App() {
   const [view, setView] = useQueryState('view');
@@ -152,6 +153,27 @@ function App() {
         <h1>{t('app.title')}</h1>
         <p className="subtitle">{t('app.subtitle')}</p>
         <SocialProof />
+        <MarketTicker />
+
+        {!selectedMode && (
+          <div className="how-to-play">
+            <div className="how-to-play-step">
+              <Newspaper size={20} className="step-icon" />
+              <h4>{t('app.howToPlayStep1')}</h4>
+              <p>{t('app.howToPlayStep1Desc')}</p>
+            </div>
+            <div className="how-to-play-step">
+              <TrendingUp size={20} className="step-icon" />
+              <h4>{t('app.howToPlayStep2')}</h4>
+              <p>{t('app.howToPlayStep2Desc')}</p>
+            </div>
+            <div className="how-to-play-step">
+              <Trophy size={20} className="step-icon" />
+              <h4>{t('app.howToPlayStep3')}</h4>
+              <p>{t('app.howToPlayStep3Desc')}</p>
+            </div>
+          </div>
+        )}
 
         <div className="mode-selector">
           <button
@@ -184,6 +206,9 @@ function App() {
             <h3>{t('app.dailyTitle')}</h3>
             <p className="mode-desc">{t('app.dailyDesc')}</p>
             <p className="mode-detail">{t('app.dailyDetail')}</p>
+            <p className="daily-countdown">
+              {t('app.dailyExpires', { hours: String(Math.max(0, 23 - new Date().getHours())) })}
+            </p>
           </button>
         </div>
 
