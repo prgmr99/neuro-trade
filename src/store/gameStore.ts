@@ -258,7 +258,7 @@ export const useGameStore = create<GameState>((set) => ({
       const stock = initializedStocks[symbol];
       let currentSimPrice = stock.price * 0.8;
       const history = [];
-      for (let i = -5; i <= 0; i++) {
+      for (let i = -19; i <= 0; i++) {
         const noise = 1 + (rng() - 0.5) * stock.volatility;
         const openPrice = currentSimPrice;
         const closePrice = openPrice * noise;
