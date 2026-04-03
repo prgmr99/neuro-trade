@@ -87,6 +87,7 @@
 
 .stock-actions-top {
   display: flex;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
@@ -134,6 +135,7 @@
 /* Chart type toggle */
 .chart-type-toggle {
   display: flex;
+  align-items: center;
   margin-left: auto;
   background: var(--surface-light);
   border-radius: 8px;

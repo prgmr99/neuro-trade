@@ -210,6 +210,7 @@ const StockChart: React.FC<StockChartProps> = ({ data, chartType = 'candle' }) =
           <Tooltip
             content={<CustomTooltip />}
             cursor={{ stroke: 'rgba(0, 0, 0, 0.08)', strokeWidth: 1, strokeDasharray: '4 4' }}
+            trigger="click"
           />
 
           {/* Current price reference line */}
