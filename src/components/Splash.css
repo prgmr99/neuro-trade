@@ -184,7 +184,7 @@
 }
 
 .start-btn {
-  background: var(--accent-gradient);
+  background: var(--accent-color);
   color: white;
   border: none;
   padding: 1rem 2.5rem;

@@ -160,8 +160,8 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
     } catch { /* ignore */ }
   }, [roomState]);
 
-  // ---- Auth loading ----
-  if (authLoading) {
+  // ---- Auth loading / failed ----
+  if (authLoading || !userId) {
     return (
       <div className="room-battle-screen">
         <div className="room-battle-card glass-card room-loading">
