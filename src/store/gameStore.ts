@@ -190,8 +190,9 @@ export const useGameStore = create<GameState>((set) => ({
       const closePrice = stock.price;
       const volMultiplier = affectedStocks.has(symbol) ? 1 : 0.2;
 
-      const highPrice = Math.max(openPrice, closePrice) * (1 + rng() * stock.volatility * volMultiplier);
-      const lowPrice = Math.min(openPrice, closePrice) * (1 - rng() * stock.volatility * volMultiplier);
+      const wickScale = 0.4; // Limit wick length to 40% of volatility for realistic candles
+      const highPrice = Math.max(openPrice, closePrice) * (1 + rng() * stock.volatility * volMultiplier * wickScale);
+      const lowPrice = Math.min(openPrice, closePrice) * (1 - rng() * stock.volatility * volMultiplier * wickScale);
 
       stock.priceHistory = [
         ...stock.priceHistory,
@@ -258,12 +259,13 @@ export const useGameStore = create<GameState>((set) => ({
       const stock = initializedStocks[symbol];
       let currentSimPrice = stock.price * 0.8;
       const history = [];
-      for (let i = -5; i <= 0; i++) {
+      for (let i = -19; i <= 0; i++) {
         const noise = 1 + (rng() - 0.5) * stock.volatility;
         const openPrice = currentSimPrice;
         const closePrice = openPrice * noise;
-        const highPrice = Math.max(openPrice, closePrice) * (1 + rng() * stock.volatility);
-        const lowPrice = Math.min(openPrice, closePrice) * (1 - rng() * stock.volatility);
+        const wickScale = 0.4;
+        const highPrice = Math.max(openPrice, closePrice) * (1 + rng() * stock.volatility * wickScale);
+        const lowPrice = Math.min(openPrice, closePrice) * (1 - rng() * stock.volatility * wickScale);
 
         history.push({
           day: i,
