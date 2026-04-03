@@ -24,14 +24,18 @@
   font-size: 2.25rem;
   margin: 0;
   flex: 1;
+  letter-spacing: -0.02em;
 }
 
 .newsfeed-date {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--text-secondary);
   background: var(--surface-light);
-  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  padding: 0.45rem 1rem;
   border-radius: 20px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 .news-card {
@@ -39,20 +43,28 @@
   border: 1px solid var(--border-color);
   border-radius: 20px;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   align-self: start;
-  box-shadow: var(--toss-shadow);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: fadeInUp 0.4s ease-out backwards;
 }
 
+.news-grid .news-card:nth-child(1) { animation-delay: 0.05s; }
+.news-grid .news-card:nth-child(2) { animation-delay: 0.1s; }
+.news-grid .news-card:nth-child(3) { animation-delay: 0.15s; }
+.news-grid .news-card:nth-child(4) { animation-delay: 0.2s; }
+.news-grid .news-card:nth-child(5) { animation-delay: 0.25s; }
+
 .news-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: rgba(49, 130, 246, 0.15);
 }
 
 .news-card.unread {
   border-left: 4px solid var(--accent-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), -2px 0 8px rgba(49, 130, 246, 0.08);
 }
 
 .news-card.read {
@@ -61,10 +73,24 @@
 
 .news-card.featured {
   background: var(--surface-color);
-  border: 2px solid rgba(49, 130, 246, 0.3);
+  border: 1.5px solid rgba(49, 130, 246, 0.2);
   margin-bottom: 1.5rem;
-  box-shadow: 0 8px 32px rgba(49, 130, 246, 0.08);
+  box-shadow: 0 8px 32px rgba(49, 130, 246, 0.06);
   width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.news-card.featured::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #3182f6, #6366f1, #3182f6);
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
 }
 
 .news-card-content {
@@ -87,15 +113,27 @@
 }
 
 .breaking-badge {
-  background: rgba(239, 68, 68, 0.2);
-  color: var(--positive);
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: rgba(240, 68, 82, 0.1);
+  color: #f04452;
+  border: 1px solid rgba(240, 68, 82, 0.25);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .new-badge {
-  background: rgba(59, 130, 246, 0.2);
+  background: rgba(49, 130, 246, 0.1);
   color: var(--accent-color);
-  border: 1px solid rgba(59, 130, 246, 0.4);
+  border: 1px solid rgba(49, 130, 246, 0.25);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .bridge-badge {
@@ -195,7 +233,7 @@
 .insider-preview {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: var(--bg-card);
+  background: var(--surface-light);
   border: 1px dashed var(--accent-color);
   border-radius: 12px;
   animation: fadeIn 0.2s ease-out;
@@ -264,11 +302,13 @@
   border-radius: 50%;
   background: var(--surface-light);
   transition: all 0.2s;
+  border: 1px solid transparent;
 }
 
 .news-card:hover .read-more {
-  background: rgba(59, 130, 246, 0.2);
+  background: rgba(49, 130, 246, 0.1);
   color: var(--accent-color);
+  border-color: rgba(49, 130, 246, 0.2);
 }
 
 .news-grid {

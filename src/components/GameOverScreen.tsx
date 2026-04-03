@@ -116,14 +116,14 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
 
   return (
     <div className="splash-screen">
-      <div className="splash-content glass-card" style={{ maxWidth: '500px', width: '90%' }}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{t('gameOver.title')}</h1>
-        <div style={{ margin: '2rem 0', padding: '1.5rem', background: 'var(--surface-light)', borderRadius: '16px' }}>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 500 }}>{t('gameOver.finalBalance')}</p>
-          <h2 style={{ fontSize: '3rem', margin: '0 0 1rem 0', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+      <div className="splash-content glass-card gameover-container">
+        <h1 className="gameover-title">{t('gameOver.title')}</h1>
+        <div className={`gameover-result-card ${isPositive ? 'result-win' : 'result-lose'}`}>
+          <p className="gameover-label">{t('gameOver.finalBalance')}</p>
+          <h2 className="gameover-value">
             ${finalValue.toFixed(2)}
           </h2>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', fontSize: '1.2rem', fontWeight: 'bold' }}>
+          <div className="gameover-return">
             <span>{t('gameOver.returnRate')}:</span>
             <span className={isPositive ? 'positive' : 'negative'}>
               {isPositive ? '+' : ''}{returnPct.toFixed(2)}%
@@ -131,39 +131,13 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
-          <button
-            onClick={handleShare}
-            style={{
-              flex: 1,
-              padding: '0.75rem 1rem',
-              background: 'transparent',
-              border: '1.5px solid var(--accent-color)',
-              color: 'var(--accent-color)',
-              borderRadius: '12px',
-              fontSize: '0.95rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
+        <div className="gameover-share-buttons">
+          <button className="gameover-copy-btn" onClick={handleShare}>
             {copyLabel === 'copied'
               ? (language === 'ko' ? '복사됨! ✓' : 'Copied! ✓')
               : (language === 'ko' ? '결과 복사' : 'Copy Results')}
           </button>
-          <button
-            onClick={handleShareOnX}
-            style={{
-              flex: 1,
-              padding: '0.75rem 1rem',
-              background: '#000',
-              border: '1.5px solid #000',
-              color: '#fff',
-              borderRadius: '12px',
-              fontSize: '0.95rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
+          <button className="gameover-x-btn" onClick={handleShareOnX}>
             {language === 'ko' ? 'X에 공유하기' : 'Share on X'}
           </button>
         </div>
@@ -193,14 +167,10 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
             className="start-btn"
             onClick={handleSubmit}
             disabled={submitting}
-            style={{ width: '100%' }}
           >
             {submitting ? '...' : t('gameOver.submitAndRank')}
           </button>
-          <button
-            className="skip-btn"
-            onClick={handleSkip}
-          >
+          <button className="skip-btn" onClick={handleSkip}>
             {t('gameOver.skipToRank')}
           </button>
         </div>

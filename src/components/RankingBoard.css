@@ -18,16 +18,16 @@
 
 .ranking-filter-btn {
   padding: 0.5rem 1.25rem;
-  min-height: 44px;
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
+  min-height: 40px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 999px;
   background: transparent;
   color: var(--text-secondary);
   font-family: 'Outfit', sans-serif;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ranking-filter-btn:hover {
@@ -89,7 +89,12 @@
   background: var(--surface-light);
   border-radius: 16px;
   border: 1px solid transparent;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ranking-row:hover {
+  border-color: var(--border-color);
+  background: var(--surface-color);
 }
 
 .ranking-row.highlighted {

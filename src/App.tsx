@@ -196,6 +196,14 @@ function App() {
           </button>
         </div>
 
+        {selectedMode && (
+          <div className="instructions">
+            <p>{t(selectedMode === 'classic' ? 'app.instruction1Classic' : 'app.instruction1Advanced')}</p>
+            <p>{t('app.instruction2')}</p>
+            <p>{t(selectedMode === 'classic' ? 'app.instruction3Classic' : 'app.instruction3Advanced')}</p>
+          </div>
+        )}
+
         <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
           <button
             className="mode-card mode-card-daily"
@@ -236,14 +244,6 @@ function App() {
             <p className="mode-detail">{t('multiplayer.joinDesc')}</p>
           </button>
         </div>
-
-        {selectedMode && (
-          <div className="instructions">
-            <p>{t(selectedMode === 'classic' ? 'app.instruction1Classic' : 'app.instruction1Advanced')}</p>
-            <p>{t('app.instruction2')}</p>
-            <p>{t(selectedMode === 'classic' ? 'app.instruction3Classic' : 'app.instruction3Advanced')}</p>
-          </div>
-        )}
 
         <div className="splash-sub-actions">
           <button className="splash-chip" onClick={() => setView('flash')}>

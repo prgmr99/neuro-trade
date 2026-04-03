@@ -118,7 +118,7 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
           <button
             onClick={toggleLanguage}
             className="nav-btn"
-            style={{ width: 'auto', padding: '0.4rem 0.8rem', fontSize: '0.8rem', borderRadius: '20px', backgroundColor: 'var(--bg-card)' }}
+            style={{ width: 'auto', padding: '0.4rem 0.8rem', fontSize: '0.8rem', borderRadius: '20px', backgroundColor: 'var(--surface-light)' }}
           >
             <Globe size={14} />
             {language === 'en' ? '한국어' : 'English'}

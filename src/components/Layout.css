@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
-  box-shadow: var(--toss-shadow);
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.03);
   z-index: 10;
 }
 
@@ -24,8 +24,12 @@
   margin: 0;
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--accent-color);
+  background: linear-gradient(135deg, #3182f6, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: -0.02em;
+  cursor: pointer;
 }
 
 .day-badge {
@@ -34,10 +38,12 @@
   margin-right: 0.4rem;
   padding: 0.25rem 0.75rem;
   background: var(--surface-light);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
 .arc-badge {
@@ -64,11 +70,11 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
+  padding: 0.85rem 1rem;
   background: transparent;
   color: var(--text-secondary);
   border: none;
-  border-radius: 16px;
+  border-radius: 14px;
   cursor: pointer;
   font-family: inherit;
   font-size: 1.05rem;
@@ -84,19 +90,33 @@
 }
 
 .nav-btn.active {
-  background: rgba(49, 130, 246, 0.1);
+  background: rgba(49, 130, 246, 0.08);
   color: var(--accent-color);
   font-weight: 700;
+}
+
+.nav-btn.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: var(--accent-color);
+  border-radius: 0 3px 3px 0;
 }
 
 .notification-badge {
   background: var(--accent-color);
   color: white;
-  font-size: 0.75rem;
-  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 7px;
   border-radius: 10px;
   position: absolute;
   right: 1rem;
+  animation: pulse-ring 2s ease-out infinite;
 }
 
 .sidebar-footer {
@@ -121,6 +141,8 @@
   font-weight: 700;
   color: var(--text-primary);
   margin-top: 0.25rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 .next-day-btn {
@@ -130,7 +152,7 @@
   gap: 0.5rem;
   width: 100%;
   padding: 1.1rem;
-  background: var(--accent-color);
+  background: linear-gradient(135deg, #3182f6, #6366f1);
   color: white;
   border: none;
   border-radius: 16px;
@@ -138,11 +160,12 @@
   font-size: 1.05rem;
   font-family: inherit;
   font-weight: 700;
-  transition: all 0.2s;
+  transition: all 0.25s;
+  box-shadow: 0 4px 16px rgba(49, 130, 246, 0.25);
 }
 
 .next-day-btn:hover:not(:disabled) {
-  background: var(--accent-hover);
+  box-shadow: 0 8px 24px rgba(49, 130, 246, 0.35);
   transform: translateY(-2px);
 }
 
@@ -213,9 +236,11 @@
     align-items: center;
     justify-content: space-between;
     padding: calc(0.75rem + env(safe-area-inset-top)) 1rem 0.75rem;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--toss-shadow);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
     z-index: 10;
     flex-shrink: 0;
     gap: 0.5rem;
@@ -233,7 +258,10 @@
     margin: 0;
     font-size: 1.15rem;
     font-weight: 800;
-    color: var(--accent-color);
+    background: linear-gradient(135deg, #3182f6, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     letter-spacing: -0.02em;
     flex-shrink: 0;
   }
@@ -292,7 +320,9 @@
     justify-content: space-around;
     padding: 0.4rem 0.5rem;
     padding-bottom: calc(0.4rem + env(safe-area-inset-bottom));
-    background: var(--surface-color);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--border-color);
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.04);
     z-index: 10;
@@ -326,6 +356,18 @@
     font-weight: 700;
   }
 
+  .bottom-nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--accent-color);
+    border-radius: 50%;
+  }
+
   .bottom-nav-item .notification-badge {
     position: absolute;
     top: 2px;
@@ -343,7 +385,7 @@
     justify-content: center;
     gap: 2px;
     padding: 0.35rem 0.5rem;
-    background: var(--accent-color);
+    background: linear-gradient(135deg, #3182f6, #6366f1);
     color: white;
     border: none;
     border-radius: 12px;
@@ -351,9 +393,10 @@
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
-    transition: background 0.2s;
+    transition: all 0.2s;
     flex: 1;
     min-height: 44px;
+    box-shadow: 0 2px 8px rgba(49, 130, 246, 0.2);
   }
 
   .bottom-nav-end-day:disabled {
