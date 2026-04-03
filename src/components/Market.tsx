@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useGameStore } from '../store/gameStore';
-import { TrendingUp, TrendingDown, BarChart2, X } from 'lucide-react';
+import { TrendingUp, TrendingDown, BarChart2, X, CandlestickChart, LineChart } from 'lucide-react';
 import StockChart from './StockChart';
 import { useTranslation } from '../i18n/translations';
 import TradeToast, { TradeToastData } from './TradeToast';
@@ -12,6 +12,7 @@ const Market: React.FC = () => {
   const [tradeQuantity, setTradeQuantity] = useState<Record<string, number>>({});
   const stockSymbols = Object.keys(stocks);
   const [expandedCharts, setExpandedCharts] = useState<string[]>(stockSymbols);
+  const [chartType, setChartType] = useState<'candle' | 'line'>('candle');
   const { t, language } = useTranslation();
   const [toasts, setToasts] = useState<TradeToastData[]>([]);
   const toastIdRef = useRef(0);
@@ -180,11 +181,29 @@ const Market: React.FC = () => {
                   <BarChart2 size={16} />
                   {expandedCharts.includes(stock.symbol) ? t('market.hideChart') : t('market.showChart')}
                 </button>
+                {expandedCharts.includes(stock.symbol) && (
+                  <div className="chart-type-toggle">
+                    <button
+                      className={`chart-type-btn ${chartType === 'candle' ? 'active' : ''}`}
+                      onClick={() => setChartType('candle')}
+                      title={t('market.candlestick')}
+                    >
+                      <CandlestickChart size={14} />
+                    </button>
+                    <button
+                      className={`chart-type-btn ${chartType === 'line' ? 'active' : ''}`}
+                      onClick={() => setChartType('line')}
+                      title={t('market.lineChart')}
+                    >
+                      <LineChart size={14} />
+                    </button>
+                  </div>
+                )}
               </div>
 
               {expandedCharts.includes(stock.symbol) && (
                 <div className="stock-chart-container">
-                  <StockChart data={stock.priceHistory} />
+                  <StockChart data={stock.priceHistory} chartType={chartType} />
                 </div>
               )}
 

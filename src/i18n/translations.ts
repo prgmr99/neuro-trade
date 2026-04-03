@@ -149,7 +149,9 @@ export const translations = {
       maxBuyable: "Max",
       sharesUnit: " shares",
       holdingQty: "Holding",
-      holdingValue: "Value"
+      holdingValue: "Value",
+      candlestick: "Candlestick",
+      lineChart: "Line Chart"
     },
     portfolio: {
       title: "Your Portfolio",
@@ -416,7 +418,9 @@ export const translations = {
       maxBuyable: "최대",
       sharesUnit: "주",
       holdingQty: "보유",
-      holdingValue: "평가액"
+      holdingValue: "평가액",
+      candlestick: "캔들 차트",
+      lineChart: "라인 차트"
     },
     portfolio: {
       title: "내 포트폴리오",
