@@ -179,6 +179,7 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
     nextDay();
     lastDayRef.current = day;
     setTotalDay((prev: number) => prev + 1);
+    window.scrollTo(0, 0);
 
     // Broadcast updated portfolio
     const value = computePortfolioValue();

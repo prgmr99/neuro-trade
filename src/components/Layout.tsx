@@ -61,6 +61,13 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
     nextDay();
     setShowSummary(false);
     setActiveTab('news');
+    scrollPositions.current = {};
+    requestAnimationFrame(() => {
+      if (mainContentRef.current) {
+        mainContentRef.current.scrollTop = 0;
+      }
+      window.scrollTo(0, 0);
+    });
   };
 
   const unreadNews = dayState.dailyNews.filter(n => !n.read).length;
