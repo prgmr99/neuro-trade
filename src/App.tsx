@@ -155,8 +155,7 @@ function App() {
         <SocialProof />
         <MarketTicker />
 
-        {!selectedMode && (
-          <div className="how-to-play">
+        <div className="how-to-play">
             <div className="how-to-play-step">
               <Newspaper size={20} className="step-icon" />
               <h4>{t('app.howToPlayStep1')}</h4>
@@ -172,8 +171,7 @@ function App() {
               <h4>{t('app.howToPlayStep3')}</h4>
               <p>{t('app.howToPlayStep3Desc')}</p>
             </div>
-          </div>
-        )}
+        </div>
 
         <div className="mode-selector">
           <button
