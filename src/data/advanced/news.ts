@@ -1,4 +1,4 @@
-import { News } from '../../types';
+import { News, LocalizedString } from '../../types';
 import { BOOST_DAYS_1_10 } from './news-boost-1';
 // boost-2 (days 11-20) and boost-3 (days 21-30) removed — arc content remapped to 10 days
 
@@ -608,3 +608,49 @@ function capNewsDensity(news: News[]): News[] {
 }
 
 export const ADVANCED_NEWS: News[] = capNewsDensity(ALL_NEWS);
+
+// Advanced arc definitions for random selection
+export interface AdvancedScenarioArc {
+  id: string;
+  name: LocalizedString;
+  news: News[];
+}
+
+export const ADVANCED_ARCS: AdvancedScenarioArc[] = [
+  { id: 'ai-revolution', name: { en: 'AI Revolution', ko: 'AI 혁명' }, news: ARC_AI_REVOLUTION },
+  { id: 'health-crisis', name: { en: 'Global Health Crisis', ko: '글로벌 보건 위기' }, news: ARC_HEALTH_CRISIS },
+  { id: 'energy-transition', name: { en: 'Energy Transition', ko: '에너지 전환' }, news: ARC_ENERGY_TRANSITION },
+  { id: 'financial-disruption', name: { en: 'Financial System Disruption', ko: '금융 시스템 혁신' }, news: ARC_FINANCIAL_DISRUPTION },
+  { id: 'geopolitical', name: { en: 'Geopolitical Tensions', ko: '지정학적 긴장' }, news: ARC_GEOPOLITICAL },
+  { id: 'real-estate-consumer', name: { en: 'Real Estate & Consumer', ko: '부동산·소비 위기' }, news: ARC_REAL_ESTATE_CONSUMER },
+];
+
+/**
+ * Select 2 arcs deterministically from seed, combine with supplemental news,
+ * remap to 10 days, and cap density. Returns news array and combined arc name.
+ */
+export function selectAdvancedArcs(seed: number): { news: News[]; arcName: LocalizedString } {
+  const n = ADVANCED_ARCS.length; // 6
+  const i1 = Math.abs(seed) % n;
+  let i2 = (Math.abs(seed) >> 8) % (n - 1);
+  if (i2 >= i1) i2 += 1; // ensure different from i1
+
+  const arc1 = ADVANCED_ARCS[i1];
+  const arc2 = ADVANCED_ARCS[i2];
+
+  const combined: News[] = [
+    ...arc1.news,
+    ...arc2.news,
+    ...ARC_SUPPLEMENTAL,
+  ].map(n => ({ ...n, dayIdx: remapDay(n.dayIdx) }))
+    .concat(BOOST_DAYS_1_10)
+    .sort((a, b) => a.dayIdx - b.dayIdx);
+
+  return {
+    news: capNewsDensity(combined),
+    arcName: {
+      en: `${arc1.name.en} × ${arc2.name.en}`,
+      ko: `${arc1.name.ko} × ${arc2.name.ko}`,
+    },
+  };
+}

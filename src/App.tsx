@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQueryState } from 'nuqs';
 import { useGameStore } from './store/gameStore';
 import { useLanguageStore } from './store/useLanguageStore';
-import { SCENARIOS, GameMode, CLASSIC_ARCS, selectClassicArc } from './data';
+import { SCENARIOS, GameMode, CLASSIC_ARCS, selectClassicArc, selectAdvancedArcs } from './data';
 import Layout from './components/Layout';
 import GameOverScreen from './components/GameOverScreen';
 import RankingBoard from './components/RankingBoard';
@@ -71,7 +71,9 @@ function App() {
       const arc = selectClassicArc(CLASSIC_ARCS, seed);
       setInitialState(scenario.stocks, arc.news, scenario.maxDays, scenario.startingCash, seed, arc.name);
     } else {
-      setInitialState(scenario.stocks, scenario.news, scenario.maxDays, scenario.startingCash, undefined, null, scenario.preApplyRatio ?? 0, scenario.marketGravity ?? 0, scenario.effectScale ?? 1);
+      const seed = Date.now();
+      const { news } = selectAdvancedArcs(seed);
+      setInitialState(scenario.stocks, news, scenario.maxDays, scenario.startingCash, seed, null, scenario.preApplyRatio ?? 0, scenario.marketGravity ?? 0, scenario.effectScale ?? 1);
     }
     setModeParam(selectedMode);
     setView('game');

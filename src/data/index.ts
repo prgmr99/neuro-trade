@@ -2,6 +2,8 @@ import { News, Stock, StockSymbol } from '../types';
 import { CLASSIC_STOCKS, CLASSIC_NEWS } from './classic';
 import { ADVANCED_STOCKS } from './advanced/stocks';
 import { ADVANCED_NEWS } from './advanced/news';
+export { selectAdvancedArcs, ADVANCED_ARCS } from './advanced/news';
+export type { AdvancedScenarioArc } from './advanced/news';
 export { CLASSIC_ARCS } from './classic';
 export { selectClassicArc, selectArcFromChain, buildPhaseNews, CLASSIC_CHAINS } from './classic-arcs';
 export type { ArcChain } from './classic-arcs';
@@ -30,9 +32,9 @@ export const SCENARIOS: Record<GameMode, ScenarioConfig> = {
     news: ADVANCED_NEWS,
     maxDays: 10,
     startingCash: 50000,
-    preApplyRatio: 0.8, // 80% of news effects already priced in when news appears
-    marketGravity: 0.85, // strong mean reversion — net positive moves get pulled back
-    effectScale: 0.10, // news effects scaled to 10% — balanced difficulty
+    preApplyRatio: 0.25, // 25% of news effects pre-priced — more surprise on price moves
+    marketGravity: 0.20, // light mean reversion — allows trends to develop
+    effectScale: 0.50, // news effects at 50% — amplified volatility
   },
 };
 
