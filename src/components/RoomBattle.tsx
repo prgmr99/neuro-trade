@@ -77,6 +77,8 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
   }, [portfolio, stocks]);
 
   // ---- Initialize game when entering playing state ----
+  const initTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     if (screen !== 'playing' || !roomState || initializedRef.current) return;
     const arc = selectClassicArc(CLASSIC_ARCS, roomState.seed);
@@ -90,21 +92,26 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
     );
     initializedRef.current = true;
 
-    setTimeout(() => {
+    // Broadcast initial portfolio after state settles (with cleanup)
+    initTimerRef.current = setTimeout(() => {
       const value = computePortfolioValue();
       const returnPct = ((value - startingCash) / startingCash) * 100;
       broadcastPortfolio(value, returnPct);
+      initTimerRef.current = null;
     }, 1500);
+
+    return () => {
+      if (initTimerRef.current) {
+        clearTimeout(initTimerRef.current);
+        initTimerRef.current = null;
+      }
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen, roomState]);
 
-  // ---- Detect game end ----
-  useEffect(() => {
-    if (screen !== 'playing') return;
-    if (dayState.currentDay > dayState.maxDays) {
-      setScreen('finished');
-    }
-  }, [dayState.currentDay, dayState.maxDays, screen]);
+  // ---- Detect game end (Room Battle uses roomState.status only) ----
+  // Note: dayState-based detection is skipped here — roomState.status === 'finished'
+  // is the single source of truth for Room Battle game end (handled in sync effect below).
 
   // ---- Periodic portfolio broadcast ----
   useEffect(() => {
@@ -123,7 +130,7 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
     if (roomState.status === 'playing' && screen === 'lobby') {
       setScreen('playing');
     }
-    if (roomState.status === 'finished' && screen === 'playing') {
+    if (roomState.status === 'finished' && (screen === 'playing' || screen === 'lobby')) {
       setScreen('finished');
     }
   }, [roomState?.status, screen]);
