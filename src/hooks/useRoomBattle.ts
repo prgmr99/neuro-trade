@@ -68,6 +68,7 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
   // Day timer
   const dayEndsAtRef = useRef<number | null>(null);
   const playerCountRef = useRef(0);
+  const isAdvancingDayRef = useRef(false);
 
   // --- Broadcast portfolio ---
   const broadcastPortfolio = useCallback(
@@ -118,9 +119,12 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
       timerRef.current = null;
     }
 
-    // If host leaves during 'waiting', delete the room
+    // If host leaves during 'waiting', delete the room (requires DELETE RLS policy)
     if (currentRoom && userId && currentRoom.hostId === userId && currentRoom.status === 'waiting') {
-      supabase.from('battle_rooms').delete().eq('room_code', currentRoom.roomCode);
+      supabase.from('battle_rooms').delete().eq('room_code', currentRoom.roomCode)
+        .then(({ error }) => {
+          if (error) console.warn('[RoomBattle] Failed to delete room:', error.message);
+        });
     }
 
     setIsConnected(false);
@@ -268,26 +272,36 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
         const current = roomStateRef.current;
         if (!current || current.status !== 'playing') return;
 
-        // Only the host advances the day
-        if (remaining <= 0 && userId === current.hostId && playerCountRef.current > 0) {
+        // Only the host advances the day, with guard flag to prevent race condition
+        if (remaining <= 0 && userId === current.hostId && playerCountRef.current > 0 && !isAdvancingDayRef.current) {
+          isAdvancingDayRef.current = true;
           const newDay = current.day + 1;
           const newEndsAt = Date.now() + 60000;
           dayEndsAtRef.current = newEndsAt;
 
           if (newDay > current.maxDays) {
-            // Game over
+            // Game over — optimistic lock: only update if day matches (prevents double advance)
             supabase.from('battle_rooms').update({
               status: 'finished',
               day: newDay,
               day_ends_at: null,
               finished_at: new Date().toISOString(),
-            }).eq('room_code', current.roomCode);
+            }).eq('room_code', current.roomCode).eq('day', current.day)
+              .then(({ error }) => {
+                isAdvancingDayRef.current = false;
+                if (error) setError(error.message);
+              });
           } else {
+            // Optimistic lock: .eq('day', current.day) ensures no double advancement
             supabase.from('battle_rooms').update({
               day: newDay,
               day_ends_at: new Date(newEndsAt).toISOString(),
               time_remaining: 60,
-            }).eq('room_code', current.roomCode);
+            }).eq('room_code', current.roomCode).eq('day', current.day)
+              .then(({ error }) => {
+                isAdvancingDayRef.current = false;
+                if (error) setError(error.message);
+              });
           }
         }
       }, 1000);
@@ -324,19 +338,41 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
         return null;
       }
 
-      const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
       playerNameRef.current = hostName;
 
-      const { error: insertError } = await supabase.from('battle_rooms').insert({
-        room_code: roomCode,
-        host_id: userId,
-        host_name: hostName,
-        max_players: maxPlayers,
-        status: 'waiting',
-        seed: 0,
-        day: 1,
-        max_days: 5,
-      });
+      // Generate room code using crypto API (not Math.random) with collision retry
+      const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let roomCode = '';
+      let insertError: { message: string } | null = null;
+
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const bytes = new Uint8Array(6);
+        crypto.getRandomValues(bytes);
+        roomCode = Array.from(bytes, (b) => CHARS[b % CHARS.length]).join('');
+
+        const result = await supabase.from('battle_rooms').insert({
+          room_code: roomCode,
+          host_id: userId,
+          host_name: hostName,
+          max_players: maxPlayers,
+          status: 'waiting',
+          seed: 0,
+          day: 1,
+          max_days: 5,
+        });
+
+        if (!result.error) {
+          insertError = null;
+          break;
+        }
+        // Retry on unique constraint violation (room code collision)
+        if (result.error.code === '23505') {
+          insertError = result.error;
+          continue;
+        }
+        insertError = result.error;
+        break;
+      }
 
       if (insertError) {
         setError(insertError.message);
