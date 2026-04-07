@@ -104,6 +104,16 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
 
     setSavedResult({ finalValue, returnPct });
 
+    // Save to global rankings
+    await supabase.from('rankings').insert({
+      player_name: name.slice(0, 20),
+      message: '',
+      return_pct: Math.round(returnPct * 100) / 100,
+      final_value: Math.round(finalValue * 100) / 100,
+      initial_value: startingCash,
+      mode: 'duel',
+    });
+
     // Check if a duel row already exists for this seed
     const { data: existing } = await supabase
       .from('duels')

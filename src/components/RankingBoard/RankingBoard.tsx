@@ -45,7 +45,7 @@ const RankingBoard: React.FC<Props> = ({ highlightId, initialMode }) => {
     });
   };
 
-  const filters = ['all', 'classic', 'advanced'] as const;
+  const filters = ['all', 'classic', 'advanced', 'duel'] as const;
   const maxReturn = rankings[0]?.return_pct ?? 1;
 
   return (
