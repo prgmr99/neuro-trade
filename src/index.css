@@ -12,6 +12,7 @@
 @import './components/GameOverScreen.css';
 @import './components/RankingBoard.css';
 @import './components/FlashRound.css';
+@import './components/RoomBattle.css';
 
 :root {
   --bg-color: #f2f4f6; /* Toss light gray background */

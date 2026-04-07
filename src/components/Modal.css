@@ -123,7 +123,7 @@
 }
 
 .primary-btn {
-  background: var(--accent-gradient);
+  background: var(--accent-color);
   color: white;
   border: none;
   padding: 1rem 2rem;

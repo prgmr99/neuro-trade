@@ -10,11 +10,12 @@ import FlashRound from './components/FlashRound';
 import DailyChallenge from './components/DailyChallenge';
 import DuelMode from './components/DuelMode';
 import LiveCompetition from './components/LiveCompetition';
+import RoomBattle from './components/RoomBattle';
 import AttendanceModal from './components/AttendanceModal';
 import AchievementGallery from './components/AchievementGallery';
 import { useAttendanceStore } from './store/attendanceStore';
 import { useTranslation } from './i18n/translations';
-import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users, Newspaper } from 'lucide-react';
+import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users, Newspaper, Swords } from 'lucide-react';
 import SocialProof from './components/SocialProof';
 import MarketTicker from './components/MarketTicker';
 
@@ -95,6 +96,10 @@ function App() {
 
   if (view === 'multiplayer') {
     return <LiveCompetition onBack={goHome} />;
+  }
+
+  if (view === 'room-battle') {
+    return <RoomBattle onBack={goHome} />;
   }
 
   if (view === 'rankings') {
@@ -242,6 +247,31 @@ function App() {
             <h3>{t('multiplayer.title')}</h3>
             <p className="mode-desc">{t('multiplayer.createDesc')}</p>
             <p className="mode-detail">{t('multiplayer.joinDesc')}</p>
+          </button>
+        </div>
+
+        <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
+          <button
+            className="mode-card mode-card-daily"
+            onClick={() => setView('room-battle')}
+            style={{ textAlign: 'left', position: 'relative' }}
+          >
+            <span style={{
+              position: 'absolute',
+              top: '0.6rem',
+              right: '0.6rem',
+              background: 'var(--accent-color)',
+              color: '#fff',
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              padding: '0.15rem 0.5rem',
+              borderRadius: '999px',
+              letterSpacing: '0.03em',
+            }}>New</span>
+            <Swords size={24} className="mode-card-icon" />
+            <h3>{t('roomBattle.title')}</h3>
+            <p className="mode-desc">{t('roomBattle.subtitle')}</p>
+            <p className="mode-detail">{t('roomBattle.splashDetail')}</p>
           </button>
         </div>
 

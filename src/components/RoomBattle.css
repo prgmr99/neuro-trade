@@ -1,0 +1,764 @@
+/* ===== RoomBattle ===== */
+
+/* ---- Shared layout ---- */
+.room-battle-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  overflow-y: auto;
+  padding: 1rem 0;
+}
+
+.room-battle-card {
+  padding: 2.5rem;
+  max-width: 520px;
+  width: 95%;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.room-battle-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  min-height: 44px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color var(--transition-fast), background var(--transition-fast);
+  margin-bottom: 1.5rem;
+  font-family: inherit;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .room-battle-back-btn:hover {
+    color: var(--text-primary);
+    background: var(--surface-light);
+  }
+}
+
+.room-battle-back-btn:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+.room-battle-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem 0;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.room-battle-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0 0 2rem 0;
+  line-height: 1.5;
+}
+
+/* ---- Input ---- */
+.room-battle-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+}
+
+.room-battle-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: var(--accent-ring);
+}
+
+.room-battle-input-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.room-battle-field {
+  margin-bottom: 1rem;
+}
+
+/* Room code input — large tabular */
+.room-code-input {
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+}
+
+/* ---- Buttons ---- */
+.room-battle-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 52px;
+  padding: 0.85rem 1.5rem;
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-md);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .room-battle-btn-primary:hover:not(:disabled) {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+}
+
+.room-battle-btn-primary:active:not(:disabled) {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+.room-battle-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.room-battle-btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.75rem 1.5rem;
+  background: var(--surface-light);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .room-battle-btn-secondary:hover:not(:disabled) {
+    background: var(--surface-color);
+    border-color: var(--accent-color);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.room-battle-btn-secondary:active:not(:disabled) {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+.room-battle-btn-secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.room-battle-btn-danger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .room-battle-btn-danger:hover {
+    background: rgba(240, 68, 82, 0.06);
+    color: var(--negative);
+    border-color: rgba(240, 68, 82, 0.2);
+  }
+}
+
+.room-battle-btn-danger:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+.room-battle-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* ---- Choice cards (create or join) ---- */
+.room-choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.room-choice-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.5rem 1rem;
+  min-height: 120px;
+  border: 2px solid var(--border-color);
+  border-radius: 20px;
+  background: var(--surface-color);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-family: inherit;
+  text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .room-choice-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+  }
+}
+
+.room-choice-card:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+.room-choice-card-icon {
+  color: var(--accent-color);
+}
+
+.room-choice-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.room-choice-card-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ---- Max players selector ---- */
+.room-max-players-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface-light);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.room-max-players-label {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.room-max-players-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 2rem;
+  text-align: center;
+}
+
+.room-max-players-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 700;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .room-max-players-btn:hover:not(:disabled) {
+    background: var(--accent-light);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+  }
+}
+
+.room-max-players-btn:active:not(:disabled) {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+.room-max-players-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ---- Error message ---- */
+.room-error {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  background: rgba(240, 68, 82, 0.07);
+  color: #e53935;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* ---- Lobby ---- */
+.room-code-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--accent-light);
+  border: 1.5px solid rgba(49, 130, 246, 0.2);
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+}
+
+.room-code-display-code {
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  color: var(--accent-color);
+  line-height: 1;
+}
+
+.room-code-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0.5rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(49, 130, 246, 0.25);
+  background: var(--surface-color);
+  color: var(--accent-color);
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .room-code-copy-btn:hover {
+    background: var(--accent-color);
+    color: #fff;
+    border-color: var(--accent-color);
+  }
+}
+
+.room-code-copy-btn:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+.room-code-copy-btn.copied {
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+}
+
+/* ---- Player count badge ---- */
+.room-player-count {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+/* ---- Player list ---- */
+.room-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.room-player-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  transition: background var(--transition-fast);
+  animation: fadeInUp 0.3s ease-out backwards;
+}
+
+.room-player-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.room-player-name {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.room-host-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.room-waiting-hint {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  padding: 0.75rem;
+  animation: fadeIn 0.5s ease-out 0.5s backwards;
+}
+
+/* ---- Playing state ---- */
+.room-battle-playing {
+  overflow: hidden;
+  height: 100dvh;
+}
+
+/* ---- Day info bar (playing overlay header) ---- */
+.room-day-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.room-day-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--accent-light);
+  color: var(--accent-color);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+}
+
+/* ---- Results / Finished ---- */
+.room-results {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.room-results-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 1.5rem 0;
+}
+
+.room-result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.room-result-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem;
+  background: var(--surface-light);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  transition: all var(--transition-fast);
+  animation: fadeInUp 0.35s ease-out backwards;
+}
+
+.room-result-card:nth-child(1) { animation-delay: 0.05s; }
+.room-result-card:nth-child(2) { animation-delay: 0.1s; }
+.room-result-card:nth-child(3) { animation-delay: 0.15s; }
+.room-result-card:nth-child(4) { animation-delay: 0.2s; }
+.room-result-card:nth-child(5) { animation-delay: 0.25s; }
+
+/* Podium styling — top 3 */
+.room-podium-1 {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.04));
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 2px 12px rgba(245, 158, 11, 0.12);
+}
+
+.room-podium-2 {
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.1), rgba(148, 163, 184, 0.04));
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.room-podium-3 {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.08), rgba(205, 127, 50, 0.04));
+  border-color: rgba(205, 127, 50, 0.25);
+}
+
+.room-result-medal {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.room-result-medal-1 {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1.5px solid rgba(245, 158, 11, 0.3);
+}
+
+.room-result-medal-2 {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+  border: 1.5px solid rgba(148, 163, 184, 0.3);
+}
+
+.room-result-medal-3 {
+  background: rgba(205, 127, 50, 0.1);
+  color: #cd7f32;
+  border: 1.5px solid rgba(205, 127, 50, 0.25);
+}
+
+.room-result-medal-n {
+  background: var(--surface-color);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  font-size: 0.85rem;
+}
+
+.room-result-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.room-result-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.room-result-value {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  margin-top: 0.15rem;
+}
+
+.room-result-return {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.room-result-return.positive {
+  color: var(--positive);
+}
+
+.room-result-return.negative {
+  color: var(--negative);
+}
+
+/* ---- Connecting / loading state ---- */
+.room-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .room-battle-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .room-battle-title {
+    font-size: 1.5rem;
+  }
+
+  .room-code-display-code {
+    font-size: 1.6rem;
+    letter-spacing: 0.2em;
+  }
+
+  .room-choice-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .room-choice-card {
+    padding: 1.25rem 0.75rem;
+    min-height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .room-battle-screen {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .room-battle-card {
+    padding: 1.5rem 1.25rem;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    width: 100%;
+    max-width: 100%;
+    min-height: 100dvh;
+  }
+
+  .room-battle-title {
+    font-size: 1.35rem;
+  }
+
+  .room-code-display-code {
+    font-size: 1.35rem;
+    letter-spacing: 0.15em;
+  }
+
+  .room-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .room-choice-card {
+    flex-direction: row;
+    min-height: 64px;
+    padding: 1rem 1.25rem;
+    text-align: left;
+  }
+
+  .room-code-display {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .room-battle-card,
+  .room-player-card,
+  .room-result-card,
+  .room-battle-btn-primary,
+  .room-battle-btn-secondary,
+  .room-battle-btn-danger,
+  .room-choice-card,
+  .room-code-copy-btn,
+  .room-max-players-btn,
+  .room-error,
+  .room-waiting-hint,
+  .room-results {
+    animation: none !important;
+    transition: none !important;
+  }
+}
