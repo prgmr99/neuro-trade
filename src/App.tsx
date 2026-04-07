@@ -25,6 +25,7 @@ function App() {
   const [modeParam, setModeParam] = useQueryState('mode');
   const [duelParam] = useQueryState('duel');
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
+  const [pendingView, setPendingView] = useState<'daily' | 'multiplayer' | 'room-battle' | null>(null);
   const [duelSeed, setDuelSeed] = useState<number | undefined>(undefined);
   const [showAchievements, setShowAchievements] = useState(false);
   const [attendanceInfo, setAttendanceInfo] = useState<{ show: boolean; isNewDay: boolean; streakBroken: boolean }>({ show: false, isNewDay: false, streakBroken: false });
@@ -63,9 +64,14 @@ function App() {
     setView(null);
     setModeParam(null);
     setSelectedMode(null);
+    setPendingView(null);
   };
 
   const startGame = () => {
+    if (pendingView) {
+      setView(pendingView, { history: 'push' });
+      return;
+    }
     if (!selectedMode) return;
     const scenario = SCENARIOS[selectedMode];
     if (selectedMode === 'classic') {
@@ -185,7 +191,7 @@ function App() {
         <div className="mode-selector">
           <button
             className={`mode-card ${selectedMode === 'classic' ? 'selected' : ''}`}
-            onClick={() => { setSelectedMode('classic'); trackModeSelected('classic'); }}
+            onClick={() => { setSelectedMode('classic'); setPendingView(null); trackModeSelected('classic'); }}
           >
             <TrendingUp size={24} className="mode-card-icon" />
             <h3>{t('app.classicTitle')}</h3>
@@ -201,7 +207,7 @@ function App() {
           )}
           <button
             className={`mode-card ${selectedMode === 'advanced' ? 'selected' : ''}`}
-            onClick={() => { setSelectedMode('advanced'); trackModeSelected('advanced'); }}
+            onClick={() => { setSelectedMode('advanced'); setPendingView(null); trackModeSelected('advanced'); }}
           >
             <BarChart3 size={24} className="mode-card-icon" />
             <h3>{t('app.advancedTitle')}</h3>
@@ -227,8 +233,8 @@ function App() {
 
         <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
           <button
-            className="mode-card mode-card-daily"
-            onClick={() => setView('daily', { history: 'push' })}
+            className={`mode-card mode-card-daily ${pendingView === 'daily' ? 'selected' : ''}`}
+            onClick={() => { setPendingView('daily'); setSelectedMode(null); }}
             style={{ textAlign: 'left' }}
           >
             <CalendarCheck size={24} className="mode-card-icon" />
@@ -243,8 +249,8 @@ function App() {
 
         <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
           <button
-            className="mode-card mode-card-daily"
-            onClick={() => setView('multiplayer', { history: 'push' })}
+            className={`mode-card mode-card-daily ${pendingView === 'multiplayer' ? 'selected' : ''}`}
+            onClick={() => { setPendingView('multiplayer'); setSelectedMode(null); }}
             style={{ textAlign: 'left', position: 'relative' }}
           >
             <span style={{
@@ -268,8 +274,8 @@ function App() {
 
         <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
           <button
-            className="mode-card mode-card-daily"
-            onClick={() => setView('room-battle', { history: 'push' })}
+            className={`mode-card mode-card-daily ${pendingView === 'room-battle' ? 'selected' : ''}`}
+            onClick={() => { setPendingView('room-battle'); setSelectedMode(null); }}
             style={{ textAlign: 'left', position: 'relative' }}
           >
             <span style={{
@@ -313,7 +319,7 @@ function App() {
           <button
             className="start-btn"
             onClick={startGame}
-            disabled={!selectedMode}
+            disabled={!selectedMode && !pendingView}
           >
             {t('app.start')}
           </button>
@@ -327,7 +333,7 @@ function App() {
         <button
           className="start-btn"
           onClick={startGame}
-          disabled={!selectedMode}
+          disabled={!selectedMode && !pendingView}
         >
           {t('app.start')}
         </button>

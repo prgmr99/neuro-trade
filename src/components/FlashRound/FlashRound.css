@@ -431,11 +431,13 @@
   animation: fadeInUp 0.5s ease-out 0.35s backwards;
 }
 
-.mode-card-daily:hover {
-  border-color: rgba(49, 130, 246, 0.3);
-  background: var(--surface-color);
-  box-shadow: var(--shadow-sm);
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .mode-card-daily:hover {
+    border-color: rgba(49, 130, 246, 0.3);
+    background: var(--surface-color);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+  }
 }
 
 /* ===== Responsive: Small mobile (<=480px) ===== */
