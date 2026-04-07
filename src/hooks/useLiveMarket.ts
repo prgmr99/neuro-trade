@@ -132,8 +132,42 @@ export function useLiveMarket(
       .select('*')
       .eq('id', 1)
       .single()
-      .then(({ data }) => {
-        if (!data) return;
+      .then(async ({ data, error }) => {
+        // If no row exists, create the initial market state so the first player can start
+        if (!data || error) {
+          const initialCycle = 1;
+          const initialSeed = computeSeed(initialCycle);
+          const newEndsAt = Date.now() + 60000;
+
+          const { data: upserted, error: upsertError } = await supabase
+            .from('live_market_state')
+            .upsert({
+              id: 1,
+              cycle_number: initialCycle,
+              day: 1,
+              seed: initialSeed,
+              day_ends_at: new Date(newEndsAt).toISOString(),
+              time_remaining: 60,
+              updated_at: new Date().toISOString(),
+            })
+            .select()
+            .single();
+
+          if (upsertError || !upserted) {
+            console.error('Failed to initialize live_market_state:', upsertError?.message);
+            return;
+          }
+
+          const state: LiveMarketState = {
+            cycleNumber: initialCycle,
+            day: 1,
+            seed: initialSeed,
+          };
+          setMarketState(state);
+          marketStateRef.current = state;
+          dayEndsAtRef.current = newEndsAt;
+          return;
+        }
 
         const state: LiveMarketState = {
           cycleNumber: data.cycle_number,
