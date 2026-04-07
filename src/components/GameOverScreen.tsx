@@ -4,7 +4,7 @@ import { useTranslation } from '../i18n/translations';
 import { supabase } from '../lib/supabase';
 import { GameMode } from '../data';
 import RankingBoard from './RankingBoard';
-import { generateGameShareText } from '../lib/shareText';
+import { generateGameShareText, getTitle } from '../lib/shareText';
 import { useLanguageStore } from '../store/useLanguageStore';
 
 interface Props {
@@ -30,6 +30,25 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
   const [submitting, setSubmitting] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | undefined>();
   const [copyLabel, setCopyLabel] = useState<'idle' | 'copied'>('idle');
+  const [duelCopied, setDuelCopied] = useState(false);
+
+  const title = getTitle(returnPct, language);
+  const resultEmoji = returnPct >= 50 ? '🚀' : returnPct >= 20 ? '🔥' : returnPct >= 10 ? '💪' : returnPct >= 0 ? '✅' : returnPct >= -10 ? '😬' : returnPct >= -20 ? '📉' : '💀';
+
+  const handleDuelChallenge = async () => {
+    const seed = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    const duelUrl = `${window.location.origin}?duel=${seed}`;
+    const challengeText = language === 'ko'
+      ? `NeuroTrade에서 수익률 ${isPositive ? '+' : ''}${returnPct.toFixed(1)}% 달성! 이길 수 있어? 👉 ${duelUrl}`
+      : `I scored ${isPositive ? '+' : ''}${returnPct.toFixed(1)}% on NeuroTrade! Think you can beat me? 👉 ${duelUrl}`;
+    try {
+      await navigator.clipboard.writeText(challengeText);
+      setDuelCopied(true);
+      setTimeout(() => setDuelCopied(false), 2000);
+    } catch {
+      // silently ignore
+    }
+  };
 
   const handleShareOnX = () => {
     const text = generateGameShareText({
@@ -129,16 +148,28 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
               {isPositive ? '+' : ''}{returnPct.toFixed(2)}%
             </span>
           </div>
+          <div className="gameover-title-badge">
+            {resultEmoji} {title}
+          </div>
         </div>
 
         <div className="gameover-share-buttons">
           <button className="gameover-copy-btn" onClick={handleShare}>
             {copyLabel === 'copied'
-              ? (language === 'ko' ? '복사됨! ✓' : 'Copied! ✓')
-              : (language === 'ko' ? '결과 복사' : 'Copy Results')}
+              ? t('gameOver.shareCopied') + ' ✓'
+              : t('gameOver.shareCopyResult')}
           </button>
           <button className="gameover-x-btn" onClick={handleShareOnX}>
-            {language === 'ko' ? 'X에 공유하기' : 'Share on X'}
+            {t('gameOver.shareOnX')}
+          </button>
+        </div>
+
+        <div className="gameover-duel-cta">
+          <p className="gameover-duel-label">{t('gameOver.duelChallenge')}</p>
+          <button className="gameover-duel-btn" onClick={handleDuelChallenge}>
+            {duelCopied
+              ? (language === 'ko' ? '링크 복사됨! ✓' : 'Link Copied! ✓')
+              : t('gameOver.duelChallengeBtn')}
           </button>
         </div>
 

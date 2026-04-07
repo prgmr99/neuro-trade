@@ -233,7 +233,20 @@ export const translations = {
       messageLabel: "Leave a Message",
       messagePlaceholder: "Share your strategy or thoughts...",
       submitAndRank: "Submit & View Rankings",
-      skipToRank: "Skip & View Rankings"
+      skipToRank: "Skip & View Rankings",
+      titleLegend: "Legendary Trader",
+      titleWolf: "Wolf of Wall Street",
+      titleSharp: "Sharp Analyst",
+      titleSteady: "Steady Hand",
+      titleBreakEven: "Break-Even Master",
+      titleNovice: "Learning the Ropes",
+      titleReverse: "Reads News Backwards",
+      titleDisaster: "Legendary Reverse Trader",
+      duelChallenge: "Challenge a friend with this scenario",
+      duelChallengeBtn: "Send Challenge",
+      shareCopyResult: "Copy Results",
+      shareCopied: "Copied!",
+      shareOnX: "Share on X"
     },
     ranking: {
       title: "Leaderboard",
@@ -539,7 +552,20 @@ export const translations = {
       messageLabel: "한마디 남기기",
       messagePlaceholder: "전략이나 소감을 공유해보세요...",
       submitAndRank: "제출하고 랭킹 보기",
-      skipToRank: "건너뛰고 랭킹 보기"
+      skipToRank: "건너뛰고 랭킹 보기",
+      titleLegend: "전설의 트레이더",
+      titleWolf: "월가의 늑대",
+      titleSharp: "감 잡는 분석가",
+      titleSteady: "안정적인 투자자",
+      titleBreakEven: "본전치기 장인",
+      titleNovice: "수업료 내는 중",
+      titleReverse: "뉴스를 거꾸로 읽는 자",
+      titleDisaster: "역대급 역투자자",
+      duelChallenge: "이 시나리오로 친구에게 도전장 보내기",
+      duelChallengeBtn: "도전장 보내기",
+      shareCopyResult: "결과 복사",
+      shareCopied: "복사됨!",
+      shareOnX: "X에 공유하기"
     },
     ranking: {
       title: "랭킹 보드",

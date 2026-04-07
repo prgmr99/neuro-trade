@@ -26,6 +26,25 @@ function getResultEmoji(returnPct: number): string {
   return '💀';
 }
 
+export function getTitle(returnPct: number, language: 'en' | 'ko'): string {
+  if (language === 'ko') {
+    if (returnPct >= 50)  return '전설의 트레이더';
+    if (returnPct >= 30)  return '월가의 늑대';
+    if (returnPct >= 10)  return '감 잡는 분석가';
+    if (returnPct >= 0)   return '본전치기 장인';
+    if (returnPct >= -10) return '수업료 내는 중';
+    if (returnPct >= -30) return '뉴스를 거꾸로 읽는 자';
+    return '역대급 역투자자';
+  }
+  if (returnPct >= 50)  return 'Legendary Trader';
+  if (returnPct >= 30)  return 'Wolf of Wall Street';
+  if (returnPct >= 10)  return 'Sharp Analyst';
+  if (returnPct >= 0)   return 'Break-Even Master';
+  if (returnPct >= -10) return 'Learning the Ropes';
+  if (returnPct >= -30) return 'Reads News Backwards';
+  return 'Legendary Reverse Trader';
+}
+
 export function generateGameShareText(params: {
   mode: string;
   maxDays: number;
@@ -71,16 +90,18 @@ export function generateGameShareText(params: {
     return `${arrow} ${paddedSymbol} ${bar}  ${pct}`;
   });
 
+  const title = getTitle(returnPct, language);
   const finalLabel = language === 'ko' ? '최종 수익' : 'Return';
   const finalLine =
     `${resultEmoji} ${finalLabel}: ${returnSign}${returnPct.toFixed(1)}%  ($${finalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })})`;
+  const titleLine = `🏷️ ${title}`;
 
   const ctaLine =
     language === 'ko'
-      ? `뉴스로 주식을 예측하는 트레이딩 게임`
-      : `Can you beat the market?`;
+      ? `이 수익률 이길 수 있어? 도전해봐 👇`
+      : `Think you can beat me? 👇`;
 
-  return [header, divider, ...stockLines, divider, finalLine, '', ctaLine, `${SITE_URL}  ${HASHTAG}`].join('\n');
+  return [header, divider, ...stockLines, divider, finalLine, titleLine, '', ctaLine, `${SITE_URL}  ${HASHTAG}`].join('\n');
 }
 
 export function generateFlashShareText(params: {
@@ -99,23 +120,23 @@ export function generateFlashShareText(params: {
 
   if (language === 'ko') {
     const choiceLabel = choice === 'allin' ? '전부 투자' : '패스';
-    const streakLabel = streak > 1 ? `\n연승: 🔥${streak}` : '';
+    const streakLabel = streak > 1 ? `\n🔥 ${streak}연승 달성!` : '';
     return [
       `NeuroTrade 플래시 ⚡`,
       `${stockSymbol}: ${choiceLabel} → ${pct} ${outcome}${streakLabel}`,
       '',
-      `뉴스로 주식을 예측하는 트레이딩 게임`,
+      `나보다 잘할 수 있어? 👇`,
       `${SITE_URL}  ${HASHTAG}`,
     ].join('\n');
   }
 
   const choiceLabel = choice === 'allin' ? 'ALL IN' : 'PASS';
-  const streakLabel = streak > 1 ? `\nStreak: 🔥${streak}` : '';
+  const streakLabel = streak > 1 ? `\n🔥 ${streak}-win streak!` : '';
   return [
     `NeuroTrade Flash ⚡`,
     `${stockSymbol}: ${choiceLabel} → ${pct} ${outcome}${streakLabel}`,
     '',
-    `Can you beat the market?`,
+    `Think you can beat me? 👇`,
     `${SITE_URL}  ${HASHTAG}`,
   ].join('\n');
 }

@@ -89,11 +89,60 @@
   animation: fadeInUp 0.5s ease-out 0.5s backwards;
 }
 
+.gameover-title-badge {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: inline-block;
+  animation: fadeInUp 0.3s ease-out 0.6s backwards;
+}
+
 .gameover-share-buttons {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   animation: fadeInUp 0.5s ease-out 0.3s backwards;
+}
+
+.gameover-duel-cta {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--surface-light);
+  border: 1.5px dashed var(--border-color);
+  border-radius: 14px;
+  text-align: center;
+  animation: fadeInUp 0.5s ease-out 0.35s backwards;
+}
+
+.gameover-duel-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.625rem;
+  font-weight: 500;
+}
+
+.gameover-duel-btn {
+  padding: 0.625rem 1.5rem;
+  background: transparent;
+  border: 1.5px solid var(--positive);
+  color: var(--positive);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: all 0.2s;
+  min-height: 44px;
+}
+
+.gameover-duel-btn:active {
+  transform: scale(0.97);
+  opacity: 0.85;
 }
 
 .gameover-copy-btn {
