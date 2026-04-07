@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { trackAchievementUnlocked } from '../lib/analytics';
 
 interface UnlockRecord {
   unlockedAt: string;
@@ -63,6 +64,7 @@ export const useAchievementStore = create<AchievementState>()(
             [id]: { unlockedAt: new Date().toISOString() },
           },
         }));
+        trackAchievementUnlocked(id, 'achievement');
       },
 
       recordGamePlayed: (mode) => {

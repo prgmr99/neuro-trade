@@ -26,6 +26,65 @@ function getResultEmoji(returnPct: number): string {
   return '💀';
 }
 
+// Provocative CTAs grouped by result tone.
+// Random selection happens at share-time so each share has a different vibe.
+const CTAS_KO = {
+  win: [
+    '이 수익률 이길 수 있어? 도전해봐 👇',
+    '주식을 잘한다면 증명해보세요 👇',
+    '나보다 잘할 자신 있어? 👇',
+    '뉴스 분석력 인정? 너도 해봐 👇',
+    '이 정도는 우습다고? 직접 해봐 👇',
+    '월스트리트는 이런 사람을 찾는다 👇',
+    '감으로 한 거 아님. 직접 해보면 앎 👇',
+  ],
+  even: [
+    '본전은 지켰다. 너는? 👇',
+    '나보다 잘할 수 있을까? 👇',
+    '뉴스 읽는 감각, 테스트해봐 👇',
+    '주식 센스 시험해볼래? 👇',
+    '이 게임 한 번 해봐. 생각보다 어려움 👇',
+  ],
+  lose: [
+    '나는 망했다. 너는 할 수 있어? 👇',
+    '리딩방보다 못함. 직접 증명해봐 👇',
+    '주식 잘하는 사람만 들어와 👇',
+    '내 수익률 이기면 인정 👇',
+    '쉬워 보이지? 직접 해보면 다름 👇',
+    '나도 망했으니까 너도 와봐 👇',
+  ],
+};
+
+const CTAS_EN = {
+  win: [
+    'Think you can beat me? 👇',
+    'If you\'re good at stocks, prove it 👇',
+    'Bet you can\'t top this 👇',
+    'Wall Street is hiring. Show them 👇',
+    'Skill, not luck. Try it 👇',
+    'I read the news. Did you? 👇',
+  ],
+  even: [
+    'I broke even. Can you do better? 👇',
+    'Test your market instinct 👇',
+    'Looks easy? Try it yourself 👇',
+    'Read the news. Beat the market 👇',
+  ],
+  lose: [
+    'I tanked. Think you can do better? 👇',
+    'Worse than a coin flip. Beat me 👇',
+    'Embarrassing result. Your turn 👇',
+    'I lost. Prove you\'re smarter 👇',
+    'Easier said than done. Try it 👇',
+  ],
+};
+
+function pickCta(returnPct: number, language: 'en' | 'ko'): string {
+  const pool = language === 'ko' ? CTAS_KO : CTAS_EN;
+  const bucket = returnPct >= 5 ? pool.win : returnPct >= -5 ? pool.even : pool.lose;
+  return bucket[Math.floor(Math.random() * bucket.length)];
+}
+
 export function getTitle(returnPct: number, language: 'en' | 'ko'): string {
   if (language === 'ko') {
     if (returnPct >= 50)  return '전설의 트레이더';
@@ -96,10 +155,7 @@ export function generateGameShareText(params: {
     `${resultEmoji} ${finalLabel}: ${returnSign}${returnPct.toFixed(1)}%  ($${finalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })})`;
   const titleLine = `🏷️ ${title}`;
 
-  const ctaLine =
-    language === 'ko'
-      ? `이 수익률 이길 수 있어? 도전해봐 👇`
-      : `Think you can beat me? 👇`;
+  const ctaLine = pickCta(returnPct, language);
 
   return [header, divider, ...stockLines, divider, finalLine, titleLine, '', ctaLine, `${SITE_URL}  ${HASHTAG}`].join('\n');
 }
@@ -118,6 +174,9 @@ export function generateFlashShareText(params: {
   const pct = `${sign}${resultPct.toFixed(1)}%`;
   const outcome = won ? '✅' : '❌';
 
+  // Flash CTA tone is based on win/loss rather than return %
+  const ctaLine = pickCta(won ? 10 : -10, language);
+
   if (language === 'ko') {
     const choiceLabel = choice === 'allin' ? '전부 투자' : '패스';
     const streakLabel = streak > 1 ? `\n🔥 ${streak}연승 달성!` : '';
@@ -125,7 +184,7 @@ export function generateFlashShareText(params: {
       `NeuroTrade 플래시 ⚡`,
       `${stockSymbol}: ${choiceLabel} → ${pct} ${outcome}${streakLabel}`,
       '',
-      `나보다 잘할 수 있어? 👇`,
+      ctaLine,
       `${SITE_URL}  ${HASHTAG}`,
     ].join('\n');
   }
@@ -136,7 +195,7 @@ export function generateFlashShareText(params: {
     `NeuroTrade Flash ⚡`,
     `${stockSymbol}: ${choiceLabel} → ${pct} ${outcome}${streakLabel}`,
     '',
-    `Think you can beat me? 👇`,
+    ctaLine,
     `${SITE_URL}  ${HASHTAG}`,
   ].join('\n');
 }

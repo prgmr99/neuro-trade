@@ -16,6 +16,22 @@
     <link rel="alternate" hreflang="ko" href="https://neuro-game.yeomniverse.com/" />
     <link rel="alternate" hreflang="x-default" href="https://neuro-game.yeomniverse.com/" />
 
+    <!-- Google Analytics 4 (loaded dynamically to avoid errors when ID is missing) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      (function(){
+        var id = '%VITE_GA_MEASUREMENT_ID%';
+        if (!id || id.indexOf('%') !== -1) return;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+        document.head.appendChild(s);
+        gtag('js', new Date());
+        gtag('config', id);
+      })();
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />

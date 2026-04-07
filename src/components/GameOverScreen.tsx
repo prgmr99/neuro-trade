@@ -6,6 +6,7 @@ import { GameMode } from '../data';
 import RankingBoard from './RankingBoard';
 import { generateGameShareText, getTitle } from '../lib/shareText';
 import { useLanguageStore } from '../store/useLanguageStore';
+import { trackGameCompleted, trackShareClicked } from '../lib/analytics';
 
 interface Props {
   mode: GameMode;
@@ -35,12 +36,24 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
   const title = getTitle(returnPct, language);
   const resultEmoji = returnPct >= 50 ? '🚀' : returnPct >= 20 ? '🔥' : returnPct >= 10 ? '💪' : returnPct >= 0 ? '✅' : returnPct >= -10 ? '😬' : returnPct >= -20 ? '📉' : '💀';
 
+  // Track game completion on mount
+  React.useEffect(() => {
+    trackGameCompleted({
+      mode,
+      return_pct: Math.round(returnPct * 100) / 100,
+      final_value: Math.round(finalValue),
+      initial_value: initialValue,
+      days_played: dayState.maxDays,
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleDuelChallenge = async () => {
     const seed = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
     const duelUrl = `${window.location.origin}?duel=${seed}`;
     const challengeText = language === 'ko'
       ? `NeuroTrade에서 수익률 ${isPositive ? '+' : ''}${returnPct.toFixed(1)}% 달성! 이길 수 있어? 👉 ${duelUrl}`
       : `I scored ${isPositive ? '+' : ''}${returnPct.toFixed(1)}% on NeuroTrade! Think you can beat me? 👉 ${duelUrl}`;
+    trackShareClicked({ share_type: 'duel_challenge', mode, return_pct: Math.round(returnPct * 100) / 100 });
     try {
       await navigator.clipboard.writeText(challengeText);
       setDuelCopied(true);
@@ -51,6 +64,7 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
   };
 
   const handleShareOnX = () => {
+    trackShareClicked({ share_type: 'x', mode, return_pct: Math.round(returnPct * 100) / 100 });
     const text = generateGameShareText({
       mode,
       maxDays: dayState.maxDays,
@@ -64,6 +78,7 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
   };
 
   const handleShare = async () => {
+    trackShareClicked({ share_type: 'copy', mode, return_pct: Math.round(returnPct * 100) / 100 });
     const text = generateGameShareText({
       mode,
       maxDays: dayState.maxDays,

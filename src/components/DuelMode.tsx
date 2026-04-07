@@ -6,6 +6,7 @@ import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../data';
 import { supabase } from '../lib/supabase';
 import { getPlayerId } from '../lib/identity';
 import Layout from './Layout';
+import { trackDuelCreated, trackDuelJoined, trackGameStarted } from '../lib/analytics';
 
 interface Props {
   onBack: () => void;
@@ -69,6 +70,12 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
     const arc = selectClassicArc(CLASSIC_ARCS, seed);
     setInitialState(scenario.stocks, arc.news, scenario.maxDays, scenario.startingCash, seed);
     setDuelState('playing');
+    trackGameStarted('duel', false);
+    if (isPlayer1Ref.current) {
+      trackDuelCreated(seed);
+    } else {
+      trackDuelJoined(seed);
+    }
   };
 
   // Compute final portfolio value

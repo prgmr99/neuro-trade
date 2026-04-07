@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { getPlayerId } from '../lib/identity';
 import { generateGameShareText } from '../lib/shareText';
 import { useTranslation } from '../i18n/translations';
+import { trackDailyPlayed, trackShareClicked, trackGameStarted } from '../lib/analytics';
 import Layout from './Layout';
 
 interface Props {
@@ -140,6 +141,7 @@ export default function DailyChallenge({ onBack }: Props) {
 
     await fetchLeaderboard();
     setPhase('result');
+    trackDailyPlayed({ return_pct: Math.round(returnPct * 100) / 100 });
   }, [portfolio, stocks, todayStr, storageKey, fetchLeaderboard]);
 
   const startChallenge = useCallback(() => {
@@ -153,10 +155,12 @@ export default function DailyChallenge({ onBack }: Props) {
       seed
     );
     setPhase('playing');
+    trackGameStarted('daily', false);
   }, [setInitialState]);
 
   const handleCopyResults = useCallback(async () => {
     if (!savedResult) return;
+    trackShareClicked({ share_type: 'copy', mode: 'daily', return_pct: savedResult.returnPct });
 
     const text = generateGameShareText({
       mode: 'Daily',

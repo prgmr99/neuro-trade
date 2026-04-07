@@ -4,6 +4,7 @@ import { FLASH_SCENARIOS, FlashScenario } from '../data/flash';
 import { useAchievementStore } from '../store/achievementStore';
 import { useTranslation } from '../i18n/translations';
 import { generateFlashShareText } from '../lib/shareText';
+import { trackFlashPlayed, trackShareClicked } from '../lib/analytics';
 
 interface Props {
   onBack: () => void;
@@ -54,6 +55,13 @@ export default function FlashRound({ onBack }: Props) {
       const playerWon = c === 'allin' ? priceWentUp : !priceWentUp;
       setWon(playerWon);
       recordFlashResult(playerWon);
+      trackFlashPlayed({
+        choice: c,
+        won: playerWon,
+        result_pct: Math.round((actualMultiplier - 1) * 10000) / 100,
+        streak: playerWon ? flashWinStreak + 1 : 0,
+        stock_symbol: scenario.stock.symbol,
+      });
     },
     [scenario, phase, recordFlashResult]
   );
@@ -80,6 +88,7 @@ export default function FlashRound({ onBack }: Props) {
 
   const handleFlashShare = useCallback(async () => {
     if (!scenario || choice === null) return;
+    trackShareClicked({ share_type: 'copy', mode: 'flash' });
     const resultPct = (finalMultiplier - 1) * 100;
     const text = generateFlashShareText({
       stockSymbol: scenario.stock.symbol,

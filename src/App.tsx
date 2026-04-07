@@ -18,6 +18,7 @@ import { useTranslation } from './i18n/translations';
 import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users, Newspaper, Swords } from 'lucide-react';
 import SocialProof from './components/SocialProof';
 import MarketTicker from './components/MarketTicker';
+import { trackGameStarted, trackModeSelected } from './lib/analytics';
 
 function App() {
   const [view, setView] = useQueryState('view');
@@ -78,6 +79,7 @@ function App() {
     }
     setModeParam(selectedMode);
     setView('game');
+    trackGameStarted(selectedMode, false);
   };
 
   // --- Views based on URL query param ---
@@ -183,7 +185,7 @@ function App() {
         <div className="mode-selector">
           <button
             className={`mode-card ${selectedMode === 'classic' ? 'selected' : ''}`}
-            onClick={() => setSelectedMode('classic')}
+            onClick={() => { setSelectedMode('classic'); trackModeSelected('classic'); }}
           >
             <TrendingUp size={24} className="mode-card-icon" />
             <h3>{t('app.classicTitle')}</h3>
@@ -192,7 +194,7 @@ function App() {
           </button>
           <button
             className={`mode-card ${selectedMode === 'advanced' ? 'selected' : ''}`}
-            onClick={() => setSelectedMode('advanced')}
+            onClick={() => { setSelectedMode('advanced'); trackModeSelected('advanced'); }}
           >
             <BarChart3 size={24} className="mode-card-icon" />
             <h3>{t('app.advancedTitle')}</h3>
