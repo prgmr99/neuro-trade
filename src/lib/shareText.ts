@@ -1,4 +1,4 @@
-const SITE_URL = 'https://neuro-game.yeomniverse.com';
+const SITE_URL = 'https://neuro-trade.yeomniverse.com';
 const HASHTAG = '#NeuroTrade';
 
 function getBar(returnPct: number): string {

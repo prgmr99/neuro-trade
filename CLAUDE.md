@@ -33,7 +33,7 @@ VITE_SUPABASE_ANON_KEY=<Supabase anon/public key>
 
 ### 배포
 - **호스팅**: Vercel
-- **프로덕션 URL**: `https://neuro-game.yeomniverse.com`
+- **프로덕션 URL**: `https://neuro-trade.yeomniverse.com`
 - **Analytics**: `@vercel/analytics` — `main.tsx`에서 `<Analytics />` 컴포넌트로 자동 수집
 - 공유 텍스트에 프로덕션 URL이 하드코딩됨 (`src/lib/shareText.ts`)
 

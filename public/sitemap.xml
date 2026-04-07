@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://neuro-game.yeomniverse.com/</loc>
+    <loc>https://neuro-trade.yeomniverse.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://neuro-game.yeomniverse.com/?view=flash</loc>
+    <loc>https://neuro-trade.yeomniverse.com/?view=flash</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://neuro-game.yeomniverse.com/?view=daily</loc>
+    <loc>https://neuro-trade.yeomniverse.com/?view=daily</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://neuro-game.yeomniverse.com/?view=duel</loc>
+    <loc>https://neuro-trade.yeomniverse.com/?view=duel</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://neuro-game.yeomniverse.com/?view=multiplayer</loc>
+    <loc>https://neuro-trade.yeomniverse.com/?view=multiplayer</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://neuro-game.yeomniverse.com/?view=rankings</loc>
+    <loc>https://neuro-trade.yeomniverse.com/?view=rankings</loc>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>

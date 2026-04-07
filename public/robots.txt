@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://neuro-game.yeomniverse.com/sitemap.xml
+Sitemap: https://neuro-trade.yeomniverse.com/sitemap.xml
