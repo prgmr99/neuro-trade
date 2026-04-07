@@ -192,6 +192,13 @@ function App() {
             <p className="mode-desc">{t('app.classicDesc')}</p>
             <p className="mode-detail">{t('app.classicDetail')}</p>
           </button>
+          {selectedMode === 'classic' && (
+            <div className="instructions instructions-mobile-only">
+              <p>{t('app.instruction1Classic')}</p>
+              <p>{t('app.instruction2')}</p>
+              <p>{t('app.instruction3Classic')}</p>
+            </div>
+          )}
           <button
             className={`mode-card ${selectedMode === 'advanced' ? 'selected' : ''}`}
             onClick={() => { setSelectedMode('advanced'); trackModeSelected('advanced'); }}
@@ -201,10 +208,17 @@ function App() {
             <p className="mode-desc">{t('app.advancedDesc')}</p>
             <p className="mode-detail">{t('app.advancedDetail')}</p>
           </button>
+          {selectedMode === 'advanced' && (
+            <div className="instructions instructions-mobile-only">
+              <p>{t('app.instruction1Advanced')}</p>
+              <p>{t('app.instruction2')}</p>
+              <p>{t('app.instruction3Advanced')}</p>
+            </div>
+          )}
         </div>
 
         {selectedMode && (
-          <div className="instructions">
+          <div className="instructions instructions-desktop-only">
             <p>{t(selectedMode === 'classic' ? 'app.instruction1Classic' : 'app.instruction1Advanced')}</p>
             <p>{t('app.instruction2')}</p>
             <p>{t(selectedMode === 'classic' ? 'app.instruction3Classic' : 'app.instruction3Advanced')}</p>
@@ -214,7 +228,7 @@ function App() {
         <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
           <button
             className="mode-card mode-card-daily"
-            onClick={() => setView('daily')}
+            onClick={() => setView('daily', { history: 'push' })}
             style={{ textAlign: 'left' }}
           >
             <CalendarCheck size={24} className="mode-card-icon" />
@@ -230,7 +244,7 @@ function App() {
         <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
           <button
             className="mode-card mode-card-daily"
-            onClick={() => setView('multiplayer')}
+            onClick={() => setView('multiplayer', { history: 'push' })}
             style={{ textAlign: 'left', position: 'relative' }}
           >
             <span style={{
@@ -255,7 +269,7 @@ function App() {
         <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
           <button
             className="mode-card mode-card-daily"
-            onClick={() => setView('room-battle')}
+            onClick={() => setView('room-battle', { history: 'push' })}
             style={{ textAlign: 'left', position: 'relative' }}
           >
             <span style={{

@@ -66,6 +66,21 @@
   min-height: 5.5em;
 }
 
+.instructions-mobile-only {
+  display: none;
+  min-height: unset;
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .instructions-mobile-only {
+    display: block;
+  }
+  .instructions-desktop-only {
+    display: none;
+  }
+}
+
 .mode-select-label {
   font-size: 1rem;
   font-weight: 600;
