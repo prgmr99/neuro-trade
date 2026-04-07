@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useGameStore } from '../store/gameStore';
-import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../data';
-import { dateSeed } from '../lib/prng';
-import { supabase } from '../lib/supabase';
-import { getPlayerId } from '../lib/identity';
-import { generateGameShareText } from '../lib/shareText';
-import { useTranslation } from '../i18n/translations';
-import { trackDailyPlayed, trackShareClicked, trackGameStarted } from '../lib/analytics';
-import Layout from './Layout';
+import { useGameStore } from '../../store/gameStore';
+import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../../data';
+import { dateSeed } from '../../lib/prng';
+import { supabase } from '../../lib/supabase';
+import { getPlayerId } from '../../lib/identity';
+import { generateGameShareText } from '../../lib/shareText';
+import { useTranslation } from '../../i18n/translations';
+import { trackDailyPlayed, trackShareClicked, trackGameStarted } from '../../lib/analytics';
+import Layout from '../Layout/Layout';
 
 interface Props {
   onBack: () => void;

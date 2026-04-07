@@ -13,13 +13,13 @@ import {
   DoorOpen,
   DoorClosed,
 } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import { useRoomBattle } from '../hooks/useRoomBattle';
-import { useGameStore } from '../store/gameStore';
-import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../data';
-import { useTranslation } from '../i18n/translations';
-import MultiplayerHUD from './MultiplayerHUD';
-import Layout from './Layout';
+import { useAuth } from '../../hooks/useAuth';
+import { useRoomBattle } from '../../hooks/useRoomBattle';
+import { useGameStore } from '../../store/gameStore';
+import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../../data';
+import { useTranslation } from '../../i18n/translations';
+import MultiplayerHUD from '../MultiplayerHUD/MultiplayerHUD';
+import Layout from '../Layout/Layout';
 import './RoomBattle.css';
 
 interface Props {

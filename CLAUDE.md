@@ -213,7 +213,7 @@ Supabase 기반 실시간 멀티플레이어. 모든 참가자가 같은 시드/
 - **번역 키 하드코딩 금지**: 유저에게 보이는 모든 텍스트는 `t()` 또는 `LocalizedString`을 거친다. 영어 문자열을 JSX에 직접 넣지 않는다.
 - **컴포넌트 파일 비대화**: 하나의 컴포넌트 파일이 500줄을 넘으면 분리를 검토한다.
 - **`useEffect` 안에서 게임 로직 실행 금지**: 게임 상태 변경은 반드시 Zustand action을 통해서. `useEffect`는 사이드 이펙트(DOM, 외부 API)에만.
-- **`index.css`에 컴포넌트 스타일 추가 금지**: `index.css`는 글로벌 변수와 유틸리티만. 컴포넌트 스타일은 `src/components/{Component}.css`에.
+- **`index.css`에 컴포넌트 스타일 추가 금지**: `index.css`는 글로벌 변수와 유틸리티만. 컴포넌트 스타일은 `src/components/{Component}/{Component}.css`에.
 
 ### 데이터
 - **뉴스 effect 밸런스 위반 금지**: 위 "Game Balance Rules" 섹션의 모드별 제한을 초과하는 effect 값 사용 금지.
@@ -224,7 +224,10 @@ Supabase 기반 실시간 멀티플레이어. 모든 참가자가 같은 시드/
 ### 파일 구조
 ```
 src/
-  components/     # React 컴포넌트 (.tsx) + 동명의 CSS 파일
+  components/               # React 컴포넌트 — 컴포넌트별 서브디렉토리
+    ComponentName/
+      ComponentName.tsx     # 컴포넌트 구현
+      ComponentName.css     # 컴포넌트 전용 스타일 (없으면 생략)
   store/          # Zustand stores (gameStore, languageStore, attendanceStore, achievementStore)
   hooks/          # Custom hooks (useAuth, useLiveMarket)
   data/           # 게임 시나리오, 뉴스, 주식 데이터

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
-import { useTranslation } from '../i18n/translations';
+import { supabase } from '../../lib/supabase';
+import { useTranslation } from '../../i18n/translations';
 
 interface SocialProofData {
   totalTraders: number;

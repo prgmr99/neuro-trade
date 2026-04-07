@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useGameStore } from '../store/gameStore';
-import { useTranslation } from '../i18n/translations';
-import { supabase } from '../lib/supabase';
-import { GameMode } from '../data';
-import RankingBoard from './RankingBoard';
-import { generateGameShareText, getTitle } from '../lib/shareText';
-import { useLanguageStore } from '../store/useLanguageStore';
-import { trackGameCompleted, trackShareClicked } from '../lib/analytics';
+import { useGameStore } from '../../store/gameStore';
+import { useTranslation } from '../../i18n/translations';
+import { supabase } from '../../lib/supabase';
+import { GameMode } from '../../data';
+import RankingBoard from '../RankingBoard/RankingBoard';
+import { generateGameShareText, getTitle } from '../../lib/shareText';
+import { useLanguageStore } from '../../store/useLanguageStore';
+import { trackGameCompleted, trackShareClicked } from '../../lib/analytics';
 
 interface Props {
   mode: GameMode;

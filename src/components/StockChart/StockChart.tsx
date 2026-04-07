@@ -11,7 +11,8 @@ import {
   ReferenceLine,
   Area,
 } from 'recharts';
-import { DayPrice } from '../types';
+import { DayPrice } from '../../types';
+
 
 type ChartType = 'candle' | 'line';
 

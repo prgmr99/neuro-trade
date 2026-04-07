@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { useLiveMarket } from '../hooks/useLiveMarket';
-import { useGameStore } from '../store/gameStore';
-import { SCENARIOS, CLASSIC_ARCS, CLASSIC_CHAINS, selectArcFromChain, buildPhaseNews } from '../data';
-import MultiplayerHUD from './MultiplayerHUD';
-import Layout from './Layout';
-import { useTranslation } from '../i18n/translations';
+import { useAuth } from '../../hooks/useAuth';
+import { useLiveMarket } from '../../hooks/useLiveMarket';
+import { useGameStore } from '../../store/gameStore';
+import { SCENARIOS, CLASSIC_ARCS, CLASSIC_CHAINS, selectArcFromChain, buildPhaseNews } from '../../data';
+import MultiplayerHUD from '../MultiplayerHUD/MultiplayerHUD';
+import Layout from '../Layout/Layout';
+import { useTranslation } from '../../i18n/translations';
 
 interface Props {
   onBack: () => void;

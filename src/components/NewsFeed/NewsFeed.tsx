@@ -1,9 +1,9 @@
 import React from 'react';
-import { useGameStore } from '../store/gameStore';
-import { useAttendanceStore } from '../store/attendanceStore';
+import { useGameStore } from '../../store/gameStore';
+import { useAttendanceStore } from '../../store/attendanceStore';
 import { ChevronDown, ChevronUp, Globe, TrendingUp, TrendingDown, Eye } from 'lucide-react';
-import { useTranslation } from '../i18n/translations';
-import { News } from '../types';
+import { useTranslation } from '../../i18n/translations';
+import { News } from '../../types';
 
 const HintBadges: React.FC<{ news: News }> = ({ news }) => {
   const effects = Object.entries(news.effect);

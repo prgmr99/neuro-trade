@@ -1,14 +1,14 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { useGameStore } from '../store/gameStore';
+import { useGameStore } from '../../store/gameStore';
 import { useQueryState, parseAsStringLiteral } from 'nuqs';
 import { Newspaper, TrendingUp, Briefcase, ChevronRight, Globe, Play, Trophy } from 'lucide-react';
-import { useTranslation } from '../i18n/translations';
-import { useLanguageStore } from '../store/useLanguageStore';
+import { useTranslation } from '../../i18n/translations';
+import { useLanguageStore } from '../../store/useLanguageStore';
 
-import DayEndSummary from './DayEndSummary';
-import Portfolio from './Portfolio';
-import Market from './Market';
-import NewsFeed from './NewsFeed';
+import DayEndSummary from '../DayEndSummary/DayEndSummary';
+import Portfolio from '../Portfolio/Portfolio';
+import Market from '../Market/Market';
+import NewsFeed from '../NewsFeed/NewsFeed';
 
 
 const tabOptions = ['news', 'market', 'portfolio'] as const;

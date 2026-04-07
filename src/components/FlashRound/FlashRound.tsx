@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { mulberry32 } from '../lib/prng';
-import { FLASH_SCENARIOS, FlashScenario } from '../data/flash';
-import { useAchievementStore } from '../store/achievementStore';
-import { useTranslation } from '../i18n/translations';
-import { generateFlashShareText } from '../lib/shareText';
-import { trackFlashPlayed, trackShareClicked } from '../lib/analytics';
+import { mulberry32 } from '../../lib/prng';
+import { FLASH_SCENARIOS, FlashScenario } from '../../data/flash';
+import { useAchievementStore } from '../../store/achievementStore';
+import { useTranslation } from '../../i18n/translations';
+import { generateFlashShareText } from '../../lib/shareText';
+import { trackFlashPlayed, trackShareClicked } from '../../lib/analytics';
 
 interface Props {
   onBack: () => void;

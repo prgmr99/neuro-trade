@@ -1,6 +1,6 @@
 import type React from 'react';
-import { useGameStore } from '../store/gameStore';
-import { useTranslation } from '../i18n/translations';
+import { useGameStore } from '../../store/gameStore';
+import { useTranslation } from '../../i18n/translations';
 
 interface Props {
   onClose: () => void;

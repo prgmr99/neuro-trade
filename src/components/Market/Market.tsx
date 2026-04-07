@@ -1,11 +1,11 @@
 import React, { useState, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { useGameStore } from '../store/gameStore';
+import { useGameStore } from '../../store/gameStore';
 import { TrendingUp, TrendingDown, BarChart2, X, CandlestickChart, LineChart } from 'lucide-react';
-import StockChart from './StockChart';
-import { useTranslation } from '../i18n/translations';
-import TradeToast, { TradeToastData } from './TradeToast';
-import { playBuySound, playSellSound, playErrorSound } from '../lib/sounds';
+import StockChart from '../StockChart/StockChart';
+import { useTranslation } from '../../i18n/translations';
+import TradeToast, { TradeToastData } from '../TradeToast/TradeToast';
+import { playBuySound, playSellSound, playErrorSound } from '../../lib/sounds';
 
 const Market: React.FC = () => {
   const { stocks, portfolio, buyStock, sellStock } = useGameStore();

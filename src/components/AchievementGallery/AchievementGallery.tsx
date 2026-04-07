@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useTranslation } from '../i18n/translations';
-import { ACHIEVEMENTS, Achievement } from '../lib/achievements';
-import { useAchievementStore } from '../store/achievementStore';
+import { useTranslation } from '../../i18n/translations';
+import { ACHIEVEMENTS, Achievement } from '../../lib/achievements';
+import { useAchievementStore } from '../../store/achievementStore';
 import './AchievementGallery.css';
 
 interface Props {

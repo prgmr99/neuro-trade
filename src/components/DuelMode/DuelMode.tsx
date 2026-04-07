@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQueryState } from 'nuqs';
-import { useGameStore } from '../store/gameStore';
-import { useTranslation } from '../i18n/translations';
-import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../data';
-import { supabase } from '../lib/supabase';
-import { getPlayerId } from '../lib/identity';
-import Layout from './Layout';
-import { trackDuelCreated, trackDuelJoined, trackGameStarted } from '../lib/analytics';
+import { useGameStore } from '../../store/gameStore';
+import { useTranslation } from '../../i18n/translations';
+import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../../data';
+import { supabase } from '../../lib/supabase';
+import { getPlayerId } from '../../lib/identity';
+import Layout from '../Layout/Layout';
+import { trackDuelCreated, trackDuelJoined, trackGameStarted } from '../../lib/analytics';
 
 interface Props {
   onBack: () => void;

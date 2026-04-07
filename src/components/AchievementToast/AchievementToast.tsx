@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from '../i18n/translations';
-import { ACHIEVEMENTS } from '../lib/achievements';
+import { useTranslation } from '../../i18n/translations';
+import { ACHIEVEMENTS } from '../../lib/achievements';
 import './AchievementToast.css';
 
 interface Props {

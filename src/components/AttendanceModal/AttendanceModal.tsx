@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { useAttendanceStore, AttendanceReward } from '../store/attendanceStore';
-import { useLanguageStore } from '../store/useLanguageStore';
+import { useAttendanceStore, AttendanceReward } from '../../store/attendanceStore';
+import { useLanguageStore } from '../../store/useLanguageStore';
 import './AttendanceModal.css';
 
 interface Props {

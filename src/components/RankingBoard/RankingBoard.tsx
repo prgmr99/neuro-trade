@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
-import { RankingEntry } from '../types';
-import { useTranslation } from '../i18n/translations';
+import { supabase } from '../../lib/supabase';
+import { RankingEntry } from '../../types';
+import { useTranslation } from '../../i18n/translations';
 
 interface Props {
   highlightId?: string;

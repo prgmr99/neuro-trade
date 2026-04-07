@@ -1,8 +1,8 @@
 import React from 'react';
 import { Users, Trophy } from 'lucide-react';
-import { useTranslation } from '../i18n/translations';
+import { useTranslation } from '../../i18n/translations';
 
-import { LivePlayer } from '../hooks/useLiveMarket';
+import { LivePlayer } from '../../hooks/useLiveMarket';
 import './MultiplayerHUD.css';
 
 interface MultiplayerHUDProps {
