@@ -71,6 +71,13 @@ body {
   box-shadow: var(--shadow-md);
 }
 
+@media (max-width: 768px) {
+  .glass-card {
+    border: none;
+    border-radius: 0;
+  }
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
