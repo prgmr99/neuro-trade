@@ -101,9 +101,10 @@
   margin-bottom: 1rem;
 }
 
-/* Room code input — large monospace */
+/* Room code input — large tabular */
 .room-code-input {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
   font-size: 1.75rem;
   font-weight: 800;
   letter-spacing: 0.25em;
@@ -373,7 +374,8 @@
 }
 
 .room-code-display-code {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
   font-size: 2rem;
   font-weight: 900;
   letter-spacing: 0.3em;
@@ -733,5 +735,30 @@
     min-height: 64px;
     padding: 1rem 1.25rem;
     text-align: left;
+  }
+
+  .room-code-display {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .room-battle-card,
+  .room-player-card,
+  .room-result-card,
+  .room-battle-btn-primary,
+  .room-battle-btn-secondary,
+  .room-battle-btn-danger,
+  .room-choice-card,
+  .room-code-copy-btn,
+  .room-max-players-btn,
+  .room-error,
+  .room-waiting-hint,
+  .room-results {
+    animation: none !important;
+    transition: none !important;
   }
 }

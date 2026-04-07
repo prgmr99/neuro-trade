@@ -64,6 +64,7 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
 
   // Keep playerName in a ref (set at join/create time)
   const playerNameRef = useRef<string>('');
+  const joinedAtRef = useRef<number>(Date.now());
 
   // Day timer
   const dayEndsAtRef = useRef<number | null>(null);
@@ -93,7 +94,7 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
         playerName: playerNameRef.current,
         portfolioValue: value,
         returnPct,
-        joinedAt: Date.now(),
+        joinedAt: joinedAtRef.current,
       });
     },
     [userId],
@@ -246,12 +247,13 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
       channel.subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
           setIsConnected(true);
+          joinedAtRef.current = Date.now();
           await channel.track({
             playerId: userId,
             playerName: playerNameRef.current,
             portfolioValue: 0,
             returnPct: 0,
-            joinedAt: Date.now(),
+            joinedAt: joinedAtRef.current,
           });
         }
         if (status === 'CHANNEL_ERROR') {

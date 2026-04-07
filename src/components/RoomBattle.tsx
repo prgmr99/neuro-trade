@@ -262,6 +262,7 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
                 className="room-max-players-btn"
                 onClick={() => setMaxPlayers((p) => Math.max(2, p - 1))}
                 disabled={maxPlayers <= 2}
+                aria-label={t('roomBattle.maxPlayers') + ' -'}
               >
                 <Minus size={14} />
               </button>
@@ -270,6 +271,7 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
                 className="room-max-players-btn"
                 onClick={() => setMaxPlayers((p) => Math.min(10, p + 1))}
                 disabled={maxPlayers >= 10}
+                aria-label={t('roomBattle.maxPlayers') + ' +'}
               >
                 <Plus size={14} />
               </button>
@@ -533,6 +535,8 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
               <button
                 className="room-battle-btn-primary"
                 onClick={async () => {
+                  // Clean up existing channels/timers before creating new room
+                  leave();
                   initializedRef.current = false;
                   const code = await createRoom(playerName.trim(), maxPlayers);
                   if (code) setScreen('lobby');
