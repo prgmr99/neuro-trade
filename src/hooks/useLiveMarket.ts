@@ -133,6 +133,9 @@ export function useLiveMarket(
       .eq('id', 1)
       .single()
       .then(async ({ data, error }) => {
+        if (error) {
+          console.error('[useLiveMarket] Failed to fetch live_market_state:', error.message, error);
+        }
         // If no row exists, create the initial market state so the first player can start
         if (!data || error) {
           const initialCycle = 1;

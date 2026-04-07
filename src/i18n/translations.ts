@@ -117,6 +117,10 @@ export const translations = {
       leaveMarket: "Leave Market",
       autoAdvance: "Market auto-updates every minute",
       cycle: "Cycle",
+      loadingTakingTooLong: "This is taking longer than expected.",
+      loadingHint: "Check your internet connection or try again.",
+      resetSession: "Reset Session",
+      backToMenu: "Back to Menu",
     },
     roomBattle: {
       title: 'Room Battle',
@@ -436,6 +440,10 @@ export const translations = {
       leaveMarket: "시장 나가기",
       autoAdvance: "시장은 1분마다 자동 업데이트됩니다",
       cycle: "사이클",
+      loadingTakingTooLong: "로딩이 평소보다 오래 걸리고 있어요.",
+      loadingHint: "인터넷 연결을 확인하거나 세션을 초기화해보세요.",
+      resetSession: "세션 초기화",
+      backToMenu: "메뉴로 돌아가기",
     },
     roomBattle: {
       title: '방 배틀',

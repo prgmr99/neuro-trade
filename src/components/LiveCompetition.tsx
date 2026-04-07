@@ -203,15 +203,56 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
     onBack();
   }, [market, onBack]);
 
+  // Show "taking too long" hint after 5 seconds of loading
+  const [showSlowHint, setShowSlowHint] = useState(false);
+  useEffect(() => {
+    if (!authLoading && market.marketState) {
+      setShowSlowHint(false);
+      return;
+    }
+    const id = setTimeout(() => setShowSlowHint(true), 5000);
+    return () => clearTimeout(id);
+  }, [authLoading, market.marketState]);
+
+  const resetSession = useCallback(() => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch { /* ignore */ }
+    market.leave();
+    onBack();
+  }, [market, onBack]);
+
+  const renderLoadingState = () => (
+    <div className="splash-screen">
+      <div className="splash-content glass-card" style={{ maxWidth: '500px', width: '95%', textAlign: 'center' }}>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: showSlowHint ? '1rem' : 0 }}>
+          {t('multiplayer.waiting')}
+        </p>
+        {showSlowHint && (
+          <>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.25rem' }}>
+              {t('multiplayer.loadingTakingTooLong')}
+            </p>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem', opacity: 0.8 }}>
+              {t('multiplayer.loadingHint')}
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem', flexDirection: 'column' }}>
+              <button className="ranking-link-btn" onClick={resetSession}>
+                {t('multiplayer.resetSession')}
+              </button>
+              <button className="ranking-link-btn" onClick={onBack}>
+                {t('multiplayer.backToMenu')}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+
   // --- Auth loading ---
   if (authLoading) {
-    return (
-      <div className="splash-screen">
-        <div className="splash-content glass-card" style={{ maxWidth: '500px', width: '95%', textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-secondary)' }}>{t('multiplayer.waiting')}</p>
-        </div>
-      </div>
-    );
+    return renderLoadingState();
   }
 
   // --- Name entry ---
@@ -265,13 +306,7 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
 
   // --- Loading market state ---
   if (!market.marketState) {
-    return (
-      <div className="splash-screen">
-        <div className="splash-content glass-card" style={{ maxWidth: '500px', width: '95%', textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-secondary)' }}>{t('multiplayer.waiting')}</p>
-        </div>
-      </div>
-    );
+    return renderLoadingState();
   }
 
   // Build leaderboard: ensure current player is always included

@@ -31,7 +31,10 @@ const RankingBoard: React.FC<Props> = ({ highlightId, initialMode }) => {
       query = query.eq('mode', modeFilter);
     }
 
-    const { data } = await query;
+    const { data, error } = await query;
+    if (error) {
+      console.error('[RankingBoard] Failed to fetch rankings:', error.message, error);
+    }
     setRankings(data ?? []);
     setLoading(false);
   };

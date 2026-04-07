@@ -416,40 +416,13 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
         .single();
 
       if (fetchError || !data) {
-        setError('Room not found');
+        setError(fetchError?.message?.includes('permission') ? 'Permission denied — contact support' : 'Room not found');
         return false;
       }
 
       if (data.status !== 'waiting') {
         setError('Room is not accepting players');
         return false;
-      }
-
-      // Check current player count via temporary presence peek
-      const maxP = data.max_players as number;
-      try {
-        const tempChannel = supabase.channel(`room-battle-peek-${roomCode.toUpperCase()}`);
-        const peekState = await new Promise<number>((resolve) => {
-          let resolved = false;
-          tempChannel.on('presence', { event: 'sync' }, () => {
-            if (!resolved) {
-              resolved = true;
-              const state = tempChannel.presenceState();
-              resolve(Object.keys(state).length);
-            }
-          });
-          tempChannel.subscribe();
-          // Fallback if presence sync doesn't fire quickly
-          setTimeout(() => { if (!resolved) { resolved = true; resolve(0); } }, 3000);
-        });
-        supabase.removeChannel(tempChannel);
-
-        if (peekState >= maxP) {
-          setError('Room is full');
-          return false;
-        }
-      } catch {
-        // If peek fails, allow join attempt (graceful degradation)
       }
 
       playerNameRef.current = playerName;

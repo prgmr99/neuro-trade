@@ -47,6 +47,7 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
   const [maxPlayers, setMaxPlayers] = useState(4);
   const [joinCode, setJoinCode] = useState('');
   const [copied, setCopied] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     players,
@@ -137,16 +138,20 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
 
   // ---- Handlers ----
   const handleCreateRoom = useCallback(async () => {
-    if (!playerName.trim()) return;
+    if (!playerName.trim() || isSubmitting) return;
+    setIsSubmitting(true);
     const code = await createRoom(playerName.trim(), maxPlayers);
+    setIsSubmitting(false);
     if (code) setScreen('lobby');
-  }, [createRoom, playerName, maxPlayers]);
+  }, [createRoom, playerName, maxPlayers, isSubmitting]);
 
   const handleJoinRoom = useCallback(async () => {
-    if (!playerName.trim() || joinCode.length !== 6) return;
+    if (!playerName.trim() || joinCode.length !== 6 || isSubmitting) return;
+    setIsSubmitting(true);
     const ok = await joinRoom(joinCode.toUpperCase(), playerName.trim());
+    setIsSubmitting(false);
     if (ok) setScreen('lobby');
-  }, [joinRoom, playerName, joinCode]);
+  }, [joinRoom, playerName, joinCode, isSubmitting]);
 
   const handleStartGame = useCallback(async () => {
     await startGame();
@@ -284,10 +289,10 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
             <button
               className="room-battle-btn-primary"
               onClick={handleCreateRoom}
-              disabled={!playerName.trim()}
+              disabled={!playerName.trim() || isSubmitting}
             >
               <Play size={16} />
-              {t('roomBattle.create')}
+              {isSubmitting ? t('roomBattle.connecting') : t('roomBattle.create')}
             </button>
           </div>
         </div>
@@ -340,10 +345,10 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
             <button
               className="room-battle-btn-primary"
               onClick={handleJoinRoom}
-              disabled={!playerName.trim() || joinCode.length !== 6}
+              disabled={!playerName.trim() || joinCode.length !== 6 || isSubmitting}
             >
               <DoorOpen size={16} />
-              {t('roomBattle.join')}
+              {isSubmitting ? t('roomBattle.connecting') : t('roomBattle.join')}
             </button>
           </div>
         </div>
