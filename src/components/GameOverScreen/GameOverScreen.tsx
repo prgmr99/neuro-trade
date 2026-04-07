@@ -137,10 +137,21 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
 
   if (phase === 'ranking') {
     return (
-      <div className="splash-screen">
+      <div className="splash-screen ranking-page">
         <div className="splash-content glass-card" style={{ maxWidth: '700px', width: '95%' }}>
           <RankingBoard highlightId={submittedId} initialMode={mode} />
-          <button className="start-btn" onClick={onRestart} style={{ width: '100%', marginTop: '1.5rem' }}>
+          {/* Desktop: inline button inside card */}
+          <div className="gameover-cta-desktop">
+            <button className="start-btn" onClick={onRestart} style={{ width: '100%', marginTop: '1.5rem' }}>
+              {t('gameOver.playAgain')}
+            </button>
+          </div>
+          {/* Mobile: spacer to prevent content hiding behind fixed bottom */}
+          <div className="gameover-actions-spacer" />
+        </div>
+        {/* Mobile: fixed bottom — must be OUTSIDE glass-card to avoid backdrop-filter stacking context */}
+        <div className="gameover-fixed-bottom">
+          <button className="start-btn" onClick={onRestart}>
             {t('gameOver.playAgain')}
           </button>
         </div>
@@ -209,6 +220,10 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
               rows={2}
             />
           </div>
+        </div>
+
+        {/* Desktop: inline buttons inside card */}
+        <div className="gameover-cta-desktop gameover-cta-desktop--col">
           <button
             className="start-btn"
             onClick={handleSubmit}
@@ -220,6 +235,23 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
             {t('gameOver.skipToRank')}
           </button>
         </div>
+
+        {/* Mobile: spacer to prevent content hiding behind fixed bottom */}
+        <div className="gameover-actions-spacer gameover-actions-spacer--two" />
+      </div>
+
+      {/* Mobile: fixed bottom — must be OUTSIDE glass-card to avoid backdrop-filter stacking context */}
+      <div className="gameover-fixed-bottom">
+        <button
+          className="start-btn"
+          onClick={handleSubmit}
+          disabled={submitting}
+        >
+          {submitting ? '...' : t('gameOver.submitAndRank')}
+        </button>
+        <button className="skip-btn" onClick={handleSkip}>
+          {t('gameOver.skipToRank')}
+        </button>
       </div>
     </div>
   );

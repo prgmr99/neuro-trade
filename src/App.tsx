@@ -112,10 +112,21 @@ function App() {
 
   if (view === 'rankings') {
     return (
-      <div className="splash-screen">
+      <div className="splash-screen ranking-page">
         <div className="splash-content glass-card" style={{ maxWidth: '700px', width: '95%' }}>
           <RankingBoard />
-          <button className="start-btn" onClick={goHome} style={{ width: '100%', marginTop: '1.5rem' }}>
+          {/* Desktop: inline button inside card */}
+          <div className="gameover-cta-desktop">
+            <button className="start-btn" onClick={goHome} style={{ width: '100%', marginTop: '1.5rem' }}>
+              {t('ranking.back')}
+            </button>
+          </div>
+          {/* Mobile: spacer for fixed bottom */}
+          <div className="gameover-actions-spacer" />
+        </div>
+        {/* Mobile: fixed bottom — outside glass-card to avoid backdrop-filter stacking context */}
+        <div className="gameover-fixed-bottom">
+          <button className="start-btn" onClick={goHome}>
             {t('ranking.back')}
           </button>
         </div>

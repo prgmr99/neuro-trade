@@ -220,13 +220,19 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
             <button className="start-btn" onClick={copyLink}>
               {copied ? t('duel.copied') : t('duel.copyLink')}
             </button>
-            <button className="start-btn" onClick={startGame} style={{ background: 'var(--accent-color)' }}>
-              {t('duel.startGame')}
-            </button>
             <button className="ranking-link-btn" onClick={onBack}>
               {t('duel.back')}
             </button>
           </div>
+          <div className="gameover-cta-desktop" style={{ marginTop: '0.75rem' }}>
+            <button className="start-btn" onClick={startGame} style={{ background: 'var(--accent-color)', width: '100%' }}>
+              {t('duel.startGame')}
+            </button>
+          </div>
+          <div className="gameover-actions-spacer" />
+        </div>
+        <div className="gameover-fixed-bottom">
+          <button className="start-btn" onClick={startGame}>{t('duel.startGame')}</button>
         </div>
       </div>
     );
@@ -262,13 +268,19 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
           </div>
 
           <div style={{ display: 'flex', gap: '0.75rem', flexDirection: 'column' }}>
-            <button className="start-btn" onClick={startGame} style={{ background: 'var(--accent-color)' }}>
-              {t('duel.accept')}
-            </button>
             <button className="ranking-link-btn" onClick={onBack}>
               {t('duel.back')}
             </button>
           </div>
+          <div className="gameover-cta-desktop" style={{ marginTop: '0.75rem' }}>
+            <button className="start-btn" onClick={startGame} style={{ background: 'var(--accent-color)', width: '100%' }}>
+              {t('duel.accept')}
+            </button>
+          </div>
+          <div className="gameover-actions-spacer" />
+        </div>
+        <div className="gameover-fixed-bottom">
+          <button className="start-btn" onClick={startGame}>{t('duel.accept')}</button>
         </div>
       </div>
     );
@@ -345,13 +357,21 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
             <button className="start-btn" onClick={copyLink}>
               {copied ? t('duel.copied') : t('duel.copyLink')}
             </button>
-            <button className="start-btn" onClick={checkOpponent} style={{ background: 'var(--surface-light)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}>
-              Check for opponent
-            </button>
             <button className="ranking-link-btn" onClick={onBack}>
               {t('duel.back')}
             </button>
           </div>
+          <div className="gameover-cta-desktop" style={{ marginTop: '0.75rem' }}>
+            <button className="start-btn" onClick={checkOpponent} style={{ background: 'var(--surface-light)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', width: '100%' }}>
+              Check for opponent
+            </button>
+          </div>
+          <div className="gameover-actions-spacer" />
+        </div>
+        <div className="gameover-fixed-bottom">
+          <button className="start-btn" onClick={checkOpponent} style={{ background: 'var(--surface-light)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}>
+            Check for opponent
+          </button>
         </div>
       </div>
     );
@@ -434,13 +454,19 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
           )}
 
           <div style={{ display: 'flex', gap: '0.75rem', flexDirection: 'column' }}>
-            <button className="start-btn" onClick={challengeAgain} style={{ background: 'var(--accent-color)' }}>
-              {t('duel.challengeAgain')}
-            </button>
             <button className="ranking-link-btn" onClick={onBack}>
               {t('duel.back')}
             </button>
           </div>
+          <div className="gameover-cta-desktop">
+            <button className="start-btn" onClick={challengeAgain} style={{ background: 'var(--accent-color)' }}>
+              {t('duel.challengeAgain')}
+            </button>
+          </div>
+          <div className="gameover-actions-spacer" />
+        </div>
+        <div className="gameover-fixed-bottom">
+          <button className="start-btn" onClick={challengeAgain}>{t('duel.challengeAgain')}</button>
         </div>
       </div>
     );

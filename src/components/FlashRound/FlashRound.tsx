@@ -191,9 +191,15 @@ export default function FlashRound({ onBack }: Props) {
             </div>
           </div>
 
-          <button className="flash-start-btn" onClick={startRound}>
-            {labels.start}
-          </button>
+          <div className="gameover-cta-desktop">
+            <button className="flash-start-btn" onClick={startRound}>
+              {labels.start}
+            </button>
+          </div>
+          <div className="gameover-actions-spacer" />
+        </div>
+        <div className="gameover-fixed-bottom">
+          <button className="flash-start-btn" onClick={startRound}>{labels.start}</button>
         </div>
       </div>
     );
@@ -313,9 +319,11 @@ export default function FlashRound({ onBack }: Props) {
 
           {/* Actions */}
           <div className="flash-result-actions">
-            <button className="flash-start-btn" onClick={startRound}>
-              {labels.playAgain}
-            </button>
+            <div className="gameover-cta-desktop">
+              <button className="flash-start-btn" onClick={startRound}>
+                {labels.playAgain}
+              </button>
+            </div>
             <button
               onClick={handleFlashShare}
               style={{
@@ -338,6 +346,10 @@ export default function FlashRound({ onBack }: Props) {
               {labels.back}
             </button>
           </div>
+          <div className="gameover-actions-spacer" />
+        </div>
+        <div className="gameover-fixed-bottom">
+          <button className="flash-start-btn" onClick={startRound}>{labels.playAgain}</button>
         </div>
       </div>
     );

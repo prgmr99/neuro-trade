@@ -13,7 +13,6 @@ const RankingBoard: React.FC<Props> = ({ highlightId, initialMode }) => {
   const [rankings, setRankings] = useState<RankingEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [modeFilter, setModeFilter] = useState<string>(initialMode ?? 'all');
-  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchRankings();
@@ -47,6 +46,7 @@ const RankingBoard: React.FC<Props> = ({ highlightId, initialMode }) => {
   };
 
   const filters = ['all', 'classic', 'advanced'] as const;
+  const maxReturn = rankings[0]?.return_pct ?? 1;
 
   return (
     <div className="ranking-board">
@@ -76,6 +76,7 @@ const RankingBoard: React.FC<Props> = ({ highlightId, initialMode }) => {
             const isHighlighted = entry.id === highlightId;
             const isPositive = entry.return_pct >= 0;
             const rank = idx + 1;
+            const barWidth = Math.max(0, (entry.return_pct / maxReturn) * 100);
 
             return (
               <div
@@ -91,6 +92,7 @@ const RankingBoard: React.FC<Props> = ({ highlightId, initialMode }) => {
                     <span className="rank-number">{rank}</span>
                   )}
                 </div>
+
                 <div className="ranking-info">
                   <div className="ranking-name-row">
                     <span className="ranking-player-name">{entry.player_name}</span>
@@ -98,24 +100,28 @@ const RankingBoard: React.FC<Props> = ({ highlightId, initialMode }) => {
                     <span className="ranking-mode-badge">{t(`ranking.${entry.mode}` as any)}</span>
                   </div>
                   {entry.message && (
-                    <div
-                      className={`ranking-message ${expandedId === entry.id ? 'expanded' : ''}`}
-                      onClick={() => setExpandedId(expandedId === entry.id ? null : entry.id)}
-                    >
-                      <span className="ranking-message-text">"{entry.message}"</span>
-                      {expandedId !== entry.id && entry.message.length > 30 && (
-                        <span className="ranking-message-more">{language === 'ko' ? '더보기' : 'more'}</span>
-                      )}
-                    </div>
+                    <p className="ranking-message">"{entry.message}"</p>
                   )}
                 </div>
+
                 <div className="ranking-stats">
                   <span className={`ranking-return ${isPositive ? 'positive' : 'negative'}`}>
                     {isPositive ? '+' : ''}{entry.return_pct.toFixed(2)}%
                   </span>
-                  <span className="ranking-value">${entry.final_value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                  <span className="ranking-value">
+                    ${entry.final_value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                  </span>
                   <span className="ranking-date">{formatDate(entry.created_at)}</span>
                 </div>
+
+                {/* Subtle performance bar */}
+                {isPositive && (
+                  <div
+                    className="ranking-bar"
+                    style={{ width: `${barWidth}%` }}
+                    aria-hidden="true"
+                  />
+                )}
               </div>
             );
           })}

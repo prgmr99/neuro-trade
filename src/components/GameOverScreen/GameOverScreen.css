@@ -325,6 +325,66 @@
   color: #fff;
 }
 
+/* Fixed bottom CTA — desktop: hidden (use .gameover-cta-desktop instead)
+   Mobile: position:fixed at bottom of viewport.
+   Must be rendered OUTSIDE .glass-card to avoid backdrop-filter stacking context. */
+.gameover-fixed-bottom {
+  display: none;
+}
+
+/* Desktop inline CTA wrapper — hidden on mobile */
+.gameover-cta-desktop {
+  /* visible by default */
+}
+
+.gameover-cta-desktop--col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Spacer prevents card content from hiding behind the fixed bottom on mobile */
+.gameover-actions-spacer {
+  display: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .gameover-fixed-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.75rem 1.5rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+    z-index: 100;
+  }
+
+  .gameover-cta-desktop {
+    display: none;
+  }
+
+  /* Single-button spacer (~82px button area) */
+  .gameover-actions-spacer {
+    display: block;
+    height: calc(82px + env(safe-area-inset-bottom));
+  }
+
+  /* Two-button spacer (~145px button area) */
+  .gameover-actions-spacer--two {
+    height: calc(145px + env(safe-area-inset-bottom));
+  }
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .gameover-container {
