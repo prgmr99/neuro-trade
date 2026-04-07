@@ -15,7 +15,7 @@
 @import './components/RoomBattle/RoomBattle.css';
 
 :root {
-  --bg-color: #f2f4f6; /* Toss light gray background */
+  --bg-color: #ffffff; /* Toss light gray background */
   --bg-gradient: none; /* No gradients */
   --text-primary: #191f28; /* Toss dark text */
   --text-secondary: #8b95a1; /* Toss secondary text */
@@ -143,8 +143,6 @@ button, a, [role="button"], input, select,
   touch-action: manipulation;
 }
 
-.mode-card:active,
-.news-card:active,
 .bottom-nav-item:active,
 .bottom-nav-end-day:active:not(:disabled),
 .preset-btn:active:not(:disabled),
