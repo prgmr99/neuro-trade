@@ -2,7 +2,8 @@
 
 **Read the news. Beat the market. Prove your edge.**
 
-[![Live Demo](https://img.shields.io/badge/Play%20Now-neuro--game.yeomniverse.com-6366f1?style=for-the-badge&logo=vercel)](https://neuro-game.yeomniverse.com/)
+[![Live Demo](https://img.shields.io/badge/Play%20Now-neuro--trade.yeomniverse.com-6366f1?style=for-the-badge&logo=vercel)](https://neuro-trade.yeomniverse.com/)
+
 [![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-5-646cff?style=flat-square&logo=vite)](https://vitejs.dev/)
