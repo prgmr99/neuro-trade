@@ -227,51 +227,93 @@ function collectStats(arc) {
   };
 }
 
-// ── main ──────────────────────────────────────────────────────────────────────
+// ── public API ────────────────────────────────────────────────────────────────
 
-const [, , filePath] = process.argv;
+/**
+ * Validate a parsed arc object against all schema + balance + narrative rules.
+ * Pure — no I/O. Callers (CLI + tests) compose this with file/stdin loading.
+ *
+ * @param {unknown} arc parsed JSON
+ * @returns {string[]} list of human-readable error messages (empty = valid)
+ */
+export function validateArc(arc) {
+  const errors = [];
 
-if (!filePath) {
-  process.stderr.write('Usage: node scripts/validate-scenario.mjs <path-to-arc.json>\n');
-  process.exit(2);
+  if (!arc || typeof arc !== 'object') {
+    errors.push('arc: must be a non-null object');
+    return errors;
+  }
+
+  validateTopLevel(arc, errors);
+
+  if (Array.isArray(arc.news)) {
+    const seenIds = new Set();
+    arc.news.forEach((item, idx) => validateNewsItem(item, idx, seenIds, errors));
+    validateDistribution(arc, errors);
+  }
+
+  return errors;
 }
 
-let raw;
-try {
-  raw = readFileSync(filePath, 'utf-8');
-} catch (err) {
-  process.stderr.write(`Error reading file "${filePath}": ${err.message}\n`);
-  process.exit(2);
+// Re-export rule constants so tests (and other tooling) don't hard-code values.
+export const RULES = {
+  EFFECT_MIN,
+  EFFECT_MAX,
+  REQUIRED_NEWS_COUNT,
+  REQUIRED_DAYS,
+  NEWS_PER_DAY,
+  MIN_DISTINCT_TICKERS,
+  MAX_EFFECT_ENTRIES_PER_NEWS,
+  DAY_TICKER_CUM_MIN,
+  DAY_TICKER_CUM_MAX,
+  COMPLICATION_DAY,
+  VALID_TICKERS: [...VALID_TICKERS],
+};
+
+// ── CLI entry point ───────────────────────────────────────────────────────────
+// Only runs when invoked directly as a script, not when imported by tests.
+
+const isDirectInvocation =
+  import.meta.url === `file://${process.argv[1]}` ||
+  (process.argv[1] && process.argv[1].endsWith('validate-scenario.mjs'));
+
+if (isDirectInvocation) {
+  const [, , filePath] = process.argv;
+
+  if (!filePath) {
+    process.stderr.write('Usage: node scripts/validate-scenario.mjs <path-to-arc.json>\n');
+    process.exit(2);
+  }
+
+  let raw;
+  try {
+    raw = readFileSync(filePath, 'utf-8');
+  } catch (err) {
+    process.stderr.write(`Error reading file "${filePath}": ${err.message}\n`);
+    process.exit(2);
+  }
+
+  let arc;
+  try {
+    arc = JSON.parse(raw);
+  } catch (err) {
+    process.stderr.write(`Error parsing JSON in "${filePath}": ${err.message}\n`);
+    process.exit(1);
+  }
+
+  const errors = validateArc(arc);
+
+  if (errors.length > 0) {
+    for (const e of errors) process.stdout.write(`ERROR  ${e}\n`);
+    process.exit(1);
+  }
+
+  const stats = collectStats(arc);
+  const GREEN = '\x1b[32m';
+  const RESET = '\x1b[0m';
+  process.stdout.write(
+    `${GREEN}VALID ✓${RESET} arc=${arc.id}  news=${arc.news.length}  days=${REQUIRED_DAYS}` +
+    `  tickers=${stats.tickerCount}  effect range=[${stats.effectMin}..${stats.effectMax}]\n`
+  );
+  process.exit(0);
 }
-
-let arc;
-try {
-  arc = JSON.parse(raw);
-} catch (err) {
-  process.stderr.write(`Error parsing JSON in "${filePath}": ${err.message}\n`);
-  process.exit(1);
-}
-
-const errors = [];
-
-validateTopLevel(arc, errors);
-
-if (Array.isArray(arc.news)) {
-  const seenIds = new Set();
-  arc.news.forEach((item, idx) => validateNewsItem(item, idx, seenIds, errors));
-  validateDistribution(arc, errors);
-}
-
-if (errors.length > 0) {
-  for (const e of errors) process.stdout.write(`ERROR  ${e}\n`);
-  process.exit(1);
-}
-
-const stats = collectStats(arc);
-const GREEN = '\x1b[32m';
-const RESET = '\x1b[0m';
-process.stdout.write(
-  `${GREEN}VALID ✓${RESET} arc=${arc.id}  news=${arc.news.length}  days=${REQUIRED_DAYS}` +
-  `  tickers=${stats.tickerCount}  effect range=[${stats.effectMin}..${stats.effectMax}]\n`
-);
-process.exit(0);
