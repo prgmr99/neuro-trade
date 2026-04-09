@@ -1,0 +1,387 @@
+{
+  "id": "chip-export-crisis",
+  "name": {
+    "en": "Semiconductor Showdown: AI Supply Chain Realigns",
+    "ko": "반도체 대격변: AI 공급망 재편"
+  },
+  "news": [
+    {
+      "id": "chip-export-crisis-1-1",
+      "dayIdx": 1,
+      "title": {
+        "en": "Major Nations Announce New AI Chip Export Restrictions",
+        "ko": "주요국, AI 칩 수출 규제 강화 발표"
+      },
+      "content": {
+        "en": "Leading technology nations have imposed new, stringent export controls on advanced AI semiconductors, citing national security concerns. The move is expected to send ripples across global tech supply chains.",
+        "ko": "주요 기술 강국들이 국가 안보를 이유로 첨단 AI 반도체에 대한 새로운 수출 규제를 발표했습니다. 이는 글로벌 기술 공급망 전반에 파장을 일으킬 것으로 예상됩니다."
+      },
+      "effect": {
+        "TECH": 0.9
+      }
+    },
+    {
+      "id": "chip-export-crisis-1-2",
+      "dayIdx": 1,
+      "title": {
+        "en": "NeoTech Stock Dips Amidst Uncertainty Over Chip Supply",
+        "ko": "칩 공급 불확실성 속 네오테크 주가 하락"
+      },
+      "content": {
+        "en": "Shares of NeoTech Industries fell sharply as investors reacted to the new export controls, fearing potential disruptions to their AI processor procurement and production timelines.",
+        "ko": "새로운 수출 규제 발표에 투자자들이 네오테크 인더스트리의 AI 프로세서 조달 및 생산 일정 차질을 우려하면서 주가가 급락했습니다."
+      },
+      "effect": {
+        "TECH": 0.88
+      }
+    },
+    {
+      "id": "chip-export-crisis-1-3",
+      "dayIdx": 1,
+      "title": {
+        "en": "E-commerce Giants Assess Impact on Data Centers and AI Operations",
+        "ko": "전자상거래 대기업들, 데이터 센터 및 AI 운영 영향 평가 중"
+      },
+      "content": {
+        "en": "GlobalMart and other e-commerce players are evaluating the potential effects of AI chip shortages on their extensive data center networks and AI-driven logistics systems, indicating possible operational cost increases.",
+        "ko": "글로벌마트를 비롯한 전자상거래 업체들이 AI 칩 부족이 광범위한 데이터 센터 네트워크와 AI 기반 물류 시스템에 미칠 잠재적 영향을 평가하고 있으며, 운영 비용 증가 가능성을 시사했습니다."
+      },
+      "effect": {
+        "ECOM": 0.92
+      }
+    },
+    {
+      "id": "chip-export-crisis-1-4",
+      "dayIdx": 1,
+      "title": {
+        "en": "Defense Sector Anticipates Increased Demand for Domestic Chip Solutions",
+        "ko": "국방 부문, 국내 칩 솔루션 수요 증가 예상"
+      },
+      "content": {
+        "en": "AeroSpace Dynamics is reportedly in early talks with domestic semiconductor manufacturers, as the defense sector seeks to secure its supply chain against foreign dependencies for critical AI components.",
+        "ko": "방위 산업이 핵심 AI 부품의 해외 의존도에서 벗어나 공급망을 확보하려 함에 따라, 에어로스페이스 다이내믹스는 국내 반도체 제조업체들과 초기 논의 중인 것으로 알려졌습니다."
+      },
+      "effect": {
+        "AERO": 1.05
+      }
+    },
+    {
+      "id": "chip-export-crisis-1-5",
+      "dayIdx": 1,
+      "title": {
+        "en": "Market Analysts Project Volatility; Advise Caution for Tech Investors",
+        "ko": "시장 분석가들, 변동성 예측; 기술 투자자들에게 신중론 권고"
+      },
+      "content": {
+        "en": "Investment firms are warning of significant market volatility in the coming weeks. Analysts suggest a cautious approach for investors heavily exposed to the technology sector, particularly AI-focused companies.",
+        "ko": "투자 회사들은 향후 몇 주간 상당한 시장 변동성을 경고하고 있습니다. 분석가들은 특히 AI 중심 기업 등 기술 부문에 많이 노출된 투자자들에게 신중한 접근을 권고했습니다."
+      },
+      "effect": {
+        "TECH": 0.9
+      }
+    },
+    {
+      "id": "chip-export-crisis-2-1",
+      "dayIdx": 2,
+      "title": {
+        "en": "Domestic Chipmakers See Surge in Orders, Capacity Concerns Rise",
+        "ko": "국내 칩 제조업체 주문 급증, 생산 능력 우려 고조"
+      },
+      "content": {
+        "en": "With export controls limiting access to foreign chips, domestic semiconductor manufacturers are experiencing an unprecedented surge in orders. However, questions about their ability to meet this new demand are emerging.",
+        "ko": "수출 규제로 해외 칩 접근이 제한되면서 국내 반도체 제조업체들은 전례 없는 주문량 급증을 경험하고 있습니다. 하지만 이 새로운 수요를 충족시킬 수 있는 능력에 대한 의문이 제기되고 있습니다."
+      },
+      "effect": {
+        "TECH": 1.07
+      }
+    },
+    {
+      "id": "chip-export-crisis-2-2",
+      "dayIdx": 2,
+      "title": {
+        "en": "AI-Powered Drug Discovery Firms Face R&D Delays",
+        "ko": "AI 기반 신약 개발 기업, R&D 지연 직면"
+      },
+      "content": {
+        "en": "VitaPharma and other biotech firms utilizing AI for drug discovery are reporting potential delays in their research and development pipelines due to anticipated shortages of high-performance AI processors.",
+        "ko": "VitaPharma를 비롯한 AI를 활용한 신약 개발 생명공학 기업들은 고성능 AI 프로세서 부족이 예상됨에 따라 연구 개발 파이프라인의 잠재적 지연을 보고하고 있습니다."
+      },
+      "effect": {
+        "HEALTH": 0.9
+      }
+    },
+    {
+      "id": "chip-export-crisis-2-3",
+      "dayIdx": 2,
+      "title": {
+        "en": "Green Energy Sector Seeks AI for Grid Optimization, Faces Hurdles",
+        "ko": "녹색 에너지 부문, AI 그리드 최적화 모색 중 난관 봉착"
+      },
+      "content": {
+        "en": "EcoEnergy Corp's plans to deploy advanced AI for optimizing renewable energy grids are now under review. The sector's reliance on cutting-edge AI for efficiency improvements is jeopardized by chip supply concerns.",
+        "ko": "에코에너지 코프의 재생에너지 그리드 최적화를 위한 첨단 AI 도입 계획이 재검토되고 있습니다. 효율성 개선을 위한 최첨단 AI에 대한 이 부문의 의존이 칩 공급 문제로 위태로워졌습니다."
+      },
+      "effect": {
+        "GREEN": 0.93
+      }
+    },
+    {
+      "id": "chip-export-crisis-2-4",
+      "dayIdx": 2,
+      "title": {
+        "en": "Supply Chain Diversification Becomes Priority for E-commerce",
+        "ko": "전자상거래 업계, 공급망 다변화 최우선 과제로 부상"
+      },
+      "content": {
+        "en": "GlobalMart announces initiatives to diversify its technology supply chain, exploring alternative chip architectures and partnerships to mitigate risks from the current export control environment.",
+        "ko": "글로벌마트는 현재의 수출 통제 환경으로 인한 위험을 완화하기 위해 대체 칩 아키텍처 및 파트너십을 모색하며 기술 공급망 다변화 이니셔티브를 발표했습니다."
+      },
+      "effect": {
+        "ECOM": 0.95,
+        "TECH": 1.03
+      }
+    },
+    {
+      "id": "chip-export-crisis-2-5",
+      "dayIdx": 2,
+      "title": {
+        "en": "Governments Announce R&D Subsidies for Domestic Chip Production",
+        "ko": "정부, 국내 칩 생산 R&D 보조금 발표"
+      },
+      "content": {
+        "en": "In response to the crisis, several governments have unveiled significant R&D subsidies and incentives aimed at accelerating domestic AI chip production and reducing reliance on imports.",
+        "ko": "이번 위기에 대응하여 여러 정부가 국내 AI 칩 생산을 가속화하고 수입 의존도를 줄이기 위한 대규모 R&D 보조금과 인센티브를 발표했습니다."
+      },
+      "effect": {
+        "TECH": 1.08
+      }
+    },
+    {
+      "id": "chip-export-crisis-3-1",
+      "dayIdx": 3,
+      "title": {
+        "en": "Unexpected Breakthrough in Alternative AI Processor Architecture Reported",
+        "ko": "대체 AI 프로세서 아키텍처에서 예상치 못한 돌파구 보고"
+      },
+      "content": {
+        "en": "A small, undisclosed firm has announced a significant breakthrough in a new, less resource-intensive AI processor architecture, potentially sidestepping some export control limitations. Market reaction is swift and mixed.",
+        "ko": "익명의 소규모 기업이 자원 소모가 적은 새로운 AI 프로세서 아키텍처에서 중요한 돌파구를 발표하며, 일부 수출 통제 제한을 잠재적으로 회피할 수 있게 되었습니다. 시장 반응은 즉각적이고 엇갈립니다."
+      },
+      "effect": {
+        "TECH": 1.1
+      }
+    },
+    {
+      "id": "chip-export-crisis-3-2",
+      "dayIdx": 3,
+      "title": {
+        "en": "Leading Tech Company (NeoTech) Reportedly Acquires Alternative Chip Startup",
+        "ko": "선도 기술 기업(네오테크), 대체 칩 스타트업 인수 보도"
+      },
+      "content": {
+        "en": "Unconfirmed reports suggest NeoTech Industries is in advanced stages of acquiring the startup behind the new AI processor architecture. This could give them a strategic advantage in navigating chip shortages.",
+        "ko": "미확인 보도에 따르면 네오테크 인더스트리가 새로운 AI 프로세서 아키텍처를 개발한 스타트업 인수를 거의 마무리 단계에 있다고 합니다. 이는 칩 부족 상황을 헤쳐나가는 데 전략적 이점을 제공할 수 있습니다."
+      },
+      "effect": {
+        "TECH": 1.15
+      }
+    },
+    {
+      "id": "chip-export-crisis-3-3",
+      "dayIdx": 3,
+      "title": {
+        "en": "Health Sector Explores Open-Source AI Hardware for Medical Imaging",
+        "ko": "의료 부문, 의료 영상에 오픈소스 AI 하드웨어 탐색"
+      },
+      "content": {
+        "en": "VitaPharma and research institutions are investigating open-source AI hardware solutions to reduce dependence on proprietary chips, aiming to maintain progress in medical diagnostics and drug discovery.",
+        "ko": "VitaPharma와 연구 기관들은 의료 진단 및 신약 개발의 진전을 유지하기 위해 독점 칩에 대한 의존도를 줄이고자 오픈소스 AI 하드웨어 솔루션을 연구하고 있습니다."
+      },
+      "effect": {
+        "HEALTH": 1.05
+      }
+    },
+    {
+      "id": "chip-export-crisis-3-4",
+      "dayIdx": 3,
+      "title": {
+        "en": "GlobalMart Announces Partnership for Edge AI Deployment",
+        "ko": "글로벌마트, 엣지 AI 배포를 위한 파트너십 발표"
+      },
+      "content": {
+        "en": "In a strategic move, GlobalMart has partnered with a regional hardware provider to accelerate the deployment of 'edge AI' solutions, reducing reliance on centralized, high-performance data centers for some operations.",
+        "ko": "전략적인 움직임으로 글로벌마트는 일부 운영에 있어 중앙 집중식 고성능 데이터 센터 의존도를 줄이기 위해 '엣지 AI' 솔루션 배포를 가속화하기 위해 지역 하드웨어 제공업체와 파트너십을 맺었습니다."
+      },
+      "effect": {
+        "ECOM": 1.08,
+        "TECH": 1.05
+      }
+    },
+    {
+      "id": "chip-export-crisis-3-5",
+      "dayIdx": 3,
+      "title": {
+        "en": "Aerospace Defense Firms Prioritize Resilient AI Systems",
+        "ko": "항공우주 방위 기업, 탄력적인 AI 시스템 우선시"
+      },
+      "content": {
+        "en": "AeroSpace Dynamics emphasizes its commitment to developing resilient AI systems capable of operating efficiently with diverse hardware, including domestically produced and open-source alternatives.",
+        "ko": "에어로스페이스 다이내믹스는 국내 생산 및 오픈소스 대안을 포함한 다양한 하드웨어로 효율적으로 작동할 수 있는 탄력적인 AI 시스템 개발에 대한 약속을 강조했습니다."
+      },
+      "effect": {
+        "AERO": 1.07
+      }
+    },
+    {
+      "id": "chip-export-crisis-4-1",
+      "dayIdx": 4,
+      "title": {
+        "en": "NeoTech Confirms Acquisition, Stock Soars on Market Optimism",
+        "ko": "네오테크 인수 확정, 시장 낙관론에 주가 급등"
+      },
+      "content": {
+        "en": "NeoTech Industries officially announced the acquisition of the innovative AI chip startup. Investors are bullish on the company's prospects for navigating the export control landscape.",
+        "ko": "네오테크 인더스트리가 혁신적인 AI 칩 스타트업 인수를 공식 발표했습니다. 투자자들은 수출 통제 환경을 헤쳐나갈 회사의 전망에 대해 낙관적인 태도를 보이고 있습니다."
+      },
+      "effect": {
+        "TECH": 1.15
+      }
+    },
+    {
+      "id": "chip-export-crisis-4-2",
+      "dayIdx": 4,
+      "title": {
+        "en": "New AI Architecture Shows Promise for EcoEnergy's Grid Optimization",
+        "ko": "새로운 AI 아키텍처, 에코에너지의 그리드 최적화에 희망 제시"
+      },
+      "content": {
+        "en": "Early tests indicate that the newly developed, less resource-intensive AI architecture could be highly effective for EcoEnergy Corp's smart grid applications, reducing their dependence on high-end, restricted chips.",
+        "ko": "초기 테스트 결과, 새로 개발된 자원 소모가 적은 AI 아키텍처가 에코에너지 코프의 스마트 그리드 애플리케이션에 매우 효과적일 수 있으며, 고성능 제한 칩에 대한 의존도를 줄일 수 있음을 시사합니다."
+      },
+      "effect": {
+        "GREEN": 1.1
+      }
+    },
+    {
+      "id": "chip-export-crisis-4-3",
+      "dayIdx": 4,
+      "title": {
+        "en": "GlobalMart's Edge AI Strategy Gains Traction, Supply Chain Resilience Improves",
+        "ko": "글로벌마트의 엣지 AI 전략 탄력, 공급망 회복력 개선"
+      },
+      "content": {
+        "en": "Analysts commend GlobalMart's proactive strategy in diversifying its AI hardware. The successful implementation of edge AI is expected to significantly bolster their operational resilience against future supply shocks.",
+        "ko": "분석가들은 글로벌마트의 AI 하드웨어 다변화 전략을 높이 평가했습니다. 엣지 AI의 성공적인 구현은 향후 공급 충격에 대한 운영 탄력성을 크게 강화할 것으로 예상됩니다."
+      },
+      "effect": {
+        "ECOM": 1.12
+      }
+    },
+    {
+      "id": "chip-export-crisis-4-4",
+      "dayIdx": 4,
+      "title": {
+        "en": "Defense Sector Ramps Up Investment in AI-Powered Autonomous Systems",
+        "ko": "국방 부문, AI 기반 자율 시스템 투자 확대"
+      },
+      "content": {
+        "en": "AeroSpace Dynamics announces plans to significantly increase investment in AI-powered autonomous systems for defense, leveraging newly secured domestic chip supplies and flexible architectures.",
+        "ko": "에어로스페이스 다이내믹스는 새로 확보된 국내 칩 공급 및 유연한 아키텍처를 활용하여 국방용 AI 기반 자율 시스템에 대한 투자를 대폭 확대할 계획을 발표했습니다."
+      },
+      "effect": {
+        "AERO": 1.1
+      }
+    },
+    {
+      "id": "chip-export-crisis-4-5",
+      "dayIdx": 4,
+      "title": {
+        "en": "Biotech Firms Form Consortium for Shared AI Hardware Development",
+        "ko": "생명공학 기업들, AI 하드웨어 공동 개발 컨소시엄 구성"
+      },
+      "content": {
+        "en": "VitaPharma leads a new consortium of biotech companies aimed at developing shared, open-source AI hardware platforms. This collaborative effort seeks to safeguard critical research from future chip supply disruptions.",
+        "ko": "VitaPharma는 공유 오픈소스 AI 하드웨어 플랫폼 개발을 목표로 하는 생명공학 기업 컨소시엄을 이끌고 있습니다. 이 협력 노력은 미래 칩 공급 중단으로부터 중요한 연구를 보호하려는 것입니다."
+      },
+      "effect": {
+        "HEALTH": 1.08
+      }
+    },
+    {
+      "id": "chip-export-crisis-5-1",
+      "dayIdx": 5,
+      "title": {
+        "en": "Market Stabilizes as Sectors Adapt to New Chip Landscape",
+        "ko": "각 부문이 새로운 칩 환경에 적응하며 시장 안정화"
+      },
+      "content": {
+        "en": "After initial turbulence, the market shows signs of stabilization. Companies across various sectors have largely outlined their strategies for navigating the new global AI chip supply chain.",
+        "ko": "초기 혼란 이후 시장은 안정화 조짐을 보이고 있습니다. 여러 부문의 기업들은 새로운 글로벌 AI 칩 공급망을 헤쳐나갈 전략을 대부분 확정했습니다."
+      },
+      "effect": {
+        "TECH": 1.05
+      }
+    },
+    {
+      "id": "chip-export-crisis-5-2",
+      "dayIdx": 5,
+      "title": {
+        "en": "NeoTech's Strategic Pivot Solidifies Market Leadership",
+        "ko": "네오테크의 전략적 전환, 시장 리더십 공고화"
+      },
+      "content": {
+        "en": "NeoTech Industries is lauded for its swift and decisive action in acquiring the alternative AI chip technology. This move is seen as a blueprint for resilience in a fractured global tech market.",
+        "ko": "네오테크 인더스트리는 대체 AI 칩 기술 인수에 대한 신속하고 단호한 조치로 찬사를 받고 있습니다. 이러한 움직임은 분열된 글로벌 기술 시장에서 회복력의 청사진으로 여겨집니다."
+      },
+      "effect": {
+        "TECH": 1.1
+      }
+    },
+    {
+      "id": "chip-export-crisis-5-3",
+      "dayIdx": 5,
+      "title": {
+        "en": "EcoEnergy Benefits from Flexible AI Solutions, Accelerates Green Initiatives",
+        "ko": "에코에너지, 유연한 AI 솔루션으로 혜택, 친환경 이니셔티브 가속화"
+      },
+      "content": {
+        "en": "EcoEnergy Corp reports faster-than-expected progress in its smart grid projects, thanks to the adaptability of the new AI architectures. This accelerates their green energy deployment goals.",
+        "ko": "에코에너지 코프는 새로운 AI 아키텍처의 적응성 덕분에 스마트 그리드 프로젝트에서 예상보다 빠른 진행을 보고했습니다. 이는 친환경 에너지 배포 목표를 가속화합니다."
+      },
+      "effect": {
+        "GREEN": 1.12
+      }
+    },
+    {
+      "id": "chip-export-crisis-5-4",
+      "dayIdx": 5,
+      "title": {
+        "en": "Healthcare Biotech Sector Finds Stability Through Collaboration",
+        "ko": "의료 생명공학 부문, 협업을 통해 안정성 확보"
+      },
+      "content": {
+        "en": "The collaborative efforts in the healthcare biotech sector to develop open-source AI hardware are bearing fruit, ensuring continued innovation in drug discovery and medical technology despite initial chip supply concerns.",
+        "ko": "오픈소스 AI 하드웨어 개발을 위한 의료 생명공학 부문의 협력 노력이 결실을 맺고 있으며, 초기 칩 공급 우려에도 불구하고 신약 개발 및 의료 기술 분야의 지속적인 혁신을 보장하고 있습니다."
+      },
+      "effect": {
+        "HEALTH": 1.07
+      }
+    },
+    {
+      "id": "chip-export-crisis-5-5",
+      "dayIdx": 5,
+      "title": {
+        "en": "Aerospace Security Bolstered by Domestic AI Capabilities",
+        "ko": "국내 AI 역량으로 항공우주 안보 강화"
+      },
+      "content": {
+        "en": "AeroSpace Dynamics confirms significant progress in integrating domestically produced AI components into its critical systems. This enhances national security and strengthens technological sovereignty.",
+        "ko": "에어로스페이스 다이내믹스는 국내 생산 AI 부품을 핵심 시스템에 통합하는 데 상당한 진전을 보였다고 확인했습니다. 이는 국가 안보를 강화하고 기술 주권을 공고히 합니다."
+      },
+      "effect": {
+        "AERO": 1.1,
+        "TECH": 1.03
+      }
+    }
+  ]
+}

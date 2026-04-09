@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "gen:scenario": "node scripts/generate-scenario.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.2",
@@ -20,6 +21,7 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
