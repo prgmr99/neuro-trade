@@ -15,6 +15,14 @@ const REQUIRED_NEWS_COUNT = 25;
 const REQUIRED_DAYS = 5;
 const NEWS_PER_DAY = 5;
 const MIN_DISTINCT_TICKERS = 3;
+const MAX_EFFECT_ENTRIES_PER_NEWS = 4;
+// Per-day cumulative product gate. nextDay() multiplies all same-day effects
+// sequentially, so 3 negative hits on one ticker compound to well under 0.85.
+// Bound the compounded movement to roughly ±30% per day per ticker.
+const DAY_TICKER_CUM_MIN = 0.75;
+const DAY_TICKER_CUM_MAX = 1.30;
+const COMPLICATION_DAY = 3;
+const ID_PATTERN = /^[a-z][a-z0-9-]*$/;
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -30,8 +38,8 @@ function isInteger(v) {
 
 function validateTopLevel(arc, errors) {
   // Rule 1: id
-  if (!isNonEmptyString(arc.id) || !/^[a-z][a-z0-9-]*$/.test(arc.id)) {
-    errors.push(`id: "${arc.id}" must be a non-empty kebab-case string matching /^[a-z][a-z0-9-]*$/`);
+  if (!isNonEmptyString(arc.id) || !ID_PATTERN.test(arc.id)) {
+    errors.push(`id: "${arc.id}" must be a non-empty kebab-case string matching ${ID_PATTERN}`);
   }
 
   // Rule 2: name.en / name.ko
@@ -97,6 +105,11 @@ function validateNewsItem(item, idx, seenIds, errors) {
     errors.push(`${prefix}.effect: must have at least 1 entry`);
     return;
   }
+  if (effectKeys.length > MAX_EFFECT_ENTRIES_PER_NEWS) {
+    errors.push(
+      `${prefix}.effect: has ${effectKeys.length} entries, maximum allowed is ${MAX_EFFECT_ENTRIES_PER_NEWS}`
+    );
+  }
 
   for (const [ticker, value] of Object.entries(item.effect)) {
     if (!VALID_TICKERS.has(ticker)) {
@@ -144,6 +157,47 @@ function validateDistribution(arc, errors) {
     errors.push(
       `effect diversity: only ${usedTickers.size} distinct ticker(s) used across arc, minimum is ${MIN_DISTINCT_TICKERS}`
     );
+  }
+
+  // Rule 8: Day 3 must contain at least 1 news item with at least one negative
+  // effect (multiplier < 1.0). Enforces the mandatory "complication" beat in
+  // the 3-act narrative structure required by the prompt.
+  const day3News = arc.news.filter((n) => n && n.dayIdx === COMPLICATION_DAY);
+  const day3HasNegative = day3News.some(
+    (n) =>
+      n.effect &&
+      typeof n.effect === 'object' &&
+      Object.values(n.effect).some((v) => typeof v === 'number' && v < 1.0)
+  );
+  if (day3News.length > 0 && !day3HasNegative) {
+    errors.push(
+      `narrative structure: day ${COMPLICATION_DAY} (complication) must contain at least 1 news with a negative effect (<1.0) to create tension`
+    );
+  }
+
+  // Rule 9: Per-day per-ticker cumulative multiplier product must stay within
+  // [DAY_TICKER_CUM_MIN, DAY_TICKER_CUM_MAX]. Mirrors how gameStore.nextDay()
+  // applies same-day effects sequentially — prevents concentration abuse
+  // (e.g. 0.9 × 0.88 × 0.9 = 0.7128, a 29% single-day drop on one ticker).
+  const cumByDayTicker = {};
+  for (const item of arc.news) {
+    if (!item || !isInteger(item.dayIdx) || item.dayIdx < 1 || item.dayIdx > REQUIRED_DAYS) continue;
+    if (!item.effect || typeof item.effect !== 'object') continue;
+    for (const [ticker, mult] of Object.entries(item.effect)) {
+      if (!VALID_TICKERS.has(ticker)) continue;
+      if (typeof mult !== 'number' || !Number.isFinite(mult)) continue;
+      const key = `${item.dayIdx}:${ticker}`;
+      cumByDayTicker[key] = (cumByDayTicker[key] ?? 1) * mult;
+    }
+  }
+  for (const [key, product] of Object.entries(cumByDayTicker)) {
+    if (product < DAY_TICKER_CUM_MIN || product > DAY_TICKER_CUM_MAX) {
+      const [day, ticker] = key.split(':');
+      errors.push(
+        `day ${day} ticker ${ticker}: cumulative effect product ${product.toFixed(4)} ` +
+        `is outside [${DAY_TICKER_CUM_MIN}, ${DAY_TICKER_CUM_MAX}]`
+      );
+    }
   }
 }
 

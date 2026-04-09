@@ -190,6 +190,11 @@ function buildRetryPrompt(violations) {
 // ---------------------------------------------------------------------------
 
 const TICKERS = ['TECH', 'ECOM', 'GREEN', 'HEALTH', 'AERO'];
+const MAX_EFFECT_ENTRIES_PER_NEWS = 4;
+const DAY_TICKER_CUM_MIN = 0.75;
+const DAY_TICKER_CUM_MAX = 1.30;
+const COMPLICATION_DAY = 3;
+const ID_PATTERN = /^[a-z][a-z0-9-]*$/;
 
 /**
  * Validates a parsed arc object.
@@ -256,6 +261,11 @@ function validateArc(arc) {
       if (entries.length === 0) {
         violations.push(`${prefix}: effect has no entries (need at least 1)`);
       }
+      if (entries.length > MAX_EFFECT_ENTRIES_PER_NEWS) {
+        violations.push(
+          `${prefix}: effect has ${entries.length} entries, maximum is ${MAX_EFFECT_ENTRIES_PER_NEWS}`
+        );
+      }
       for (const [ticker, mult] of entries) {
         if (!TICKERS.includes(ticker)) {
           violations.push(`${prefix}: unknown ticker "${ticker}" in effect`);
@@ -294,9 +304,52 @@ function validateArc(arc) {
   // Top-level fields
   if (!arc.id || typeof arc.id !== 'string') {
     violations.push('arc.id is missing or not a string');
+  } else if (!ID_PATTERN.test(arc.id)) {
+    violations.push(`arc.id "${arc.id}" must match kebab-case pattern ${ID_PATTERN}`);
   }
   if (!arc.name?.en || !arc.name?.ko) {
     violations.push('arc.name missing en or ko');
+  }
+  if ('themeHint' in arc && typeof arc.themeHint !== 'string') {
+    violations.push('arc.themeHint must be a string when present');
+  }
+
+  // Narrative structure: day 3 (complication) must contain at least one
+  // negative effect to create tension. Mirrors validate-scenario.mjs.
+  const day3News = arc.news.filter((n) => n && n.dayIdx === COMPLICATION_DAY);
+  const day3HasNegative = day3News.some(
+    (n) =>
+      n?.effect &&
+      typeof n.effect === 'object' &&
+      Object.values(n.effect).some((v) => typeof v === 'number' && v < 1.0)
+  );
+  if (day3News.length > 0 && !day3HasNegative) {
+    violations.push(
+      `day ${COMPLICATION_DAY} (complication) must contain at least 1 news with a negative effect (<1.0)`
+    );
+  }
+
+  // Per-day per-ticker cumulative product gate. nextDay() applies same-day
+  // effects sequentially, so 3 negatives compound. Bound ~±30% per ticker/day.
+  const cumByDayTicker = {};
+  for (const item of arc.news) {
+    if (!item || typeof item !== 'object') continue;
+    if (![1, 2, 3, 4, 5].includes(item.dayIdx)) continue;
+    if (!item.effect || typeof item.effect !== 'object') continue;
+    for (const [ticker, mult] of Object.entries(item.effect)) {
+      if (!TICKERS.includes(ticker)) continue;
+      if (typeof mult !== 'number' || !Number.isFinite(mult)) continue;
+      const key = `${item.dayIdx}:${ticker}`;
+      cumByDayTicker[key] = (cumByDayTicker[key] ?? 1) * mult;
+    }
+  }
+  for (const [key, product] of Object.entries(cumByDayTicker)) {
+    if (product < DAY_TICKER_CUM_MIN || product > DAY_TICKER_CUM_MAX) {
+      const [day, ticker] = key.split(':');
+      violations.push(
+        `day ${day} ticker ${ticker}: cumulative effect ${product.toFixed(4)} outside [${DAY_TICKER_CUM_MIN}, ${DAY_TICKER_CUM_MAX}]`
+      );
+    }
   }
 
   return violations;

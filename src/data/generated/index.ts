@@ -24,6 +24,13 @@ interface GeneratedNewsEntry {
   effect: Record<string, number>;
 }
 
+// Balance gate enforced at runtime. Mirrors scripts/validate-scenario.mjs so
+// hand-edited JSON (which bypasses the build-time validator) cannot smuggle
+// out-of-range effects into gameplay.
+const EFFECT_MIN = 0.85;
+const EFFECT_MAX = 1.15;
+const VALID_TICKERS = new Set(['TECH', 'ECOM', 'GREEN', 'HEALTH', 'AERO']);
+
 interface GeneratedArcJson {
   id: string;
   name: LocalizedString;
@@ -73,7 +80,9 @@ function isGeneratedArcJson(val: unknown): val is GeneratedArcJson {
 // ---------------------------------------------------------------------------
 
 // Vite resolves this at build time — zero runtime overhead when folder is empty.
-const rawModules = import.meta.glob('./arcs/*.json', {
+// `sample-*.json` is excluded so reference/example arcs don't silently become
+// live gameplay content via selectClassicArc.
+const rawModules = import.meta.glob(['./arcs/*.json', '!./arcs/sample-*.json'], {
   eager: true,
   import: 'default',
 }) as Record<string, unknown>;
@@ -86,6 +95,28 @@ function mapToArc(raw: unknown, sourcePath: string): ClassicScenarioArc | null {
   if (!isGeneratedArcJson(raw)) {
     console.warn(`[generated/index] Skipping malformed arc at "${sourcePath}": failed schema check`);
     return null;
+  }
+
+  // Balance gate: reject any arc whose effects violate the Classic multiplier
+  // range or reference unknown tickers. Hand-edited JSON bypasses the build-time
+  // validator script, so we enforce it again at load time.
+  for (const n of raw.news) {
+    for (const [ticker, mult] of Object.entries(n.effect)) {
+      if (!VALID_TICKERS.has(ticker)) {
+        console.warn(
+          `[generated/index] Skipping arc "${raw.id}" (${sourcePath}): ` +
+          `news "${n.id}" references unknown ticker "${ticker}"`
+        );
+        return null;
+      }
+      if (typeof mult !== 'number' || !Number.isFinite(mult) || mult < EFFECT_MIN || mult > EFFECT_MAX) {
+        console.warn(
+          `[generated/index] Skipping arc "${raw.id}" (${sourcePath}): ` +
+          `news "${n.id}" effect[${ticker}]=${mult} is outside [${EFFECT_MIN}, ${EFFECT_MAX}]`
+        );
+        return null;
+      }
+    }
   }
 
   return {
