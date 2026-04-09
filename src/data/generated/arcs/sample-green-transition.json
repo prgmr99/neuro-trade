@@ -330,7 +330,7 @@
         "en": "The week ended with a clear sector repricing: green energy and healthcare commanded a structural premium while traditional energy consumers faced persistent headwinds. Analysts called it a regime change for portfolio construction.",
         "ko": "이번 주는 명확한 섹터 재평가로 마무리됐습니다. 녹색 에너지와 헬스케어가 구조적 프리미엄을 누린 반면 전통적인 에너지 소비자들은 지속적인 역풍에 직면했습니다. 애널리스트들은 이를 포트폴리오 구성의 패러다임 전환이라고 평가했습니다."
       },
-      "effect": { "GREEN": 1.05, "HEALTH": 1.04, "AERO": 0.96, "ECOM": 1.02, "TECH": 1.03 }
+      "effect": { "GREEN": 1.05, "HEALTH": 1.04, "AERO": 0.96, "ECOM": 1.02 }
     }
   ]
 }

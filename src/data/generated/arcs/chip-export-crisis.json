@@ -17,7 +17,7 @@
         "ko": "주요 기술 강국들이 국가 안보를 이유로 첨단 AI 반도체에 대한 새로운 수출 규제를 발표했습니다. 이는 글로벌 기술 공급망 전반에 파장을 일으킬 것으로 예상됩니다."
       },
       "effect": {
-        "TECH": 0.9
+        "TECH": 0.93
       }
     },
     {
@@ -32,7 +32,7 @@
         "ko": "새로운 수출 규제 발표에 투자자들이 네오테크 인더스트리의 AI 프로세서 조달 및 생산 일정 차질을 우려하면서 주가가 급락했습니다."
       },
       "effect": {
-        "TECH": 0.88
+        "TECH": 0.92
       }
     },
     {
@@ -160,76 +160,76 @@
       "id": "chip-export-crisis-3-1",
       "dayIdx": 3,
       "title": {
-        "en": "Unexpected Breakthrough in Alternative AI Processor Architecture Reported",
-        "ko": "대체 AI 프로세서 아키텍처에서 예상치 못한 돌파구 보고"
+        "en": "Alt-Chip Breakthrough Hype Meets Scaling Doubts",
+        "ko": "대체 칩 돌파구, 양산 가능성에 찬물"
       },
       "content": {
-        "en": "A small, undisclosed firm has announced a significant breakthrough in a new, less resource-intensive AI processor architecture, potentially sidestepping some export control limitations. Market reaction is swift and mixed.",
-        "ko": "익명의 소규모 기업이 자원 소모가 적은 새로운 AI 프로세서 아키텍처에서 중요한 돌파구를 발표하며, 일부 수출 통제 제한을 잠재적으로 회피할 수 있게 되었습니다. 시장 반응은 즉각적이고 엇갈립니다."
+        "en": "Independent benchmarks cast doubt on the scalability of the much-hyped alternative AI processor architecture. Analysts warn that lab performance rarely survives contact with mass production, and the initial rally is unwinding fast.",
+        "ko": "독립 벤치마크에서 어제 화제가 된 대체 AI 프로세서 아키텍처의 양산 가능성에 의문이 제기되었습니다. 분석가들은 실험실 성능이 대량 생산에서 재현되기 어렵다고 경고했고, 초기의 급등세는 빠르게 되돌려지고 있습니다."
       },
       "effect": {
-        "TECH": 1.1
+        "TECH": 0.93
       }
     },
     {
       "id": "chip-export-crisis-3-2",
       "dayIdx": 3,
       "title": {
-        "en": "Leading Tech Company (NeoTech) Reportedly Acquires Alternative Chip Startup",
-        "ko": "선도 기술 기업(네오테크), 대체 칩 스타트업 인수 보도"
+        "en": "Antitrust Regulators Probe Rumored NeoTech Acquisition",
+        "ko": "반독점 당국, 네오테크 인수설 전면 조사 착수"
       },
       "content": {
-        "en": "Unconfirmed reports suggest NeoTech Industries is in advanced stages of acquiring the startup behind the new AI processor architecture. This could give them a strategic advantage in navigating chip shortages.",
-        "ko": "미확인 보도에 따르면 네오테크 인더스트리가 새로운 AI 프로세서 아키텍처를 개발한 스타트업 인수를 거의 마무리 단계에 있다고 합니다. 이는 칩 부족 상황을 헤쳐나가는 데 전략적 이점을 제공할 수 있습니다."
+        "en": "Antitrust authorities have opened a formal probe into NeoTech Industries' rumored acquisition of the alt-chip startup, raising fears that the deal may be blocked or delayed for months. NeoTech shares reversed their gains on the news.",
+        "ko": "반독점 당국이 네오테크 인더스트리의 대체 칩 스타트업 인수설에 대해 공식 조사에 착수했습니다. 거래가 몇 달간 지연되거나 무산될 수 있다는 우려가 퍼지며, 네오테크 주가는 전일 상승분을 반납했습니다."
       },
       "effect": {
-        "TECH": 1.15
+        "TECH": 0.88
       }
     },
     {
       "id": "chip-export-crisis-3-3",
       "dayIdx": 3,
       "title": {
-        "en": "Health Sector Explores Open-Source AI Hardware for Medical Imaging",
-        "ko": "의료 부문, 의료 영상에 오픈소스 AI 하드웨어 탐색"
+        "en": "Foreign Powers Retaliate with Rare Earth Export Curbs",
+        "ko": "해외 주요국, 희토류 수출 제한으로 맞불"
       },
       "content": {
-        "en": "VitaPharma and research institutions are investigating open-source AI hardware solutions to reduce dependence on proprietary chips, aiming to maintain progress in medical diagnostics and drug discovery.",
-        "ko": "VitaPharma와 연구 기관들은 의료 진단 및 신약 개발의 진전을 유지하기 위해 독점 칩에 대한 의존도를 줄이고자 오픈소스 AI 하드웨어 솔루션을 연구하고 있습니다."
+        "en": "In a sharp escalation, foreign governments have responded to the chip export controls by restricting exports of rare earth metals critical to batteries, solar panels, and defense electronics. Markets brace for a full-blown trade war.",
+        "ko": "해외 주요국이 칩 수출 규제에 대응해 배터리, 태양광 패널, 방위 전자 부품에 필수적인 희토류 수출을 전면 제한한다고 발표했습니다. 시장은 본격적인 무역 전쟁 가능성에 긴장하고 있습니다."
       },
       "effect": {
-        "HEALTH": 1.05
+        "GREEN": 0.88,
+        "AERO": 0.9
       }
     },
     {
       "id": "chip-export-crisis-3-4",
       "dayIdx": 3,
       "title": {
-        "en": "GlobalMart Announces Partnership for Edge AI Deployment",
-        "ko": "글로벌마트, 엣지 AI 배포를 위한 파트너십 발표"
+        "en": "GlobalMart Edge-AI Pilot Blows Past Budget",
+        "ko": "글로벌마트 엣지 AI 파일럿, 예산 대폭 초과"
       },
       "content": {
-        "en": "In a strategic move, GlobalMart has partnered with a regional hardware provider to accelerate the deployment of 'edge AI' solutions, reducing reliance on centralized, high-performance data centers for some operations.",
-        "ko": "전략적인 움직임으로 글로벌마트는 일부 운영에 있어 중앙 집중식 고성능 데이터 센터 의존도를 줄이기 위해 '엣지 AI' 솔루션 배포를 가속화하기 위해 지역 하드웨어 제공업체와 파트너십을 맺었습니다."
+        "en": "Internal documents reveal that GlobalMart's highly-publicised edge AI pilot is running far over budget, with integration costs double initial estimates. Investors are repricing the e-commerce giant's near-term margin outlook.",
+        "ko": "내부 문서에 따르면 글로벌마트가 대대적으로 홍보했던 엣지 AI 파일럿의 통합 비용이 초기 추정치의 두 배에 달하며 예산을 크게 초과한 것으로 드러났습니다. 투자자들은 단기 마진 전망을 재평가하고 있습니다."
       },
       "effect": {
-        "ECOM": 1.08,
-        "TECH": 1.05
+        "ECOM": 0.91
       }
     },
     {
       "id": "chip-export-crisis-3-5",
       "dayIdx": 3,
       "title": {
-        "en": "Aerospace Defense Firms Prioritize Resilient AI Systems",
-        "ko": "항공우주 방위 기업, 탄력적인 AI 시스템 우선시"
+        "en": "VitaPharma Warns AI Drug Discovery Timelines Slipping",
+        "ko": "비타파마, AI 신약 개발 일정 지연 경고"
       },
       "content": {
-        "en": "AeroSpace Dynamics emphasizes its commitment to developing resilient AI systems capable of operating efficiently with diverse hardware, including domestically produced and open-source alternatives.",
-        "ko": "에어로스페이스 다이내믹스는 국내 생산 및 오픈소스 대안을 포함한 다양한 하드웨어로 효율적으로 작동할 수 있는 탄력적인 AI 시스템 개발에 대한 약속을 강조했습니다."
+        "en": "VitaPharma has issued a rare guidance update warning that its flagship AI-driven drug discovery programs are slipping as replacement compute capacity remains scarce. Management declined to reconfirm the original clinical milestones.",
+        "ko": "비타파마는 이례적으로 가이던스 업데이트를 발표하며, 대체 연산 자원 확보가 지연되면서 핵심 AI 신약 개발 프로그램 일정이 밀리고 있다고 경고했습니다. 경영진은 기존 임상 마일스톤을 재확인하지 않았습니다."
       },
       "effect": {
-        "AERO": 1.07
+        "HEALTH": 0.92
       }
     },
     {
