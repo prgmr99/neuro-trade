@@ -28,5 +28,8 @@ dist-ssr
 # TypeScript
 *.tsbuildinfo
 
+# AI-generated raw responses (failed validation dumps from generate-scenario)
+*.raw.json
+
 # omc changes
 .omc

@@ -1,0 +1,336 @@
+{
+  "id": "sample-green-transition",
+  "name": { "en": "Green Transition Shock", "ko": "녹색 전환 충격" },
+  "themeHint": "Oil price shock triggers global pivot to green energy — GREEN and HEALTH win, AERO and some TECH lose.",
+  "news": [
+    {
+      "id": "sgt-1-1",
+      "dayIdx": 1,
+      "title": {
+        "en": "OPEC Announces Surprise Production Cut, Oil Spikes 30%",
+        "ko": "OPEC, 기습 감산 발표… 국제 유가 30% 급등"
+      },
+      "content": {
+        "en": "OPEC+ members agreed to slash output by 2 million barrels per day, sending crude oil above $130 a barrel. Airlines and aviation manufacturers face an immediate cost shock as jet fuel prices surge.",
+        "ko": "OPEC+ 회원국들이 하루 200만 배럴 감산에 합의하며 원유가 배럴당 130달러를 돌파했습니다. 항공유 가격이 급등하면서 항공사와 항공우주 제조업체들이 즉각적인 비용 충격에 직면했습니다."
+      },
+      "effect": { "AERO": 0.88, "ECOM": 0.95 }
+    },
+    {
+      "id": "sgt-1-2",
+      "dayIdx": 1,
+      "title": {
+        "en": "EcoEnergy Corp Surges on Renewable Tailwind",
+        "ko": "에코에너지, 재생에너지 수혜 기대에 급등"
+      },
+      "content": {
+        "en": "Investors piled into EcoEnergy Corp as the oil shock highlighted the strategic value of renewables. Order pipelines for solar and wind installations expanded sharply overnight.",
+        "ko": "유가 충격이 재생에너지의 전략적 가치를 부각시키면서 투자자들이 에코에너지에 몰렸습니다. 태양광·풍력 설비 수주 파이프라인이 하룻밤 사이 크게 늘었습니다."
+      },
+      "effect": { "GREEN": 1.12 }
+    },
+    {
+      "id": "sgt-1-3",
+      "dayIdx": 1,
+      "title": {
+        "en": "Health Sector Shielded From Energy Volatility",
+        "ko": "헬스케어 섹터, 에너지 변동성 영향 제한적"
+      },
+      "content": {
+        "en": "VitaPharma and peers held steady as analysts noted that pharmaceutical supply chains have limited oil exposure. Defensive rotation into healthcare gathered momentum.",
+        "ko": "비타파마와 동종 기업들이 견조한 흐름을 유지했습니다. 애널리스트들은 제약 공급망의 원유 노출도가 낮다고 지적했으며 방어주로의 로테이션에 탄력이 붙었습니다."
+      },
+      "effect": { "HEALTH": 1.05, "TECH": 0.97 }
+    },
+    {
+      "id": "sgt-1-4",
+      "dayIdx": 1,
+      "title": {
+        "en": "Tech Giants Warn of Higher Data Centre Energy Costs",
+        "ko": "기술 대기업들, 데이터센터 에너지 비용 상승 경고"
+      },
+      "content": {
+        "en": "NeoTech Industries flagged that spiralling energy prices could add hundreds of millions to annual operating costs, putting pressure on margins across the AI infrastructure buildout.",
+        "ko": "네오테크 산업이 에너지 가격 급등으로 연간 운영 비용이 수억 달러 늘어날 수 있다고 경고했습니다. AI 인프라 구축 전반에 걸쳐 마진 압박이 가중되고 있습니다."
+      },
+      "effect": { "TECH": 0.93 }
+    },
+    {
+      "id": "sgt-1-5",
+      "dayIdx": 1,
+      "title": {
+        "en": "G7 Calls Emergency Energy Security Summit",
+        "ko": "G7, 에너지 안보 긴급 정상회의 소집"
+      },
+      "content": {
+        "en": "World leaders announced an emergency summit to coordinate a response to the oil shock. Early signals point to fast-tracking green energy investment as the central policy response.",
+        "ko": "세계 지도자들이 유가 충격 대응을 조율하기 위한 긴급 정상회의를 발표했습니다. 초기 신호는 녹색 에너지 투자 가속화를 핵심 정책 대응으로 내세울 것임을 시사합니다."
+      },
+      "effect": { "GREEN": 1.08, "AERO": 0.96 }
+    },
+
+    {
+      "id": "sgt-2-1",
+      "dayIdx": 2,
+      "title": {
+        "en": "G7 Summit Pledges $2 Trillion Green Investment Accelerator",
+        "ko": "G7 정상회의, 2조 달러 규모 녹색 투자 가속화 선언"
+      },
+      "content": {
+        "en": "Leaders agreed to a landmark $2 trillion package to accelerate solar, wind, and battery infrastructure over five years. EcoEnergy Corp is positioned as one of the primary beneficiaries.",
+        "ko": "각국 정상들이 5년간 태양광·풍력·배터리 인프라를 가속화하기 위한 2조 달러 규모의 획기적인 패키지에 합의했습니다. 에코에너지가 주요 수혜 기업 중 하나로 부각됩니다."
+      },
+      "effect": { "GREEN": 1.14 }
+    },
+    {
+      "id": "sgt-2-2",
+      "dayIdx": 2,
+      "title": {
+        "en": "Airlines Ground Older Fuel-Hungry Fleets, Deferring New Orders",
+        "ko": "항공사들, 구형 고연비 기종 운항 중단… 신규 주문 연기"
+      },
+      "content": {
+        "en": "Major carriers announced early retirement of inefficient jets and indefinitely deferred new aircraft orders, dealing a heavy blow to AeroSpace Dynamics\u2019 forward booking pipeline.",
+        "ko": "주요 항공사들이 연비가 낮은 구형 기종을 조기 퇴역시키고 신규 항공기 주문을 무기한 연기한다고 발표했습니다. 에어로스페이스 다이내믹스의 수주 파이프라인에 큰 타격이 될 전망입니다."
+      },
+      "effect": { "AERO": 0.87 }
+    },
+    {
+      "id": "sgt-2-3",
+      "dayIdx": 2,
+      "title": {
+        "en": "NeoTech Pivots AI to Green Grid Optimisation",
+        "ko": "네오테크, AI를 친환경 전력망 최적화에 투입"
+      },
+      "content": {
+        "en": "NeoTech announced a strategic pivot to offer AI-driven grid management software for renewable operators, reframing its energy cost headwinds as a new revenue opportunity.",
+        "ko": "네오테크가 재생에너지 사업자를 위한 AI 기반 전력망 관리 소프트웨어를 제공하겠다고 발표했습니다. 에너지 비용 역풍을 새로운 수익 기회로 전환하는 전략적 전환입니다."
+      },
+      "effect": { "TECH": 1.07, "GREEN": 1.04 }
+    },
+    {
+      "id": "sgt-2-4",
+      "dayIdx": 2,
+      "title": {
+        "en": "Pharmaceutical Logistics Costs Creep Higher on Fuel Surcharges",
+        "ko": "연료 할증료로 제약 물류 비용 소폭 상승"
+      },
+      "content": {
+        "en": "VitaPharma and rival drug makers reported modest cost increases from fuel surcharges on cold-chain deliveries, though the impact remains manageable compared with energy-intensive sectors.",
+        "ko": "비타파마와 경쟁 제약사들이 콜드체인 배송 연료 할증료로 소폭의 비용 증가를 보고했습니다. 그러나 에너지 집약 산업과 비교해 영향은 여전히 관리 가능한 수준입니다."
+      },
+      "effect": { "HEALTH": 0.97 }
+    },
+    {
+      "id": "sgt-2-5",
+      "dayIdx": 2,
+      "title": {
+        "en": "E-Commerce Giants Pass Energy Surcharges to Consumers",
+        "ko": "이커머스 대기업들, 에너지 할증료 소비자에 전가"
+      },
+      "content": {
+        "en": "GlobalMart announced temporary energy surcharges on deliveries, sparking consumer backlash but partially offsetting rising fulfilment costs. Analysts called the move pragmatic but warned of volume risk.",
+        "ko": "글로벌마트가 배송에 임시 에너지 할증료를 부과한다고 발표했습니다. 소비자 반발을 불러일으켰지만 증가하는 배송 비용을 부분적으로 상쇄했습니다. 애널리스트들은 실용적인 조치라면서도 주문량 감소 위험을 경고했습니다."
+      },
+      "effect": { "ECOM": 0.94 }
+    },
+
+    {
+      "id": "sgt-3-1",
+      "dayIdx": 3,
+      "title": {
+        "en": "Solar Panel Orders Break All-Time Records in 48 Hours",
+        "ko": "48시간 만에 태양광 패널 주문 사상 최대치 갱신"
+      },
+      "content": {
+        "en": "EcoEnergy Corp reported a record backlog following a wave of utility and industrial solar orders triggered by the G7 pledge. Production facilities are running at full capacity.",
+        "ko": "G7 공약에 촉발된 유틸리티·산업용 태양광 주문 폭주로 에코에너지가 사상 최대 수주 잔고를 기록했습니다. 생산 시설이 풀가동 중입니다."
+      },
+      "effect": { "GREEN": 1.11 }
+    },
+    {
+      "id": "sgt-3-2",
+      "dayIdx": 3,
+      "title": {
+        "en": "VitaPharma Wins WHO Contract for Climate-Linked Disease Research",
+        "ko": "비타파마, 기후 관련 질병 연구 WHO 계약 수주"
+      },
+      "content": {
+        "en": "The World Health Organization awarded VitaPharma a multiyear research grant to study diseases expected to spread with climate change, including vector-borne illnesses, boosting the company\u2019s long-term revenue outlook.",
+        "ko": "세계보건기구가 기후변화와 함께 확산이 예상되는 매개체 매개 질환 등을 연구하는 다년 연구비를 비타파마에 지원했습니다. 회사의 장기 수익 전망이 밝아졌습니다."
+      },
+      "effect": { "HEALTH": 1.09 }
+    },
+    {
+      "id": "sgt-3-3",
+      "dayIdx": 3,
+      "title": {
+        "en": "NeoTech Grid-AI Pilot Contracts Signed With Three Utilities",
+        "ko": "네오테크, 전력망 AI 파일럿 계약 3개 유틸리티사와 체결"
+      },
+      "content": {
+        "en": "Just days after its strategic pivot announcement, NeoTech signed pilot agreements with three major utilities to deploy its grid optimisation AI, validating the pivot and easing investor concerns about energy cost headwinds.",
+        "ko": "전략적 전환 발표 불과 며칠 만에 네오테크가 3대 주요 전력 회사와 전력망 최적화 AI 파일럿 계약을 체결했습니다. 전환의 타당성을 입증하고 에너지 비용 역풍에 대한 투자자 우려를 완화시켰습니다."
+      },
+      "effect": { "TECH": 1.08 }
+    },
+    {
+      "id": "sgt-3-4",
+      "dayIdx": 3,
+      "title": {
+        "en": "AeroSpace Dynamics Misses Quarterly Earnings by Wide Margin",
+        "ko": "에어로스페이스 다이내믹스, 분기 실적 대폭 하회"
+      },
+      "content": {
+        "en": "AeroSpace Dynamics reported a steep earnings miss as fuel-cost-driven order cancellations and deferrals gutted the commercial aviation backlog. The defence segment partially offset the damage.",
+        "ko": "에어로스페이스 다이내믹스가 항공유 가격 상승에 따른 주문 취소 및 연기로 상업용 항공 수주 잔고가 급감하면서 분기 실적을 크게 하회했습니다. 방산 부문이 피해를 부분적으로 상쇄했습니다."
+      },
+      "effect": { "AERO": 0.90 }
+    },
+    {
+      "id": "sgt-3-5",
+      "dayIdx": 3,
+      "title": {
+        "en": "Online Grocery Demand Spikes as Commuters Cut Car Use",
+        "ko": "이동 자제로 온라인 식료품 수요 급증"
+      },
+      "content": {
+        "en": "High fuel prices discouraged discretionary driving, pushing consumers toward home delivery. GlobalMart\u2019s grocery and essentials segment saw a sharp volume uplift, offsetting pressure on its energy surcharge controversy.",
+        "ko": "높은 연료 가격이 불필요한 운전을 억제하면서 소비자들이 가정 배달로 이동했습니다. 글로벌마트의 식료품 및 생필품 부문 주문량이 급증하면서 에너지 할증료 논란에 따른 압박을 상쇄했습니다."
+      },
+      "effect": { "ECOM": 1.06 }
+    },
+
+    {
+      "id": "sgt-4-1",
+      "dayIdx": 4,
+      "title": {
+        "en": "Green Bond Market Hits $1 Trillion in Single Quarter",
+        "ko": "그린본드 시장, 단일 분기 1조 달러 돌파"
+      },
+      "content": {
+        "en": "The green bond market surpassed $1 trillion in issuance for a single quarter, with EcoEnergy Corp raising $4 billion at record-low yields to fund new manufacturing capacity.",
+        "ko": "그린본드 시장이 단일 분기 발행량 1조 달러를 돌파했습니다. 에코에너지가 신규 생산 능력 확충을 위해 사상 최저 금리로 40억 달러를 조달했습니다."
+      },
+      "effect": { "GREEN": 1.10 }
+    },
+    {
+      "id": "sgt-4-2",
+      "dayIdx": 4,
+      "title": {
+        "en": "VitaPharma Expands Climate Health Division, Hires 500 Researchers",
+        "ko": "비타파마, 기후 보건 부문 확대… 연구원 500명 채용"
+      },
+      "content": {
+        "en": "Buoyed by the WHO contract, VitaPharma announced a major expansion of its climate-linked disease division with a $1.2 billion R&D commitment, signalling long-term confidence in the sector.",
+        "ko": "WHO 계약에 힘입어 비타파마가 12억 달러의 R&D 투자와 함께 기후 관련 질병 부문을 대폭 확대한다고 발표했습니다. 해당 분야에 대한 장기적 자신감을 표명한 것입니다."
+      },
+      "effect": { "HEALTH": 1.08 }
+    },
+    {
+      "id": "sgt-4-3",
+      "dayIdx": 4,
+      "title": {
+        "en": "AeroSpace Dynamics Defence Contracts Provide Partial Lifeline",
+        "ko": "에어로스페이스 다이내믹스, 방산 계약으로 부분 회복"
+      },
+      "content": {
+        "en": "A $15 billion NATO drone programme contract announcement provided relief for AeroSpace Dynamics, suggesting the defence backlog can partially cushion the commercial aviation slump.",
+        "ko": "150억 달러 규모의 NATO 드론 프로그램 계약 발표가 에어로스페이스 다이내믹스에 안도감을 줬습니다. 방산 수주 잔고가 상업용 항공 부진을 부분적으로 완충할 수 있을 것이라는 신호입니다."
+      },
+      "effect": { "AERO": 1.07 }
+    },
+    {
+      "id": "sgt-4-4",
+      "dayIdx": 4,
+      "title": {
+        "en": "NeoTech Inks Grid-AI Deal With National Power Operator",
+        "ko": "네오테크, 국영 전력 회사와 전력망 AI 계약 체결"
+      },
+      "content": {
+        "en": "NeoTech secured a landmark contract with a national power operator to deploy AI-driven demand forecasting across the entire national grid, the largest deal in the company\u2019s grid-AI division history.",
+        "ko": "네오테크가 국영 전력 회사와 전국 전력망 전반에 AI 수요 예측 기술을 배치하는 획기적인 계약을 체결했습니다. 회사 전력망 AI 사업부 역사상 최대 거래입니다."
+      },
+      "effect": { "TECH": 1.10, "GREEN": 1.03 }
+    },
+    {
+      "id": "sgt-4-5",
+      "dayIdx": 4,
+      "title": {
+        "en": "E-Commerce Volumes Recover as Energy Surcharge Backlash Fades",
+        "ko": "에너지 할증료 반발 잦아들며 이커머스 주문량 회복"
+      },
+      "content": {
+        "en": "Consumer complaints over GlobalMart\u2019s energy surcharge subsided as rivals adopted similar pricing. Order volumes rebounded to pre-surcharge levels, reassuring investors about demand elasticity.",
+        "ko": "경쟁사들도 유사한 가격 정책을 채택하면서 글로벌마트의 에너지 할증료에 대한 소비자 불만이 잦아들었습니다. 주문량이 할증료 이전 수준으로 회복되면서 수요 탄력성에 대한 투자자 우려가 해소됐습니다."
+      },
+      "effect": { "ECOM": 1.05 }
+    },
+
+    {
+      "id": "sgt-5-1",
+      "dayIdx": 5,
+      "title": {
+        "en": "EcoEnergy Corp Raises Full-Year Guidance on Record Demand",
+        "ko": "에코에너지, 기록적 수요에 연간 전망치 상향"
+      },
+      "content": {
+        "en": "EcoEnergy raised its full-year revenue guidance by 35%, citing an unprecedented backlog and government programme tailwinds. The stock extended its week-long rally to close near multi-year highs.",
+        "ko": "에코에너지가 유례없는 수주 잔고와 정부 정책 수혜를 이유로 연간 매출 전망치를 35% 상향했습니다. 주가가 주간 랠리를 이어가며 다년간 고점 근처에서 마감했습니다."
+      },
+      "effect": { "GREEN": 1.13 }
+    },
+    {
+      "id": "sgt-5-2",
+      "dayIdx": 5,
+      "title": {
+        "en": "VitaPharma Climate Health Pipeline Attracts Partnership Bids",
+        "ko": "비타파마 기후 보건 파이프라인에 파트너십 입찰 쇄도"
+      },
+      "content": {
+        "en": "Multiple global pharmaceutical groups submitted partnership proposals for VitaPharma\u2019s climate-disease research programme, validating its strategic bet and boosting the company\u2019s valuation multiple.",
+        "ko": "여러 글로벌 제약사들이 비타파마의 기후 질병 연구 프로그램 파트너십 제안서를 제출했습니다. 전략적 베팅의 타당성이 입증되면서 회사의 밸류에이션 배수가 높아졌습니다."
+      },
+      "effect": { "HEALTH": 1.07 }
+    },
+    {
+      "id": "sgt-5-3",
+      "dayIdx": 5,
+      "title": {
+        "en": "Oil Prices Ease Slightly on Strategic Reserve Release",
+        "ko": "전략 비축유 방출로 유가 소폭 하락"
+      },
+      "content": {
+        "en": "Coordinated strategic petroleum reserve releases by the US and EU provided modest relief on oil prices, easing the immediate cost pressure on aviation and logistics.",
+        "ko": "미국과 EU의 협조 전략 비축유 방출이 유가에 소폭 안도를 제공했습니다. 항공과 물류에 대한 즉각적인 비용 압박이 다소 완화됐습니다."
+      },
+      "effect": { "AERO": 1.06, "ECOM": 1.04 }
+    },
+    {
+      "id": "sgt-5-4",
+      "dayIdx": 5,
+      "title": {
+        "en": "NeoTech Confirms Grid-AI as New Core Business Segment",
+        "ko": "네오테크, 전력망 AI를 새 핵심 사업부로 공식 확정"
+      },
+      "content": {
+        "en": "In an investor day presentation, NeoTech elevated Grid-AI to a standalone reportable segment, guiding for $2 billion in revenue in year one. Analysts upgraded price targets across the board.",
+        "ko": "투자자 데이에서 네오테크가 전력망 AI를 독립 보고 사업부로 격상하고 첫해 매출 20억 달러를 제시했습니다. 애널리스트들이 일제히 목표 주가를 상향했습니다."
+      },
+      "effect": { "TECH": 1.09 }
+    },
+    {
+      "id": "sgt-5-5",
+      "dayIdx": 5,
+      "title": {
+        "en": "Markets Close Week With Broad Green-Sector Premium Priced In",
+        "ko": "시장, 녹색 섹터 프리미엄 반영하며 주간 마감"
+      },
+      "content": {
+        "en": "The week ended with a clear sector repricing: green energy and healthcare commanded a structural premium while traditional energy consumers faced persistent headwinds. Analysts called it a regime change for portfolio construction.",
+        "ko": "이번 주는 명확한 섹터 재평가로 마무리됐습니다. 녹색 에너지와 헬스케어가 구조적 프리미엄을 누린 반면 전통적인 에너지 소비자들은 지속적인 역풍에 직면했습니다. 애널리스트들은 이를 포트폴리오 구성의 패러다임 전환이라고 평가했습니다."
+      },
+      "effect": { "GREEN": 1.05, "HEALTH": 1.04, "AERO": 0.96, "ECOM": 1.02 }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { News, Stock, StockSymbol } from '../types';
 import { ClassicScenarioArc } from './classic-arcs';
+import { mergeWithClassicArcs } from './generated';
 import { TRADE_WAR_ARC } from './classic-arc-trade-war';
 import { TECH_BUBBLE_ARC } from './classic-arc-tech-bubble';
 import { ENERGY_CRISIS_ARC } from './classic-arc-energy-crisis';
@@ -251,7 +252,7 @@ export const PANDEMIC_ARC: ClassicScenarioArc = {
   news: CLASSIC_NEWS,
 };
 
-export const CLASSIC_ARCS: ClassicScenarioArc[] = [
+const BASE_CLASSIC_ARCS: ClassicScenarioArc[] = [
   PANDEMIC_ARC,
   TRADE_WAR_ARC,
   TECH_BUBBLE_ARC,
@@ -273,3 +274,5 @@ export const CLASSIC_ARCS: ClassicScenarioArc[] = [
   AVIATION_SAFETY_ARC,
   DOTCOM_CRASH_ARC,
 ];
+
+export const CLASSIC_ARCS: ClassicScenarioArc[] = mergeWithClassicArcs(BASE_CLASSIC_ARCS);
