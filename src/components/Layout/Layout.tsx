@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useGameStore } from '../../store/gameStore';
-import { useQueryState, parseAsStringLiteral } from 'nuqs';
+import { useSearchParams } from 'react-router-dom';
 import { Newspaper, TrendingUp, Briefcase, ChevronRight, Globe, Play, Trophy } from 'lucide-react';
 import { useTranslation } from '../../i18n/translations';
 import { useLanguageStore } from '../../store/useLanguageStore';
@@ -23,11 +23,8 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayLabel, dayLabel }) => {
-  const [activeTabQuery, setActiveTab] = useQueryState(
-    'tab',
-    parseAsStringLiteral(tabOptions).withDefault('news')
-  );
-  const activeTab = activeTabQuery as Tab;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = (searchParams.get('tab') as Tab | null) ?? 'news';
   const [showSummary, setShowSummary] = useState(false);
   const scrollPositions = useRef<Record<string, number>>({});
   const mainContentRef = useRef<HTMLDivElement>(null);
@@ -41,13 +38,17 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
     if (mainContentRef.current) {
       scrollPositions.current[activeTab] = mainContentRef.current.scrollTop;
     }
-    setActiveTab(newTab);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', newTab);
+      return next;
+    });
     requestAnimationFrame(() => {
       if (mainContentRef.current) {
         mainContentRef.current.scrollTop = scrollPositions.current[newTab] || 0;
       }
     });
-  }, [activeTab, setActiveTab]);
+  }, [activeTab, setSearchParams]);
 
   const handleNextDay = () => {
     if (onDayEnd) {
@@ -60,7 +61,11 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
   const closeSummaryAndAdvance = () => {
     nextDay();
     setShowSummary(false);
-    setActiveTab('news');
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', 'news');
+      return next;
+    });
     scrollPositions.current = {};
     requestAnimationFrame(() => {
       if (mainContentRef.current) {

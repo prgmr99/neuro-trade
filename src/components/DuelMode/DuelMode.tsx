@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useQueryState } from 'nuqs';
+import { useSearchParams } from 'react-router-dom';
 import { useGameStore } from '../../store/gameStore';
 import { useTranslation } from '../../i18n/translations';
 import { SCENARIOS, CLASSIC_ARCS, selectClassicArc } from '../../data';
@@ -30,7 +30,8 @@ interface DuelRow {
 }
 
 const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
-  const [duelParam] = useQueryState('duel');
+  const [searchParams] = useSearchParams();
+  const duelParam = searchParams.get('seed');
   const { t } = useTranslation();
   const { setInitialState, dayState, portfolio, stocks } = useGameStore();
 
@@ -53,7 +54,7 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
   const [saveError, setSaveError] = useState<string | null>(null);
   const isPlayer1Ref = useRef(true);
 
-  const shareLink = `${window.location.origin}?duel=${seed}`;
+  const shareLink = `${window.location.origin}/duel?seed=${seed}`;
 
   const copyLink = async () => {
     try {

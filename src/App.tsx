@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQueryState } from 'nuqs';
+import { Routes, Route, useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from './store/gameStore';
 import { useLanguageStore } from './store/useLanguageStore';
 import { SCENARIOS, GameMode, CLASSIC_ARCS, selectClassicArc, selectAdvancedArcs } from './data';
@@ -20,18 +20,65 @@ import SocialProof from './components/SocialProof/SocialProof';
 import MarketTicker from './components/MarketTicker/MarketTicker';
 import { trackGameStarted, trackModeSelected } from './lib/analytics';
 
-function App() {
-  const [view, setView] = useQueryState('view');
-  const [modeParam, setModeParam] = useQueryState('mode');
-  const [duelParam] = useQueryState('duel');
+// --- Route-level components ---
+
+function GameRoute({ goHome }: { goHome: () => void }) {
+  const [searchParams] = useSearchParams();
+  const modeParam = searchParams.get('mode') as GameMode | null;
+  const { dayState } = useGameStore();
+
+  if (dayState.currentDay > dayState.maxDays) {
+    return <GameOverScreen mode={modeParam!} onRestart={goHome} />;
+  }
+
+  return (
+    <div className="app-container">
+      <Layout onGoHome={goHome} />
+    </div>
+  );
+}
+
+function RankingsRoute({ goHome }: { goHome: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <div className="splash-screen ranking-page">
+      <div className="splash-content glass-card" style={{ maxWidth: '700px', width: '95%' }}>
+        <RankingBoard />
+        <div className="gameover-cta-desktop">
+          <button className="start-btn" onClick={goHome} style={{ width: '100%', marginTop: '1.5rem' }}>
+            {t('ranking.back')}
+          </button>
+        </div>
+        <div className="gameover-actions-spacer" />
+      </div>
+      <div className="gameover-fixed-bottom">
+        <button className="start-btn" onClick={goHome}>
+          {t('ranking.back')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function DuelRoute({ goHome }: { goHome: () => void }) {
+  const [searchParams] = useSearchParams();
+  const seedParam = searchParams.get('seed');
+  const initialSeed = seedParam ? parseInt(seedParam, 10) : undefined;
+  return <DuelMode onBack={goHome} initialSeed={initialSeed} />;
+}
+
+// --- Splash screen ---
+
+function SplashScreen() {
+  const navigate = useNavigate();
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
   const [pendingView, setPendingView] = useState<'daily' | 'multiplayer' | 'room-battle' | null>(null);
-  const [duelSeed, setDuelSeed] = useState<number | undefined>(undefined);
   const [showAchievements, setShowAchievements] = useState(false);
   const [attendanceInfo, setAttendanceInfo] = useState<{ show: boolean; isNewDay: boolean; streakBroken: boolean }>({ show: false, isNewDay: false, streakBroken: false });
-  const { setInitialState, dayState } = useGameStore();
+  const { setInitialState } = useGameStore();
   const { language, setLanguage } = useLanguageStore();
   const checkIn = useAttendanceStore((s) => s.checkIn);
+  const { t } = useTranslation();
 
   useEffect(() => {
     document.documentElement.lang = language === 'ko' ? 'ko' : 'en';
@@ -44,32 +91,13 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    if (duelParam) {
-      const parsed = parseInt(duelParam, 10);
-      if (!isNaN(parsed)) {
-        setDuelSeed(parsed);
-        setView('duel');
-      }
-    }
-  }, [duelParam]);
-
-  const { t } = useTranslation();
-
   const toggleLanguage = () => {
     setLanguage(language === 'en' ? 'ko' : 'en');
   };
 
-  const goHome = () => {
-    setView(null);
-    setModeParam(null);
-    setSelectedMode(null);
-    setPendingView(null);
-  };
-
   const startGame = () => {
     if (pendingView) {
-      setView(pendingView, { history: 'push' });
+      navigate(`/${pendingView}`);
       return;
     }
     if (!selectedMode) return;
@@ -83,77 +111,14 @@ function App() {
       const { news } = selectAdvancedArcs(seed);
       setInitialState(scenario.stocks, news, scenario.maxDays, scenario.startingCash, seed, null, scenario.preApplyRatio ?? 0, scenario.marketGravity ?? 0, scenario.effectScale ?? 1);
     }
-    setModeParam(selectedMode);
-    setView('game');
+    navigate(`/game?mode=${selectedMode}`);
     trackGameStarted(selectedMode, false);
   };
 
-  // --- Views based on URL query param ---
-
-  if (view === 'flash') {
-    return <FlashRound onBack={goHome} />;
-  }
-
-  if (view === 'daily') {
-    return <DailyChallenge onBack={goHome} />;
-  }
-
-  if (view === 'duel') {
-    return <DuelMode onBack={() => { goHome(); setDuelSeed(undefined); }} initialSeed={duelSeed} />;
-  }
-
-  if (view === 'multiplayer') {
-    return <LiveCompetition onBack={goHome} />;
-  }
-
-  if (view === 'room-battle') {
-    return <RoomBattle onBack={goHome} />;
-  }
-
-  if (view === 'rankings') {
-    return (
-      <div className="splash-screen ranking-page">
-        <div className="splash-content glass-card" style={{ maxWidth: '700px', width: '95%' }}>
-          <RankingBoard />
-          {/* Desktop: inline button inside card */}
-          <div className="gameover-cta-desktop">
-            <button className="start-btn" onClick={goHome} style={{ width: '100%', marginTop: '1.5rem' }}>
-              {t('ranking.back')}
-            </button>
-          </div>
-          {/* Mobile: spacer for fixed bottom */}
-          <div className="gameover-actions-spacer" />
-        </div>
-        {/* Mobile: fixed bottom — outside glass-card to avoid backdrop-filter stacking context */}
-        <div className="gameover-fixed-bottom">
-          <button className="start-btn" onClick={goHome}>
-            {t('ranking.back')}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (view === 'game') {
-    const gameMode = (modeParam as GameMode) ?? selectedMode;
-
-    if (dayState.currentDay > dayState.maxDays) {
-      return <GameOverScreen mode={gameMode!} onRestart={goHome} />;
-    }
-
-    return (
-      <div className="app-container">
-        <Layout onGoHome={goHome} />
-      </div>
-    );
-  }
-
-  // --- Splash screen (default) ---
   return (
     <div className="splash-screen">
       <div className="splash-content glass-card" style={{ position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginBottom: '0.5rem' }}>
-          {/* Desktop: Trophy icon / Mobile: Rankings button */}
           <button
             onClick={() => setShowAchievements(true)}
             className="splash-lang-btn splash-desktop-only"
@@ -162,7 +127,7 @@ function App() {
             <Trophy size={14} />
           </button>
           <button
-            onClick={() => setView('rankings')}
+            onClick={() => navigate('/rankings')}
             className="splash-lang-btn splash-mobile-only"
           >
             <Trophy size={14} />
@@ -309,23 +274,22 @@ function App() {
         </div>
 
         <div className="splash-sub-actions">
-          <button className="splash-chip" onClick={() => setView('flash')}>
+          <button className="splash-chip" onClick={() => navigate('/flash')}>
             ⚡ {t('app.flashTitle')}
           </button>
           <span className="splash-chip-divider">·</span>
-          <button className="splash-chip" onClick={() => setView('duel')}>
+          <button className="splash-chip" onClick={() => navigate('/duel')}>
             {t('duel.createTitle')}
           </button>
         </div>
 
         <button
           className="splash-ranking-btn"
-          onClick={() => setView('rankings')}
+          onClick={() => navigate('/rankings')}
         >
           {t('ranking.viewRankings')}
         </button>
 
-        {/* Start button — inline on desktop */}
         <div className="splash-start-desktop">
           <button
             className="start-btn"
@@ -339,7 +303,6 @@ function App() {
         <div className="splash-actions-spacer" />
       </div>
 
-      {/* Fixed bottom start button — mobile only */}
       <div className="splash-fixed-bottom">
         <button
           className="start-btn"
@@ -362,6 +325,26 @@ function App() {
         <AchievementGallery onClose={() => setShowAchievements(false)} />
       )}
     </div>
+  );
+}
+
+// --- App root ---
+
+function App() {
+  const navigate = useNavigate();
+  const goHome = () => navigate('/');
+
+  return (
+    <Routes>
+      <Route path="/flash" element={<FlashRound onBack={goHome} />} />
+      <Route path="/daily" element={<DailyChallenge onBack={goHome} />} />
+      <Route path="/duel" element={<DuelRoute goHome={goHome} />} />
+      <Route path="/multiplayer" element={<LiveCompetition onBack={goHome} />} />
+      <Route path="/room-battle" element={<RoomBattle onBack={goHome} />} />
+      <Route path="/rankings" element={<RankingsRoute goHome={goHome} />} />
+      <Route path="/game" element={<GameRoute goHome={goHome} />} />
+      <Route path="/" element={<SplashScreen />} />
+    </Routes>
   );
 }
 

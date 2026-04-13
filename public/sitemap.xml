@@ -6,27 +6,27 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://neuro-trade.yeomniverse.com/?view=flash</loc>
+    <loc>https://neuro-trade.yeomniverse.com/flash</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://neuro-trade.yeomniverse.com/?view=daily</loc>
+    <loc>https://neuro-trade.yeomniverse.com/daily</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://neuro-trade.yeomniverse.com/?view=duel</loc>
+    <loc>https://neuro-trade.yeomniverse.com/duel</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://neuro-trade.yeomniverse.com/?view=multiplayer</loc>
+    <loc>https://neuro-trade.yeomniverse.com/multiplayer</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://neuro-trade.yeomniverse.com/?view=rankings</loc>
+    <loc>https://neuro-trade.yeomniverse.com/rankings</loc>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
