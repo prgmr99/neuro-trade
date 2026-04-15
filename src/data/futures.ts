@@ -139,7 +139,6 @@ export const FUTURES_FALLBACK_NEWS: News[] = [
 export const FUTURES_CONFIG = {
   maxDays: 5,
   startingCash: 10000,
-  leverageOptions: [10, 25, 50, 75, 100, 125] as const,
   maxLeverage: 125,
   fundingRatePerDay: 0.0009, // 0.09% per day (roughly 0.03% per 8hrs)
 } as const;

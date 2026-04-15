@@ -53,7 +53,7 @@ export interface FuturesPosition {
   id: string;                    // "${symbol}-${direction}"
   symbol: string;
   direction: 'long' | 'short';
-  leverage: number;              // 2, 5, 10, or 20
+  leverage: number;              // 10, 25, 50, 75, 100, or 125
   margin: number;                // collateral posted (USD)
   size: number;                  // margin * leverage (notional value)
   entryPrice: number;

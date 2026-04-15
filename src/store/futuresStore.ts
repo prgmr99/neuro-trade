@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { FuturesPosition, FuturesStats, News, Stock } from '../types';
 import { mulberry32 } from '../lib/prng';
-import { FUTURES_STOCKS, FUTURES_FALLBACK_NEWS, FUTURES_CONFIG } from '../data/futures';
+import { FUTURES_CONFIG } from '../data/futures';
 
 interface FuturesStoreState {
   // Game state
@@ -29,7 +29,6 @@ interface FuturesStoreState {
   nextDay: () => void;
   readNews: (newsId: string) => void;
   toggleNewsExpanded: (newsId: string) => void;
-  resetGame: () => void;
 }
 
 export const useFuturesStore = create<FuturesStoreState>()(immer((set) => ({
@@ -160,6 +159,7 @@ export const useFuturesStore = create<FuturesStoreState>()(immer((set) => ({
   closePosition: (positionId) => set((state) => {
     const pos = state.positions[positionId];
     if (!pos) return;
+    if (pos.isLiquidated) return;
 
     const currentPrice = state.stocks[pos.symbol].price;
     const pnl = pos.direction === 'long'
@@ -214,30 +214,36 @@ export const useFuturesStore = create<FuturesStoreState>()(immer((set) => ({
       if (pos.isLiquidated) continue;
 
       const currentPrice = draft.stocks[pos.symbol].price;
+      const lastCandle = draft.stocks[pos.symbol].priceHistory[draft.stocks[pos.symbol].priceHistory.length - 1];
+      const todayHigh = lastCandle?.high ?? currentPrice;
+      const todayLow = lastCandle?.low ?? currentPrice;
 
-      // Funding rate
+      // Funding rate — deducted from wallet cash (margin stays immutable after open)
       const fundingCost = pos.size * fundingRate;
-      pos.margin = Math.max(0, pos.margin - fundingCost);
+      draft.cash = Math.max(0, draft.cash - fundingCost);
       pos.fundingPaid += fundingCost;
       draft.stats.totalFundingPaid += fundingCost;
 
-      // Unrealized PnL
-      if (pos.direction === 'long') {
-        pos.unrealizedPnl = ((currentPrice - pos.entryPrice) / pos.entryPrice) * pos.size;
-      } else {
-        pos.unrealizedPnl = ((pos.entryPrice - currentPrice) / pos.entryPrice) * pos.size;
-      }
-
-      // Liquidation check
+      // Liquidation check — use high/low to catch intraday breaches
       const isLiquidated =
-        (pos.direction === 'long' && currentPrice <= pos.liquidationPrice) ||
-        (pos.direction === 'short' && currentPrice >= pos.liquidationPrice) ||
-        pos.margin <= 0;
+        (pos.direction === 'long' && (currentPrice <= pos.liquidationPrice || todayLow <= pos.liquidationPrice)) ||
+        (pos.direction === 'short' && (currentPrice >= pos.liquidationPrice || todayHigh >= pos.liquidationPrice));
 
       if (isLiquidated) {
+        // PnL locked at liquidation price (margin is wiped)
+        pos.unrealizedPnl = pos.direction === 'long'
+          ? ((pos.liquidationPrice - pos.entryPrice) / pos.entryPrice) * pos.size
+          : ((pos.entryPrice - pos.liquidationPrice) / pos.entryPrice) * pos.size;
         pos.isLiquidated = true;
         liquidatedIds.push(posId);
         draft.stats.totalLiquidations++;
+      } else {
+        // Unrealized PnL based on close price
+        if (pos.direction === 'long') {
+          pos.unrealizedPnl = ((currentPrice - pos.entryPrice) / pos.entryPrice) * pos.size;
+        } else {
+          pos.unrealizedPnl = ((pos.entryPrice - currentPrice) / pos.entryPrice) * pos.size;
+        }
       }
     }
 
@@ -295,60 +301,4 @@ export const useFuturesStore = create<FuturesStoreState>()(immer((set) => ({
     }
   }),
 
-  resetGame: () => set((state) => {
-    const seed = Date.now();
-    const rng = mulberry32(seed);
-
-    const initializedStocks: Record<string, Stock> = {};
-    Object.keys(FUTURES_STOCKS).forEach(symbol => {
-      initializedStocks[symbol] = { ...FUTURES_STOCKS[symbol], priceHistory: [] };
-    });
-
-    Object.keys(initializedStocks).forEach(symbol => {
-      const stock = initializedStocks[symbol];
-      let currentSimPrice = stock.price * 0.8;
-      const history = [];
-      for (let i = -19; i <= 0; i++) {
-        const noise = 1 + (rng() - 0.5) * stock.volatility;
-        const openPrice = currentSimPrice;
-        const closePrice = openPrice * noise;
-        const wickScale = 0.4;
-        const highPrice = Math.max(openPrice, closePrice) * (1 + rng() * stock.volatility * wickScale);
-        const lowPrice = Math.min(openPrice, closePrice) * (1 - rng() * stock.volatility * wickScale);
-
-        history.push({ day: i, open: openPrice, close: closePrice, high: highPrice, low: lowPrice });
-        currentSimPrice = closePrice;
-      }
-      stock.price = currentSimPrice;
-      stock.previousPrice = currentSimPrice;
-      stock.priceHistory = history;
-    });
-
-    // Select random arc for new game
-    // Import is not available here, so use fallback news
-    const freshNews: News[] = FUTURES_FALLBACK_NEWS.map(n => ({ ...n, read: false }));
-    const day1News = freshNews.filter(n => n.dayIdx === 1);
-
-    state.positions = {};
-    state.cash = FUTURES_CONFIG.startingCash;
-    state.currentDay = 1;
-    state.maxDays = FUTURES_CONFIG.maxDays;
-    state.stocks = initializedStocks;
-    state.allNews = freshNews;
-    state.dailyNews = day1News;
-    state.history = [];
-    state.seed = seed;
-    state.prngState = seed;
-    state.gamePhase = 'playing';
-    state.stats = {
-      totalPositionsOpened: 0,
-      totalLiquidations: 0,
-      totalFundingPaid: 0,
-      peakTotalValue: FUTURES_CONFIG.startingCash,
-      worstDrawdown: 0,
-    };
-    state.expandedNews = [];
-    state.liquidatedThisTurn = [];
-    state.arcName = null;
-  }),
 })));

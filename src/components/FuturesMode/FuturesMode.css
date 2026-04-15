@@ -16,15 +16,6 @@
   50%      { opacity: 0.5; }
 }
 
-/* Warning amber token — scoped to this module; align with CSS variable system */
-.futures-mode {
-  --futures-warning: #ff9500;
-  --futures-warning-bg: rgba(255, 149, 0, 0.1);
-  --futures-warning-border: rgba(255, 149, 0, 0.25);
-  --futures-danger-bg: rgba(240, 68, 82, 0.1);
-  --futures-danger-border: rgba(240, 68, 82, 0.3);
-}
-
 /* ── Root ────────────────────────────────────────────────────────────────── */
 .futures-mode {
   display: flex;
@@ -166,12 +157,15 @@
   flex: 0 0 auto;
 }
 
-.stats-next-day {
-  height: 40px !important;
-  padding: 0 20px;
-  width: auto !important;
-  font-size: 14px !important;
-  min-width: 140px;
+.futures-desktop-right-footer {
+  padding: 12px;
+  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.futures-desktop-right-footer .futures-bottom-btn {
+  height: 44px;
+  font-size: 14px;
 }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
@@ -299,7 +293,7 @@
 .stock-item:active { opacity: 0.85; transform: scale(0.98); }
 
 .stock-item.selected {
-  background: var(--accent-light, rgba(49, 130, 246, 0.06));
+  background: var(--accent-light);
   border-color: var(--accent-color);
 }
 
@@ -363,6 +357,7 @@
   flex-direction: column;
   gap: 10px;
   flex-shrink: 0;
+  animation: slideInUp 0.2s ease both;
 }
 
 .trade-panel.inline {
@@ -401,6 +396,7 @@
 .futures-chart-area {
   position: relative;
   margin: 0 -4px;
+  padding-top: 4px;
 }
 
 .futures-chart-area .stock-chart-wrapper {
@@ -436,8 +432,12 @@
 /* On mobile inline view chart toggle is absolute positioned (no header) */
 .futures-market-tab .futures-chart-toggle {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 4px;
+  right: 4px;
+  background: var(--surface-color);
+  padding: 4px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-xs);
 }
 
 .chart-type-btn {
@@ -482,8 +482,8 @@
 
 .dir-chip {
   flex-shrink: 0;
-  height: 36px;
-  padding: 0 16px;
+  height: 44px;
+  padding: 0 18px;
   border-radius: 10px;
   border: 2px solid var(--border-color);
   background: var(--surface-color);
@@ -507,8 +507,8 @@
 
 .lev-chip {
   flex-shrink: 0;
-  height: 36px;
-  padding: 0 12px;
+  height: 44px;
+  padding: 0 14px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
   background: var(--surface-color);
@@ -520,10 +520,10 @@
 }
 
 .lev-chip.active { background: var(--text-primary); border-color: var(--text-primary); color: #fff; }
-.lev-chip[data-danger="high"]            { border-color: var(--futures-warning); color: var(--futures-warning); }
-.lev-chip[data-danger="high"].active     { background: var(--futures-warning); color: #fff; border-color: var(--futures-warning); }
-.lev-chip[data-danger="extreme"]         { border-color: var(--positive); color: var(--positive); }
-.lev-chip[data-danger="extreme"].active  { background: var(--positive); color: #fff; border-color: var(--positive); }
+.lev-chip[data-danger="high"]            { border-color: var(--warning); color: var(--warning); }
+.lev-chip[data-danger="high"].active     { background: var(--warning); color: #fff; border-color: var(--warning); }
+.lev-chip[data-danger="extreme"]         { border-color: var(--danger); color: var(--danger); }
+.lev-chip[data-danger="extreme"].active  { background: var(--danger); color: #fff; border-color: var(--danger); }
 
 /* Margin row */
 .trade-margin-row {
@@ -566,7 +566,7 @@
   transition: var(--transition-fast);
 }
 
-.margin-chip:hover  { border-color: var(--accent-color); color: var(--accent-color); }
+.margin-chip:hover  { background: var(--accent-light); border-color: var(--accent-color); color: var(--accent-color); }
 .margin-chip:active { opacity: 0.7; transform: scale(0.95); }
 
 /* Calculated info */
@@ -586,12 +586,12 @@
   font-size: 12px;
   padding: 6px 10px;
   border-radius: 8px;
-  background: var(--futures-warning-bg);
-  color: var(--futures-warning);
+  background: var(--warning-bg);
+  color: var(--warning);
   font-weight: 500;
 }
 
-.lev-warn.extreme { background: var(--futures-danger-bg); color: var(--positive); font-weight: 600; }
+.lev-warn.extreme { background: var(--danger-bg); color: var(--danger); font-weight: 600; }
 .lev-warn.normal  { background: var(--surface-color); color: var(--text-secondary); border: 1px solid var(--border-color); }
 
 .trade-error {
@@ -621,6 +621,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  animation: slideInUp 0.2s ease both;
 }
 
 .position-header {
@@ -680,10 +681,10 @@
 }
 
 .liq-row.danger {
-  background: var(--futures-danger-bg);
+  background: var(--danger-bg);
   border-radius: 8px;
   padding: 6px 8px;
-  color: var(--positive);
+  color: var(--danger);
 }
 
 .liq-distance {
@@ -696,11 +697,11 @@
 }
 
 .liq-distance.danger {
-  color: var(--positive);
+  color: var(--danger);
   animation: pulse-danger 1s ease-in-out infinite;
 }
 
-.liq-distance.warning { color: var(--futures-warning); }
+.liq-distance.warning { color: var(--warning); }
 .liq-distance.safe    { color: var(--text-secondary); }
 
 .liq-danger-banner {
@@ -708,12 +709,12 @@
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  background: var(--futures-danger-bg);
-  border: 1px solid var(--futures-danger-border);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
   border-radius: 8px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--positive);
+  color: var(--danger);
 }
 
 .close-btn {
@@ -842,7 +843,6 @@
   color: var(--text-secondary);
   font-size: 15px;
   margin: 0;
-  font-style: italic;
 }
 
 .gameover-result {
@@ -954,7 +954,7 @@
 }
 
 .liquidation-toast {
-  background: var(--positive);
+  background: var(--danger);
   color: #fff;
   padding: 12px 20px;
   border-radius: 12px;
@@ -1019,9 +1019,10 @@
   }
 
   .futures-desktop-center {
-    background: transparent;
-    border: none;
-    box-shadow: none;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: var(--shadow-xs);
     overflow-y: auto;
   }
 
@@ -1093,9 +1094,6 @@
     grid-template-columns: 320px 1fr 400px;
     gap: 20px;
     padding: 20px;
-    max-width: 1800px;
-    margin: 0 auto;
-    width: 100%;
   }
 
   .futures-mode-desktop .stock-chart-wrapper,
@@ -1120,6 +1118,8 @@
   }
   .liquidation-toast { animation: none; }
   .liq-distance.danger { animation: none; }
+  .trade-panel { animation: none; }
+  .position-card { animation: none; }
 }
 
 /* ── Touch device: no hover ──────────────────────────────────────────────── */

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { TrendingUp, TrendingDown, AlertTriangle, ChevronLeft, CandlestickChart, LineChart } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, ChevronLeft, CandlestickChart, LineChart, ChevronUp, ChevronDown } from 'lucide-react';
 import { useFuturesStore } from '../../store/futuresStore';
 import { useTranslation } from '../../i18n/translations';
 import { FUTURES_STOCKS, FUTURES_CONFIG, FUTURES_LEVERAGE_OPTIONS } from '../../data/futures';
@@ -132,7 +132,7 @@ function TradePanel({
   if (!selectedStock) {
     return (
       <div className="trade-panel trade-panel-empty">
-        <AlertTriangle size={32} />
+        <TrendingUp size={32} />
         <p>{t('futures.noStockSelected')}</p>
       </div>
     );
@@ -151,14 +151,14 @@ function TradePanel({
             <button
               className={`chart-type-btn${chartType === 'candle' ? ' active' : ''}`}
               onClick={() => setChartType('candle')}
-              aria-label="Candlestick chart"
+              aria-label={t('futures.chart.candle')}
             >
               <CandlestickChart size={14} />
             </button>
             <button
               className={`chart-type-btn${chartType === 'line' ? ' active' : ''}`}
               onClick={() => setChartType('line')}
-              aria-label="Line chart"
+              aria-label={t('futures.chart.line')}
             >
               <LineChart size={14} />
             </button>
@@ -357,8 +357,8 @@ function NewsList() {
                 {item.title[language]}
               </span>
               <div className="news-item-meta">
-                {!item.read && <span className="news-unread-dot" aria-label="unread" />}
-                <span className="news-chevron">{isExpanded ? '▲' : '▼'}</span>
+                {!item.read && <span className="news-unread-dot" aria-label={t('futures.unreadLabel')} />}
+                <span className="news-chevron">{isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}</span>
               </div>
             </button>
             {isExpanded && (
@@ -444,14 +444,14 @@ function MobileMarketTab({ trade }: { trade: TradeState }) {
                     <button
                       className={`chart-type-btn${chartType === 'candle' ? ' active' : ''}`}
                       onClick={() => setChartType('candle')}
-                      aria-label="Candlestick chart"
+                      aria-label={t('futures.chart.candle')}
                     >
                       <CandlestickChart size={14} />
                     </button>
                     <button
                       className={`chart-type-btn${chartType === 'line' ? ' active' : ''}`}
                       onClick={() => setChartType('line')}
-                      aria-label="Line chart"
+                      aria-label={t('futures.chart.line')}
                     >
                       <LineChart size={14} />
                     </button>
@@ -640,6 +640,11 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
     }
   }, [activeTab, isDesktop]);
 
+  // Clear stale selection on layout swap (mobile ↔ desktop)
+  useEffect(() => {
+    setSelectedSymbol(null);
+  }, [isDesktop]);
+
   // Initialize on mount
   useEffect(() => {
     const seed = Date.now();
@@ -652,22 +657,26 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
       seed,
       arc.name[language],
     );
-  }, [setInitialState, language]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setInitialState]);
 
   // Liquidation toasts
   useEffect(() => {
     const newLiqs = liquidatedThisTurn.filter(id => !prevLiquidated.current.includes(id));
     if (newLiqs.length === 0) return;
-    prevLiquidated.current = liquidatedThisTurn;
+    prevLiquidated.current = [...liquidatedThisTurn];
 
+    const timers: ReturnType<typeof setTimeout>[] = [];
     newLiqs.forEach(id => {
       const symbol = id.split('-')[0];
       const toastId = ++toastIdRef.current;
-      setToasts(prev => [...prev, { id: toastId, message: `⚡ ${symbol} ${t('futures.liquidated')} — margin lost` }]);
-      setTimeout(() => {
+      setToasts(prev => [...prev, { id: toastId, message: `⚡ ${symbol} ${t('futures.liquidated')} — ${t('futures.marginLost')}` }]);
+      const timer = setTimeout(() => {
         setToasts(prev => prev.filter(toast => toast.id !== toastId));
       }, 3000);
+      timers.push(timer);
     });
+    return () => { timers.forEach(clearTimeout); };
   }, [liquidatedThisTurn, t]);
 
   const totalPnl = Object.values(positions).reduce((sum, p) => sum + p.unrealizedPnl, 0);
@@ -720,7 +729,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
   // ── Header (shared) ─────────────────────────────────────────────────────────
   const Header = (
     <header className="futures-header">
-      <button className="futures-back-btn" onClick={onBack} aria-label="back">
+      <button className="futures-back-btn" onClick={onBack} aria-label={t('futures.back')}>
         <ChevronLeft size={20} />
       </button>
       <div className="futures-title-area">
@@ -748,20 +757,10 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
         </strong>
       </div>
       {isDesktop && (
-        <>
-          <div className="stat-item">
-            <span className="stat-label">Total Equity</span>
-            <strong className="stat-value">${totalEquity.toFixed(2)}</strong>
-          </div>
-          <div className="stat-item stat-item-action">
-            <button
-              className="futures-bottom-btn futures-next-day-btn stats-next-day"
-              onClick={handleNextDay}
-            >
-              {t('futures.nextDay')} →
-            </button>
-          </div>
-        </>
+        <div className="stat-item">
+          <span className="stat-label">{t('futures.totalEquity')}</span>
+          <strong className="stat-value">${totalEquity.toFixed(2)}</strong>
+        </div>
       )}
     </div>
   );
@@ -790,7 +789,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
       <div className="futures-mode futures-mode-desktop">
         {Header}
         {StatsBar}
-        <div className="futures-desktop-grid">
+        <main className="futures-desktop-grid">
           {/* Left: Market list */}
           <aside className="futures-desktop-left">
             <div className="futures-panel-heading">
@@ -827,8 +826,16 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
             <div className="futures-desktop-scroll futures-desktop-scroll-flex">
               <NewsList />
             </div>
+            <div className="futures-desktop-right-footer">
+              <button
+                className="futures-bottom-btn futures-next-day-btn"
+                onClick={handleNextDay}
+              >
+                {`${t('futures.nextDay')} (${currentDay}/${maxDays})`}
+              </button>
+            </div>
           </aside>
-        </div>
+        </main>
 
         {toasts.length > 0 && (
           <div className="toast-container" aria-live="polite">
@@ -850,6 +857,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
       <nav className="futures-tabs" role="tablist">
         <button
           role="tab"
+          id="tab-market"
           aria-selected={activeTab === 'market'}
           className={activeTab === 'market' ? 'active' : ''}
           onClick={() => setActiveTab('market')}
@@ -858,6 +866,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
         </button>
         <button
           role="tab"
+          id="tab-positions"
           aria-selected={activeTab === 'positions'}
           className={activeTab === 'positions' ? 'active' : ''}
           onClick={() => setActiveTab('positions')}
@@ -867,6 +876,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
         </button>
         <button
           role="tab"
+          id="tab-news"
           aria-selected={activeTab === 'news'}
           className={activeTab === 'news' ? 'active' : ''}
           onClick={() => setActiveTab('news')}
@@ -877,9 +887,11 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
       </nav>
 
       <main className="futures-content">
-        {activeTab === 'market' && <MobileMarketTab trade={trade} />}
-        {activeTab === 'positions' && <PositionsList />}
-        {activeTab === 'news' && <NewsList />}
+        <div role="tabpanel" aria-labelledby={`tab-${activeTab}`}>
+          {activeTab === 'market' && <MobileMarketTab trade={trade} />}
+          {activeTab === 'positions' && <PositionsList />}
+          {activeTab === 'news' && <NewsList />}
+        </div>
       </main>
 
       <div className="futures-bottom">

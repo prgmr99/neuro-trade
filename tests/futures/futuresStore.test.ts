@@ -311,9 +311,10 @@ describe('futuresStore', () => {
       expect(histAfter).toBe(histBefore + 1);
     });
 
-    it('deducts funding cost from open positions', async () => {
+    it('deducts funding cost from cash (not margin)', async () => {
       useFuturesStore.getState().openPosition('TECH', 'long', 10, 1000);
       const marginBefore = useFuturesStore.getState().positions['TECH-long'].margin;
+      const cashBefore = useFuturesStore.getState().cash;
 
       // Prevent liquidation by setting a very low liquidation price
       useFuturesStore.setState((s) => {
@@ -321,12 +322,14 @@ describe('futuresStore', () => {
       });
 
       await useFuturesStore.getState().nextDay();
-      const pos = useFuturesStore.getState().positions['TECH-long'];
+      const state = useFuturesStore.getState();
+      const pos = state.positions['TECH-long'];
 
       if (pos) {
-        // Funding = size * 0.0009 = 10000 * 0.0009 = 9
-        expect(pos.margin).toBeLessThan(marginBefore);
+        // Funding = size * 0.0009 = 10000 * 0.0009 = 9 — deducted from cash, not margin
+        expect(pos.margin).toBe(marginBefore); // margin is immutable
         expect(pos.fundingPaid).toBeCloseTo(9, 1);
+        expect(state.cash).toBeLessThan(cashBefore); // cash decreased by funding
       }
     });
 
@@ -406,10 +409,10 @@ describe('futuresStore', () => {
       expect(stats.worstDrawdown).toBeLessThanOrEqual(1);
     });
 
-    it('builds previousDaySummaries for Gemini context', async () => {
-      expect(useFuturesStore.getState().previousDaySummaries).toHaveLength(0);
+    it('records portfolio history entry per nextDay call', async () => {
+      expect(useFuturesStore.getState().history).toHaveLength(0);
       await useFuturesStore.getState().nextDay();
-      expect(useFuturesStore.getState().previousDaySummaries).toHaveLength(1);
+      expect(useFuturesStore.getState().history).toHaveLength(1);
     });
   });
 
@@ -443,14 +446,22 @@ describe('futuresStore', () => {
     });
   });
 
-  // ─── resetGame ──────────────────────────────────────────
+  // ─── setInitialState reset ──────────────────────────────
 
-  describe('resetGame', () => {
-    it('resets to initial state with fresh seed', () => {
+  describe('setInitialState used as reset', () => {
+    it('resets to initial state with fresh seed via setInitialState', () => {
       // Open a position and advance
       useFuturesStore.getState().openPosition('TECH', 'long', 10, 1000);
 
-      useFuturesStore.getState().resetGame();
+      // Reset by calling setInitialState again (same pattern as handleRetry in FuturesMode)
+      const store = useFuturesStore.getState();
+      store.setInitialState(
+        JSON.parse(JSON.stringify(FUTURES_STOCKS)),
+        FUTURES_FALLBACK_NEWS.map(n => ({ ...n, read: false })),
+        FUTURES_CONFIG.maxDays,
+        FUTURES_CONFIG.startingCash,
+        Date.now(),
+      );
       const state = useFuturesStore.getState();
 
       expect(state.currentDay).toBe(1);
