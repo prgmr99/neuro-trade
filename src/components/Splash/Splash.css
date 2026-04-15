@@ -309,6 +309,16 @@
   min-height: unset;
 }
 
+/* Futures mode card warning style */
+.mode-card-futures .mode-card-icon-futures {
+  color: var(--negative);
+}
+
+.mode-card-futures.selected {
+  border-color: var(--negative);
+  box-shadow: 0 0 0 1px var(--negative), var(--shadow-sm);
+}
+
 /* Daily countdown */
 .daily-countdown {
   font-size: 0.72rem;

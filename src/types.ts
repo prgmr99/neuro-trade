@@ -49,6 +49,29 @@ export interface DayState {
   dailyNews: News[];
 }
 
+export interface FuturesPosition {
+  id: string;                    // "${symbol}-${direction}"
+  symbol: string;
+  direction: 'long' | 'short';
+  leverage: number;              // 10, 25, 50, 75, 100, or 125
+  margin: number;                // collateral posted (USD)
+  size: number;                  // margin * leverage (notional value)
+  entryPrice: number;
+  liquidationPrice: number;
+  unrealizedPnl: number;
+  fundingPaid: number;           // cumulative funding cost paid
+  isLiquidated: boolean;
+  openedOnDay: number;
+}
+
+export interface FuturesStats {
+  totalPositionsOpened: number;
+  totalLiquidations: number;
+  totalFundingPaid: number;
+  peakTotalValue: number;
+  worstDrawdown: number;         // largest drop from peak (as fraction, e.g. 0.45 = -45%)
+}
+
 export interface RankingEntry {
   id: string;
   player_name: string;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from './store/gameStore';
 import { useLanguageStore } from './store/useLanguageStore';
@@ -15,10 +15,12 @@ import AttendanceModal from './components/AttendanceModal/AttendanceModal';
 import AchievementGallery from './components/AchievementGallery/AchievementGallery';
 import { useAttendanceStore } from './store/attendanceStore';
 import { useTranslation } from './i18n/translations';
-import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users, Newspaper, Swords } from 'lucide-react';
+import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users, Newspaper, Swords, AlertTriangle } from 'lucide-react';
 import SocialProof from './components/SocialProof/SocialProof';
 import MarketTicker from './components/MarketTicker/MarketTicker';
 import { trackGameStarted, trackModeSelected } from './lib/analytics';
+
+const FuturesMode = lazy(() => import('./components/FuturesMode/FuturesMode'));
 
 // --- Route-level components ---
 
@@ -101,6 +103,11 @@ function SplashScreen() {
       return;
     }
     if (!selectedMode) return;
+    if (selectedMode === 'futures') {
+      navigate('/futures');
+      trackGameStarted(selectedMode, false);
+      return;
+    }
     const scenario = SCENARIOS[selectedMode];
     if (selectedMode === 'classic') {
       const seed = Date.now();
@@ -273,6 +280,31 @@ function SplashScreen() {
           </button>
         </div>
 
+        <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
+          <button
+            className={`mode-card mode-card-daily mode-card-futures ${selectedMode === 'futures' ? 'selected' : ''}`}
+            onClick={() => { setSelectedMode('futures'); setPendingView(null); trackModeSelected('futures'); }}
+            style={{ textAlign: 'left', position: 'relative' }}
+          >
+            <span style={{
+              position: 'absolute',
+              top: '0.6rem',
+              right: '0.6rem',
+              background: 'var(--negative)',
+              color: '#fff',
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              padding: '0.15rem 0.5rem',
+              borderRadius: '999px',
+              letterSpacing: '0.03em',
+            }}>{t('futures.badge')}</span>
+            <AlertTriangle size={24} className="mode-card-icon mode-card-icon-futures" />
+            <h3>{t('futures.title')}</h3>
+            <p className="mode-desc">{t('futures.subtitle')}</p>
+            <p className="mode-detail">{t('futures.detail')}</p>
+          </button>
+        </div>
+
         <div className="splash-sub-actions">
           <button className="splash-chip" onClick={() => navigate('/flash')}>
             ⚡ {t('app.flashTitle')}
@@ -341,6 +373,7 @@ function App() {
       <Route path="/duel" element={<DuelRoute goHome={goHome} />} />
       <Route path="/multiplayer" element={<LiveCompetition onBack={goHome} />} />
       <Route path="/room-battle" element={<RoomBattle onBack={goHome} />} />
+      <Route path="/futures" element={<Suspense fallback={<div className="lazy-fallback">Loading…</div>}><FuturesMode onBack={goHome} /></Suspense>} />
       <Route path="/rankings" element={<RankingsRoute goHome={goHome} />} />
       <Route path="/game" element={<GameRoute goHome={goHome} />} />
       <Route path="/" element={<SplashScreen />} />
