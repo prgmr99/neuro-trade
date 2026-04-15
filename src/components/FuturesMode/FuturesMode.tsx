@@ -758,7 +758,9 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
           {arcName && <span className="arc-badge">{arcName}</span>}
         </div>
       </div>
-      <div className="futures-day">{t('futures.dayCounter', { current: String(currentDay), max: String(maxDays) })}</div>
+      {gamePhase !== 'gameover' && (
+        <div className="futures-day">{t('futures.dayCounter', { current: String(currentDay), max: String(maxDays) })}</div>
+      )}
     </header>
   );
 
