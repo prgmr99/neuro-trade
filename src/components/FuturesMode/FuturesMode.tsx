@@ -200,6 +200,7 @@ function TradePanel({
           type="number"
           inputMode="decimal"
           className="margin-input-compact"
+          aria-label={t('futures.margin')}
           value={marginInput}
           onChange={e => { setMarginInput(e.target.value); setErrorMsg(''); }}
           placeholder={`${t('futures.margin')} ($)`}
@@ -490,6 +491,7 @@ function MobileMarketTab({ trade }: { trade: TradeState }) {
                     type="number"
                     inputMode="decimal"
                     className="margin-input-compact"
+                    aria-label={t('futures.margin')}
                     value={marginInput}
                     onChange={e => { setMarginInput(e.target.value); setErrorMsg(''); }}
                     placeholder={`${t('futures.margin')} ($)`}
@@ -739,7 +741,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
           {arcName && <span className="arc-badge">{arcName}</span>}
         </div>
       </div>
-      <div className="futures-day">Day {currentDay}/{maxDays}</div>
+      <div className="futures-day">{t('futures.dayCounter', { current: String(currentDay), max: String(maxDays) })}</div>
     </header>
   );
 
@@ -773,7 +775,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
           <GameOverScreen onBack={onBack} onRetry={handleRetry} />
         </div>
         {toasts.length > 0 && (
-          <div className="toast-container">
+          <div className="toast-container" aria-live="polite">
             {toasts.map(toast => (
               <div key={toast.id} className="liquidation-toast">{toast.message}</div>
             ))}
@@ -803,6 +805,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
           {/* Center: Chart + Trade */}
           <section className="futures-desktop-center">
             <TradePanel
+              key={trade.selectedSymbol ?? 'empty'}
               trade={trade}
               onOpenPosition={handleOpenPosition}
               canOpenPosition={canOpenPosition}
