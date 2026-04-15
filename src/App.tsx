@@ -373,7 +373,7 @@ function App() {
       <Route path="/duel" element={<DuelRoute goHome={goHome} />} />
       <Route path="/multiplayer" element={<LiveCompetition onBack={goHome} />} />
       <Route path="/room-battle" element={<RoomBattle onBack={goHome} />} />
-      <Route path="/futures" element={<Suspense fallback={<div>Loading...</div>}><FuturesMode onBack={goHome} /></Suspense>} />
+      <Route path="/futures" element={<Suspense fallback={<div className="lazy-fallback">Loading…</div>}><FuturesMode onBack={goHome} /></Suspense>} />
       <Route path="/rankings" element={<RankingsRoute goHome={goHome} />} />
       <Route path="/game" element={<GameRoute goHome={goHome} />} />
       <Route path="/" element={<SplashScreen />} />

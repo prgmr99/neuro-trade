@@ -15,6 +15,16 @@
 @import './components/RoomBattle/RoomBattle.css';
 @import './components/FuturesMode/FuturesMode.css';
 
+/* Lazy-load fallback */
+.lazy-fallback {
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
 :root {
   --bg-color: #ffffff; /* Toss light gray background */
   --bg-gradient: none; /* No gradients */

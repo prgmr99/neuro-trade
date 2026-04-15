@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { TrendingUp, TrendingDown, AlertTriangle, ChevronLeft, CandlestickChart, LineChart, ChevronUp, ChevronDown } from 'lucide-react';
 import { useFuturesStore } from '../../store/futuresStore';
 import { useTranslation } from '../../i18n/translations';
@@ -30,6 +30,8 @@ interface TradeState {
   setMarginInput: (m: string) => void;
   errorMsg: string;
   setErrorMsg: (e: string) => void;
+  chartType: ChartType;
+  setChartType: (c: ChartType) => void;
 }
 
 // ── useIsDesktop hook ──────────────────────────────────────────────────────────
@@ -56,7 +58,7 @@ function getDangerLevel(lv: number): string {
 // ── StockList ──────────────────────────────────────────────────────────────────
 function StockList({ trade, compact = false }: { trade: TradeState; compact?: boolean }) {
   const { language } = useTranslation();
-  const { stocks } = useFuturesStore();
+  const stocks = useFuturesStore(s => s.stocks);
   const stockList = Object.values(stocks);
 
   return (
@@ -110,10 +112,11 @@ function TradePanel({
   inline?: boolean;
 }) {
   const { t } = useTranslation();
-  const { stocks, cash, positions } = useFuturesStore();
-  const [chartType, setChartType] = useState<ChartType>('candle');
+  const stocks = useFuturesStore(s => s.stocks);
+  const cash = useFuturesStore(s => s.cash);
+  const positions = useFuturesStore(s => s.positions);
 
-  const { selectedSymbol, direction, setDirection, leverage, setLeverage, marginInput, setMarginInput, errorMsg, setErrorMsg } = trade;
+  const { selectedSymbol, direction, setDirection, leverage, setLeverage, marginInput, setMarginInput, errorMsg, setErrorMsg, chartType, setChartType } = trade;
   const selectedStock = selectedSymbol ? stocks[selectedSymbol] : null;
   const marginNum = parseFloat(marginInput) || 0;
   const size = marginNum * leverage;
@@ -253,7 +256,9 @@ function TradePanel({
 // ── PositionsList ──────────────────────────────────────────────────────────────
 function PositionsList() {
   const { t } = useTranslation();
-  const { positions, stocks, closePosition } = useFuturesStore();
+  const positions = useFuturesStore(s => s.positions);
+  const stocks = useFuturesStore(s => s.stocks);
+  const closePosition = useFuturesStore(s => s.closePosition);
   const positionList = Object.values(positions);
 
   const getLiqDistance = (pos: FuturesPosition): number => {
@@ -332,7 +337,10 @@ function PositionsList() {
 // ── NewsList ───────────────────────────────────────────────────────────────────
 function NewsList() {
   const { t, language } = useTranslation();
-  const { dailyNews, expandedNews, toggleNewsExpanded, readNews } = useFuturesStore();
+  const dailyNews = useFuturesStore(s => s.dailyNews);
+  const expandedNews = useFuturesStore(s => s.expandedNews);
+  const toggleNewsExpanded = useFuturesStore(s => s.toggleNewsExpanded);
+  const readNews = useFuturesStore(s => s.readNews);
 
   if (dailyNews.length === 0) {
     return <div className="empty-state">{t('futures.emptyNews')}</div>;
@@ -377,18 +385,19 @@ function NewsList() {
 // ── Mobile Market tab (list with inline trade panel) ───────────────────────────
 function MobileMarketTab({ trade }: { trade: TradeState }) {
   const { t, language } = useTranslation();
-  const { stocks, cash, positions } = useFuturesStore();
+  const stocks = useFuturesStore(s => s.stocks);
+  const cash = useFuturesStore(s => s.cash);
+  const positions = useFuturesStore(s => s.positions);
   const tradePanelRef = useRef<HTMLDivElement>(null);
-  const [chartType, setChartType] = useState<ChartType>('candle');
 
-  const { selectedSymbol, setSelectedSymbol, direction, setDirection, leverage, setLeverage, marginInput, setMarginInput, errorMsg, setErrorMsg } = trade;
+  const { selectedSymbol, setSelectedSymbol, direction, setDirection, leverage, setLeverage, marginInput, setMarginInput, errorMsg, setErrorMsg, chartType, setChartType } = trade;
 
   useEffect(() => {
-    if (selectedSymbol && tradePanelRef.current) {
-      setTimeout(() => {
-        tradePanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 50);
-    }
+    if (!selectedSymbol || !tradePanelRef.current) return;
+    const id = setTimeout(() => {
+      tradePanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+    return () => clearTimeout(id);
   }, [selectedSymbol]);
 
   const stockList = Object.values(stocks);
@@ -536,7 +545,9 @@ function MobileMarketTab({ trade }: { trade: TradeState }) {
 // ── GameOverScreen ─────────────────────────────────────────────────────────────
 function GameOverScreen({ onBack, onRetry }: { onBack: () => void; onRetry: () => void }) {
   const { t } = useTranslation();
-  const { cash, positions, stats } = useFuturesStore();
+  const cash = useFuturesStore(s => s.cash);
+  const positions = useFuturesStore(s => s.positions);
+  const stats = useFuturesStore(s => s.stats);
 
   const posValues = Object.values(positions).reduce((sum, p) => sum + Math.max(0, p.margin + p.unrealizedPnl), 0);
   const finalValue = cash + posValues;
@@ -600,19 +611,18 @@ function GameOverScreen({ onBack, onRetry }: { onBack: () => void; onRetry: () =
 export default function FuturesMode({ onBack }: FuturesModeProps) {
   const { t, language } = useTranslation();
   const isDesktop = useIsDesktop();
-  const {
-    cash,
-    currentDay,
-    maxDays,
-    positions,
-    dailyNews,
-    gamePhase,
-    liquidatedThisTurn,
-    arcName,
-    openPosition,
-    setInitialState,
-    nextDay,
-  } = useFuturesStore();
+
+  const cash = useFuturesStore(s => s.cash);
+  const currentDay = useFuturesStore(s => s.currentDay);
+  const maxDays = useFuturesStore(s => s.maxDays);
+  const positions = useFuturesStore(s => s.positions);
+  const dailyNews = useFuturesStore(s => s.dailyNews);
+  const gamePhase = useFuturesStore(s => s.gamePhase);
+  const liquidatedThisTurn = useFuturesStore(s => s.liquidatedThisTurn);
+  const arcName = useFuturesStore(s => s.arcName);
+  const openPosition = useFuturesStore(s => s.openPosition);
+  const setInitialState = useFuturesStore(s => s.setInitialState);
+  const nextDay = useFuturesStore(s => s.nextDay);
 
   const [activeTab, setActiveTab] = useState<'market' | 'positions' | 'news'>('market');
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -624,6 +634,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
   const [leverage, setLeverage] = useState<typeof FUTURES_LEVERAGE_OPTIONS[number]>(10);
   const [marginInput, setMarginInput] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const [chartType, setChartType] = useState<ChartType>('candle');
 
   const trade: TradeState = {
     selectedSymbol, setSelectedSymbol,
@@ -631,6 +642,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
     leverage, setLeverage,
     marginInput, setMarginInput,
     errorMsg, setErrorMsg,
+    chartType, setChartType,
   };
 
   const marginNum = parseFloat(marginInput) || 0;
@@ -681,11 +693,16 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
     return () => { timers.forEach(clearTimeout); };
   }, [liquidatedThisTurn, t]);
 
-  const totalPnl = Object.values(positions).reduce((sum, p) => sum + p.unrealizedPnl, 0);
-  const posEquity = Object.values(positions).reduce((sum, p) => sum + Math.max(0, p.margin + p.unrealizedPnl), 0);
+  const { totalPnl, posEquity, positionCount } = useMemo(() => {
+    const posList = Object.values(positions);
+    return {
+      totalPnl: posList.reduce((sum, p) => sum + p.unrealizedPnl, 0),
+      posEquity: posList.reduce((sum, p) => sum + Math.max(0, p.margin + p.unrealizedPnl), 0),
+      positionCount: posList.length,
+    };
+  }, [positions]);
   const totalEquity = cash + posEquity;
-  const positionCount = Object.keys(positions).length;
-  const unreadCount = dailyNews.filter(n => !n.read).length;
+  const unreadCount = useMemo(() => dailyNews.filter(n => !n.read).length, [dailyNews]);
 
   const handleNextDay = () => {
     if (!isDesktop) setSelectedSymbol(null);
@@ -805,7 +822,6 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
           {/* Center: Chart + Trade */}
           <section className="futures-desktop-center">
             <TradePanel
-              key={trade.selectedSymbol ?? 'empty'}
               trade={trade}
               onOpenPosition={handleOpenPosition}
               canOpenPosition={canOpenPosition}
