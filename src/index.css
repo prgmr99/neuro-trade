@@ -13,6 +13,7 @@
 @import './components/RankingBoard/RankingBoard.css';
 @import './components/FlashRound/FlashRound.css';
 @import './components/RoomBattle/RoomBattle.css';
+@import './components/FuturesMode/FuturesMode.css';
 
 :root {
   --bg-color: #ffffff; /* Toss light gray background */
