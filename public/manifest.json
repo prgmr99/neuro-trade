@@ -1,7 +1,9 @@
 {
-  "name": "NeuroTrade",
+  "name": "NeuroTrade — Stock Trading Simulator",
   "short_name": "NeuroTrade",
-  "description": "Analyze breaking news, predict market movements, and build your portfolio in 5 days.",
+  "description": "Free stock trading simulator & stock trade game. Analyze news, beat the market. Daily challenges, multiplayer — no signup. 무료 주식 시뮬레이터 & 주식 게임.",
+  "lang": "en",
+  "categories": ["games", "finance", "education"],
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
