@@ -5,6 +5,8 @@ import { dateSeed } from '../../lib/prng';
 import { supabase } from '../../lib/supabase';
 import { getPlayerId } from '../../lib/identity';
 import { generateGameShareText } from '../../lib/shareText';
+import { createShareId, getIncomingRef } from '../../lib/shareSession';
+import { trackShareCompleted, trackReferredShareCompleted } from '../../lib/analytics';
 import { useTranslation } from '../../i18n/translations';
 import { trackDailyPlayed, trackShareClicked, trackGameStarted } from '../../lib/analytics';
 import Layout from '../Layout/Layout';
@@ -160,7 +162,8 @@ export default function DailyChallenge({ onBack }: Props) {
 
   const handleCopyResults = useCallback(async () => {
     if (!savedResult) return;
-    trackShareClicked({ share_type: 'copy', mode: 'daily', return_pct: savedResult.returnPct });
+    const shareId = createShareId();
+    trackShareClicked({ share_type: 'copy', mode: 'daily', return_pct: savedResult.returnPct, share_id: shareId });
 
     const text = generateGameShareText({
       mode: 'Daily',
@@ -171,11 +174,36 @@ export default function DailyChallenge({ onBack }: Props) {
       finalValue: savedResult.finalValue,
       initialValue: 10000,
       language,
+      shareId,
     });
+
+    const fireCompleted = (
+      shareType: 'copy' | 'native',
+      channel: 'clipboard' | 'web_share',
+    ) => {
+      trackShareCompleted({
+        share_type: shareType,
+        mode: 'daily',
+        return_pct: savedResult.returnPct,
+        share_id: shareId,
+        channel,
+      });
+      const parentRef = getIncomingRef();
+      if (parentRef) {
+        trackReferredShareCompleted({
+          parent_share_id: parentRef,
+          share_id: shareId,
+          mode: 'daily',
+          return_pct: savedResult.returnPct,
+          share_type: shareType,
+        });
+      }
+    };
 
     if (navigator.share) {
       try {
         await navigator.share({ text });
+        fireCompleted('native', 'web_share');
         return;
       } catch {
         // Fall through to clipboard
@@ -186,6 +214,7 @@ export default function DailyChallenge({ onBack }: Props) {
       await navigator.clipboard.writeText(text);
       setCopyLabel('copied');
       setTimeout(() => setCopyLabel('idle'), 2000);
+      fireCompleted('copy', 'clipboard');
     } catch {
       // Silently ignore
     }

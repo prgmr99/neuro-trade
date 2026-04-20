@@ -1,3 +1,5 @@
+import { buildShareUrl } from './shareSession';
+
 const SITE_URL = 'https://neuro-trade.yeomniverse.com';
 const HASHTAG = '#NeuroTrade';
 
@@ -111,8 +113,9 @@ export function generateGameShareText(params: {
   finalValue: number;
   initialValue: number;
   language: 'en' | 'ko';
+  shareId: string;
 }): string {
-  const { mode, maxDays, stocks, finalValue, initialValue, language } = params;
+  const { mode, maxDays, stocks, finalValue, initialValue, language, shareId } = params;
 
   const returnPct = ((finalValue - initialValue) / initialValue) * 100;
   const returnSign = returnPct >= 0 ? '+' : '';
@@ -157,7 +160,9 @@ export function generateGameShareText(params: {
 
   const ctaLine = pickCta(returnPct, language);
 
-  return [header, divider, ...stockLines, divider, finalLine, titleLine, '', ctaLine, `${SITE_URL}  ${HASHTAG}`].join('\n');
+  const shareUrl = buildShareUrl(SITE_URL, shareId);
+
+  return [header, divider, ...stockLines, divider, finalLine, titleLine, '', ctaLine, `${shareUrl}  ${HASHTAG}`].join('\n');
 }
 
 export function generateFlashShareText(params: {
@@ -167,8 +172,10 @@ export function generateFlashShareText(params: {
   won: boolean;
   streak: number;
   language: 'en' | 'ko';
+  shareId: string;
 }): string {
-  const { stockSymbol, choice, resultPct, won, streak, language } = params;
+  const { stockSymbol, choice, resultPct, won, streak, language, shareId } = params;
+  const shareUrl = buildShareUrl(SITE_URL, shareId);
 
   const sign = resultPct >= 0 ? '+' : '';
   const pct = `${sign}${resultPct.toFixed(1)}%`;
@@ -185,7 +192,7 @@ export function generateFlashShareText(params: {
       `${stockSymbol}: ${choiceLabel} → ${pct} ${outcome}${streakLabel}`,
       '',
       ctaLine,
-      `${SITE_URL}  ${HASHTAG}`,
+      `${shareUrl}  ${HASHTAG}`,
     ].join('\n');
   }
 

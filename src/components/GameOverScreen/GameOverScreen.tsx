@@ -6,7 +6,14 @@ import { GameMode } from '../../data';
 import RankingBoard from '../RankingBoard/RankingBoard';
 import { generateGameShareText, getTitle } from '../../lib/shareText';
 import { useLanguageStore } from '../../store/useLanguageStore';
-import { trackGameCompleted, trackShareClicked } from '../../lib/analytics';
+import {
+  trackGameCompleted,
+  trackShareClicked,
+  trackShareCompleted,
+  trackReferredGameCompleted,
+  trackReferredShareCompleted,
+} from '../../lib/analytics';
+import { createShareId, buildShareUrl, getIncomingRef } from '../../lib/shareSession';
 
 interface Props {
   mode: GameMode;
@@ -36,35 +43,74 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
   const title = getTitle(returnPct, language);
   const resultEmoji = returnPct >= 50 ? '🚀' : returnPct >= 20 ? '🔥' : returnPct >= 10 ? '💪' : returnPct >= 0 ? '✅' : returnPct >= -10 ? '😬' : returnPct >= -20 ? '📉' : '💀';
 
-  // Track game completion on mount
+  const returnPctRounded = Math.round(returnPct * 100) / 100;
+
+  // Track game completion on mount. If the current session arrived via a
+  // shared link, also fire referred_game_completed so we can close the
+  // viral attribution loop.
   React.useEffect(() => {
     trackGameCompleted({
       mode,
-      return_pct: Math.round(returnPct * 100) / 100,
+      return_pct: returnPctRounded,
       final_value: Math.round(finalValue),
       initial_value: initialValue,
       days_played: dayState.maxDays,
     });
+    const parentRef = getIncomingRef();
+    if (parentRef) {
+      trackReferredGameCompleted({
+        share_id: parentRef,
+        mode,
+        return_pct: returnPctRounded,
+      });
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const fireShareCompleted = (
+    shareType: 'x' | 'copy' | 'native' | 'duel_challenge',
+    shareId: string,
+    channel: 'clipboard' | 'web_share' | 'x_intent',
+  ) => {
+    trackShareCompleted({
+      share_type: shareType,
+      mode,
+      return_pct: returnPctRounded,
+      share_id: shareId,
+      channel,
+    });
+    const parentRef = getIncomingRef();
+    if (parentRef) {
+      trackReferredShareCompleted({
+        parent_share_id: parentRef,
+        share_id: shareId,
+        mode,
+        return_pct: returnPctRounded,
+        share_type: shareType,
+      });
+    }
+  };
 
   const handleDuelChallenge = async () => {
     const seed = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-    const duelUrl = `${window.location.origin}?duel=${seed}`;
+    const shareId = createShareId();
+    const duelUrl = buildShareUrl(window.location.origin, shareId, { duel: seed });
     const challengeText = language === 'ko'
       ? `NeuroTrade에서 수익률 ${isPositive ? '+' : ''}${returnPct.toFixed(1)}% 달성! 이길 수 있어? 👉 ${duelUrl}`
       : `I scored ${isPositive ? '+' : ''}${returnPct.toFixed(1)}% on NeuroTrade! Think you can beat me? 👉 ${duelUrl}`;
-    trackShareClicked({ share_type: 'duel_challenge', mode, return_pct: Math.round(returnPct * 100) / 100 });
+    trackShareClicked({ share_type: 'duel_challenge', mode, return_pct: returnPctRounded, share_id: shareId });
     try {
       await navigator.clipboard.writeText(challengeText);
       setDuelCopied(true);
       setTimeout(() => setDuelCopied(false), 2000);
+      fireShareCompleted('duel_challenge', shareId, 'clipboard');
     } catch {
       // silently ignore
     }
   };
 
   const handleShareOnX = () => {
-    trackShareClicked({ share_type: 'x', mode, return_pct: Math.round(returnPct * 100) / 100 });
+    const shareId = createShareId();
+    trackShareClicked({ share_type: 'x', mode, return_pct: returnPctRounded, share_id: shareId });
     const text = generateGameShareText({
       mode,
       maxDays: dayState.maxDays,
@@ -72,13 +118,18 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
       finalValue,
       initialValue,
       language,
+      shareId,
     });
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    const opened = window.open(url, '_blank', 'noopener,noreferrer');
+    // X intent open is the closest proxy we have for completion; we cannot
+    // observe whether the user actually tweets.
+    if (opened) fireShareCompleted('x', shareId, 'x_intent');
   };
 
   const handleShare = async () => {
-    trackShareClicked({ share_type: 'copy', mode, return_pct: Math.round(returnPct * 100) / 100 });
+    const shareId = createShareId();
+    trackShareClicked({ share_type: 'copy', mode, return_pct: returnPctRounded, share_id: shareId });
     const text = generateGameShareText({
       mode,
       maxDays: dayState.maxDays,
@@ -86,11 +137,13 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
       finalValue,
       initialValue,
       language,
+      shareId,
     });
 
     if (navigator.share) {
       try {
         await navigator.share({ text });
+        fireShareCompleted('native', shareId, 'web_share');
         return;
       } catch {
         // Fall through to clipboard
@@ -101,6 +154,7 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
       await navigator.clipboard.writeText(text);
       setCopyLabel('copied');
       setTimeout(() => setCopyLabel('idle'), 2000);
+      fireShareCompleted('copy', shareId, 'clipboard');
     } catch {
       // Clipboard unavailable — silently ignore
     }

@@ -4,6 +4,8 @@ import { FLASH_SCENARIOS, FlashScenario } from '../../data/flash';
 import { useAchievementStore } from '../../store/achievementStore';
 import { useTranslation } from '../../i18n/translations';
 import { generateFlashShareText } from '../../lib/shareText';
+import { createShareId, getIncomingRef } from '../../lib/shareSession';
+import { trackShareCompleted, trackReferredShareCompleted } from '../../lib/analytics';
 import { trackFlashPlayed, trackShareClicked } from '../../lib/analytics';
 
 interface Props {
@@ -88,8 +90,10 @@ export default function FlashRound({ onBack }: Props) {
 
   const handleFlashShare = useCallback(async () => {
     if (!scenario || choice === null) return;
-    trackShareClicked({ share_type: 'copy', mode: 'flash' });
+    const shareId = createShareId();
     const resultPct = (finalMultiplier - 1) * 100;
+    const returnPctRounded = Math.round(resultPct * 100) / 100;
+    trackShareClicked({ share_type: 'copy', mode: 'flash', return_pct: returnPctRounded, share_id: shareId });
     const text = generateFlashShareText({
       stockSymbol: scenario.stock.symbol,
       choice,
@@ -97,11 +101,36 @@ export default function FlashRound({ onBack }: Props) {
       won,
       streak: flashWinStreak,
       language,
+      shareId,
     });
+
+    const fireCompleted = (
+      shareType: 'copy' | 'native',
+      channel: 'clipboard' | 'web_share',
+    ) => {
+      trackShareCompleted({
+        share_type: shareType,
+        mode: 'flash',
+        return_pct: returnPctRounded,
+        share_id: shareId,
+        channel,
+      });
+      const parentRef = getIncomingRef();
+      if (parentRef) {
+        trackReferredShareCompleted({
+          parent_share_id: parentRef,
+          share_id: shareId,
+          mode: 'flash',
+          return_pct: returnPctRounded,
+          share_type: shareType,
+        });
+      }
+    };
 
     if (navigator.share) {
       try {
         await navigator.share({ text });
+        fireCompleted('native', 'web_share');
         return;
       } catch {
         // Fall through to clipboard
@@ -112,6 +141,7 @@ export default function FlashRound({ onBack }: Props) {
       await navigator.clipboard.writeText(text);
       setCopyLabel('copied');
       setTimeout(() => setCopyLabel('idle'), 2000);
+      fireCompleted('copy', 'clipboard');
     } catch {
       // Clipboard unavailable — silently ignore
     }

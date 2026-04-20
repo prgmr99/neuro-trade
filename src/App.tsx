@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import { Routes, Route, useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from './store/gameStore';
 import { useLanguageStore } from './store/useLanguageStore';
@@ -18,7 +18,8 @@ import { useTranslation } from './i18n/translations';
 import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users, Newspaper, Swords, AlertTriangle } from 'lucide-react';
 import SocialProof from './components/SocialProof/SocialProof';
 import MarketTicker from './components/MarketTicker/MarketTicker';
-import { trackGameStarted, trackModeSelected } from './lib/analytics';
+import { trackGameStarted, trackModeSelected, trackVisitFromShare } from './lib/analytics';
+import { captureIncomingRef } from './lib/shareSession';
 
 const FuturesMode = lazy(() => import('./components/FuturesMode/FuturesMode'));
 
@@ -365,6 +366,19 @@ function SplashScreen() {
 function App() {
   const navigate = useNavigate();
   const goHome = () => navigate('/');
+  const refCapturedRef = useRef(false);
+
+  // Capture the incoming ?ref=<share_id> once per session, persist it to
+  // sessionStorage via shareSession, and fire visit_from_share if this is
+  // the first time we've seen this referral in the session.
+  useEffect(() => {
+    if (refCapturedRef.current) return;
+    refCapturedRef.current = true;
+    const { shareId, firstCapture } = captureIncomingRef();
+    if (shareId && firstCapture) {
+      trackVisitFromShare({ share_id: shareId });
+    }
+  }, []);
 
   return (
     <Routes>
