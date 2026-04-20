@@ -110,6 +110,7 @@ function TradePanel({
   const selectedStock = selectedSymbol ? stocks[selectedSymbol] : null;
   // Always-defined hook call (safe when selectedSymbol is null — returns 0 fallback).
   const displayPrice = useDisplayPrice(selectedSymbol ?? '');
+  const isAnimating = useIsAnimatingPrices();
   const marginNum = parseFloat(marginInput) || 0;
   const size = marginNum * leverage;
 
@@ -162,6 +163,12 @@ function TradePanel({
           </div>
         </div>
         <StockChart data={selectedStock.priceHistory} chartType={chartType} />
+        {isAnimating && (
+          <div className="futures-live-price-badge" aria-live="polite">
+            <span className="badge-dot" aria-hidden="true" />
+            ${displayPrice.toFixed(2)}
+          </div>
+        )}
       </div>
 
       {/* Direction + Leverage */}
@@ -249,14 +256,21 @@ function TradePanel({
 
 // ── PositionCard ───────────────────────────────────────────────────────────────
 // Per-position card. Subscribes to display price for `pos.symbol` so the
-// current-price readout + liq-distance tick live during the animation.
-// NOTE(phase2): `pos.unrealizedPnl` is the committed value — it only updates
-// on `nextDay()`. Phase 2 will swap this for a display-price derived PnL.
+// current-price readout, live PnL, and liq-distance all tick during the
+// Phase 2 Next-Day animation. Once the tween resolves `useDisplayPrice`
+// falls back to the committed `stocks[symbol].price`.
 function PositionCard({ pos }: { pos: FuturesPosition }) {
   const { t } = useTranslation();
   const closePosition = useFuturesStore(s => s.closePosition);
   const displayPrice = useDisplayPrice(pos.symbol);
   const currentPrice = displayPrice || pos.entryPrice;
+
+  // Live PnL derived from the tween price (falls back to committed once the
+  // animation resolves). After liquidation the position is deleted from the
+  // store before this card re-renders, so we don't need to guard for that.
+  const livePnl = pos.direction === 'long'
+    ? ((currentPrice - pos.entryPrice) / pos.entryPrice) * pos.size
+    : ((pos.entryPrice - currentPrice) / pos.entryPrice) * pos.size;
 
   const liqDist = pos.direction === 'long'
     ? ((currentPrice - pos.liquidationPrice) / currentPrice) * 100
@@ -271,8 +285,8 @@ function PositionCard({ pos }: { pos: FuturesPosition }) {
         </span>
         <span className="leverage-badge">{pos.leverage}x</span>
         <span className="position-symbol">{pos.symbol}</span>
-        <span className={`position-pnl ${pos.unrealizedPnl >= 0 ? 'positive' : 'negative'}`}>
-          {pos.unrealizedPnl >= 0 ? '+' : ''}${pos.unrealizedPnl.toFixed(2)}
+        <span className={`position-pnl ${livePnl >= 0 ? 'positive' : 'negative'}`}>
+          {livePnl >= 0 ? '+' : ''}${livePnl.toFixed(2)}
         </span>
       </div>
 
@@ -389,6 +403,7 @@ function MobileMarketTab({ trade }: { trade: TradeState }) {
 
   const { selectedSymbol, setSelectedSymbol, direction, setDirection, leverage, setLeverage, marginInput, setMarginInput, errorMsg, setErrorMsg, chartType, setChartType } = trade;
   const selectedDisplayPrice = useDisplayPrice(selectedSymbol ?? '');
+  const isAnimatingMobile = useIsAnimatingPrices();
 
   useEffect(() => {
     if (!selectedSymbol || !tradePanelRef.current) return;
@@ -454,6 +469,12 @@ function MobileMarketTab({ trade }: { trade: TradeState }) {
                     </div>
                   </div>
                   <StockChart data={selectedStock.priceHistory} chartType={chartType} />
+                  {isAnimatingMobile && (
+                    <div className="futures-live-price-badge" aria-live="polite">
+                      <span className="badge-dot" aria-hidden="true" />
+                      ${selectedDisplayPrice.toFixed(2)}
+                    </div>
+                  )}
                 </div>
 
                 <div className="trade-row-compact">

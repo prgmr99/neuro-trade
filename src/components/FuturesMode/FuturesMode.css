@@ -16,6 +16,11 @@
   50%      { opacity: 0.5; }
 }
 
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.2); }
+}
+
 /* ── Root ────────────────────────────────────────────────────────────────── */
 .futures-mode {
   display: flex;
@@ -428,6 +433,42 @@
   font-size: 18px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+/* Live price pill overlay — only rendered while displayPriceStore.isAnimating */
+.futures-live-price-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-xs);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.futures-live-price-badge .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  animation: pulse-live 1.4s ease-in-out infinite;
+}
+
+/* On mobile the chart-toggle sits at top-right, so shift the badge to top-left
+   to avoid overlap. */
+.futures-market-tab .futures-live-price-badge {
+  left: 8px;
+  right: auto;
 }
 
 .futures-chart-toggle {
@@ -1171,6 +1212,7 @@
   .liq-distance.danger { animation: none; }
   .trade-panel { animation: none; }
   .position-card { animation: none; }
+  .futures-live-price-badge .badge-dot { animation: none; }
 }
 
 /* ── Touch device: no hover ──────────────────────────────────────────────── */

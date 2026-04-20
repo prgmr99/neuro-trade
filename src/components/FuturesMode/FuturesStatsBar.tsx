@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useFuturesStore } from '../../store/futuresStore';
+import { useDisplayPriceStore } from '../../store/displayPriceStore';
 import { useTranslation } from '../../i18n/translations';
 
 interface FuturesStatsBarProps {
@@ -7,13 +8,16 @@ interface FuturesStatsBarProps {
 }
 
 /**
- * Memoized stats bar. Subscribes to `cash` and `positions` only — not `stocks`.
+ * Memoized stats bar. Subscribes to `cash`, `positions`, `stocks` (committed)
+ * and `displayPriceStore.prices` (tween) so the total-equity / unrealized PnL
+ * readouts tick LIVE during the Phase 2 Next-Day animation.
  *
- * NOTE (phase2): unrealizedPnl is read from `positions[id].unrealizedPnl`, which
- * is committed only at `nextDay()`. During the tween animation the StatsBar
- * value is therefore frozen. Phase 2 will expose a display-price-based PnL
- * selector (likely throttled) so the total-equity figure ticks live.
- * TODO(phase2): integrate useDisplayPrice for live PnL in StatsBar.
+ * Performance note: subscribing to `displayPriceStore.prices` means the bar
+ * re-renders on every tween frame (up to ~60fps). The inner loop is O(N) over
+ * open positions (typically 0–10) and does no React child work beyond itself.
+ * React DevTools Profiler should show no knock-on re-renders of siblings
+ * (Header/StockList are memoized with independent selectors). If this becomes
+ * a concern the display-price read can be throttled to 100ms — see Phase 3.
  */
 export const FuturesStatsBar = React.memo(function FuturesStatsBar({
   isDesktop,
@@ -21,14 +25,23 @@ export const FuturesStatsBar = React.memo(function FuturesStatsBar({
   const { t } = useTranslation();
   const cash = useFuturesStore((s) => s.cash);
   const positions = useFuturesStore((s) => s.positions);
+  const stocks = useFuturesStore((s) => s.stocks);
+  const displayPrices = useDisplayPriceStore((s) => s.prices);
 
   const { totalPnl, posEquity } = useMemo(() => {
-    const posList = Object.values(positions);
-    return {
-      totalPnl: posList.reduce((sum, p) => sum + p.unrealizedPnl, 0),
-      posEquity: posList.reduce((sum, p) => sum + Math.max(0, p.margin + p.unrealizedPnl), 0),
-    };
-  }, [positions]);
+    let pnl = 0;
+    let equity = 0;
+    for (const p of Object.values(positions)) {
+      // Prefer display-price (live tween) → committed price → entry fallback.
+      const price = displayPrices[p.symbol] ?? stocks[p.symbol]?.price ?? p.entryPrice;
+      const livePnl = p.direction === 'long'
+        ? ((price - p.entryPrice) / p.entryPrice) * p.size
+        : ((p.entryPrice - price) / p.entryPrice) * p.size;
+      pnl += livePnl;
+      equity += Math.max(0, p.margin + livePnl);
+    }
+    return { totalPnl: pnl, posEquity: equity };
+  }, [positions, stocks, displayPrices]);
 
   const totalEquity = cash + posEquity;
 
