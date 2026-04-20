@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useFuturesStore } from '../../store/futuresStore';
 import { useDisplayPriceStore } from '../../store/displayPriceStore';
 import { useTranslation } from '../../i18n/translations';
@@ -6,6 +6,8 @@ import { useTranslation } from '../../i18n/translations';
 interface FuturesStatsBarProps {
   isDesktop: boolean;
 }
+
+type TickDir = 'up' | 'down' | null;
 
 /**
  * Memoized stats bar. Subscribes to `cash`, `positions`, `stocks` (committed)
@@ -28,6 +30,8 @@ export const FuturesStatsBar = React.memo(function FuturesStatsBar({
   const stocks = useFuturesStore((s) => s.stocks);
   const displayPrices = useDisplayPriceStore((s) => s.prices);
 
+  const isAnimating = useDisplayPriceStore((s) => s.isAnimating);
+
   const { totalPnl, posEquity } = useMemo(() => {
     let pnl = 0;
     let equity = 0;
@@ -43,6 +47,48 @@ export const FuturesStatsBar = React.memo(function FuturesStatsBar({
     return { totalPnl: pnl, posEquity: equity };
   }, [positions, stocks, displayPrices]);
 
+  // Committed PnL — depends only on committed store state (positions +
+  // stocks), so it changes once per Next-Day commit rather than every tween
+  // frame. That's what we want to drive the tick flash.
+  const committedPnl = useMemo(() => {
+    let pnl = 0;
+    for (const p of Object.values(positions)) {
+      const price = stocks[p.symbol]?.price ?? p.entryPrice;
+      const livePnl = p.direction === 'long'
+        ? ((price - p.entryPrice) / p.entryPrice) * p.size
+        : ((p.entryPrice - price) / p.entryPrice) * p.size;
+      pnl += livePnl;
+    }
+    return pnl;
+  }, [positions, stocks]);
+
+  const prevCommittedPnlRef = useRef<number | null>(null);
+  const [tick, setTick] = useState<TickDir>(null);
+  const [tickId, setTickId] = useState(0);
+  const tickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    // Skip flashing while the tween is still running — we want a single flash
+    // at the moment the committed price settles, not noise during the sweep.
+    if (isAnimating) return;
+    const prev = prevCommittedPnlRef.current;
+    prevCommittedPnlRef.current = committedPnl;
+    if (prev === null) return; // first render: no baseline to compare
+    const delta = committedPnl - prev;
+    if (Math.abs(delta) < 0.01) return;
+    setTick(delta > 0 ? 'up' : 'down');
+    setTickId((id) => id + 1);
+    if (tickTimerRef.current) clearTimeout(tickTimerRef.current);
+    tickTimerRef.current = setTimeout(() => {
+      setTick(null);
+      tickTimerRef.current = null;
+    }, 650);
+  }, [committedPnl, isAnimating]);
+
+  useEffect(() => () => {
+    if (tickTimerRef.current) clearTimeout(tickTimerRef.current);
+  }, []);
+
   const totalEquity = cash + posEquity;
 
   return (
@@ -53,7 +99,11 @@ export const FuturesStatsBar = React.memo(function FuturesStatsBar({
       </div>
       <div className="stat-item">
         <span className="stat-label">{t('futures.unrealizedPnl')}</span>
-        <strong className={`stat-value ${totalPnl >= 0 ? 'positive' : 'negative'}`}>
+        <strong
+          key={tick ? tickId : 'idle'}
+          className={`stat-value ${totalPnl >= 0 ? 'positive' : 'negative'}`}
+          data-tick={tick ?? undefined}
+        >
           {totalPnl >= 0 ? '+' : ''}${totalPnl.toFixed(2)}
         </strong>
       </div>

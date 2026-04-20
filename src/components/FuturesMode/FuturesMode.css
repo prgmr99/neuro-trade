@@ -162,6 +162,31 @@
   text-overflow: ellipsis;
 }
 
+/* PnL tick flash — fires once per committed price change (end of tween). */
+@keyframes stat-tick-up {
+  0%   { background: transparent; }
+  30%  { background: rgba(240, 68, 82, 0.08); }
+  100% { background: transparent; }
+}
+
+@keyframes stat-tick-down {
+  0%   { background: transparent; }
+  30%  { background: rgba(49, 130, 246, 0.08); }
+  100% { background: transparent; }
+}
+
+.futures-stats-bar .stat-value[data-tick="up"] {
+  animation: stat-tick-up 0.6s ease-out;
+  border-radius: 6px;
+  padding: 0 4px;
+}
+
+.futures-stats-bar .stat-value[data-tick="down"] {
+  animation: stat-tick-down 0.6s ease-out;
+  border-radius: 6px;
+  padding: 0 4px;
+}
+
 .futures-stats-bar .stat-item-action {
   align-items: flex-end;
   justify-content: center;
@@ -186,6 +211,7 @@
   background: var(--surface-color);
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
+  position: relative;
 }
 
 .futures-tabs button {
@@ -208,11 +234,24 @@
 
 .futures-tabs button.active {
   color: var(--accent-color);
-  border-bottom-color: var(--accent-color);
+  /* indicator div owns the underline so it can spring-slide between tabs */
+  border-bottom-color: transparent;
   font-weight: 600;
 }
 
 .futures-tabs button:active { opacity: 0.7; }
+
+/* Absolute-positioned sliding indicator. Left/width are set from React
+   in useLayoutEffect + ResizeObserver. */
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent-color);
+  border-radius: 2px 2px 0 0;
+  transition: left var(--transition-spring), width var(--transition-spring);
+  pointer-events: none;
+}
 
 /* ── Content area ────────────────────────────────────────────────────────── */
 .futures-content {
@@ -622,8 +661,35 @@
 .lev-chip.active { background: var(--text-primary); border-color: var(--text-primary); color: #fff; }
 .lev-chip[data-danger="high"]            { border-color: var(--warning); color: var(--warning); }
 .lev-chip[data-danger="high"].active     { background: var(--warning); color: #fff; border-color: var(--warning); }
-.lev-chip[data-danger="extreme"]         { border-color: var(--danger); color: var(--danger); }
+.lev-chip[data-danger="extreme"]         { border-color: var(--danger); color: var(--danger); position: relative; }
 .lev-chip[data-danger="extreme"].active  { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+/* Extreme leverage chip: pulsing halo ring to dramatize 100x/125x danger. */
+.lev-chip[data-danger="extreme"]::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 1px solid var(--danger);
+  border-radius: inherit;
+  opacity: 0;
+  animation: extreme-halo 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes extreme-halo {
+  0%, 100% { opacity: 0; transform: scale(0.95); }
+  50%      { opacity: 0.5; transform: scale(1.05); }
+}
+
+/* Trade panel flash when user switches to extreme (>=100x) leverage. */
+@keyframes panel-danger-flash {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.25); }
+  100% { box-shadow: 0 0 0 8px rgba(255, 59, 48, 0); }
+}
+
+.trade-panel[data-leverage-warning="true"] {
+  animation: panel-danger-flash 0.5s ease-out;
+}
 
 /* Margin row */
 .trade-margin-row {
@@ -680,6 +746,51 @@
 }
 
 .trade-calc-line strong { color: var(--text-primary); font-weight: 600; }
+
+/* Liquidation-distance bar — visualizes how close the chosen position is to
+   getting wiped out. Horizontal track with safety/warn/danger color steps. */
+.liq-distance-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.liq-bar-track {
+  position: relative;
+  height: 6px;
+  background: var(--surface-light);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.trade-panel.inline .liq-bar-track {
+  background: var(--surface-color);
+}
+
+.liq-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--positive);
+  border-radius: 3px;
+  transition: width var(--transition-normal), background var(--transition-fast);
+}
+
+.liq-bar-fill[data-safety="warn"]   { background: var(--warning); }
+.liq-bar-fill[data-safety="danger"] { background: var(--danger); }
+
+.liq-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.liq-bar-labels strong { color: var(--text-primary); font-weight: 700; }
+.liq-bar-labels strong.negative { color: var(--danger); }
 
 /* Leverage warning */
 .lev-warn {
@@ -974,6 +1085,23 @@
   word-break: break-all;
 }
 
+/* Game-over tier visual accents — quiet by default, louder at the extremes. */
+.futures-gameover[data-tier="legend"] .result-value {
+  text-shadow: 0 0 20px rgba(240, 68, 82, 0.3);
+}
+
+.futures-gameover[data-tier="liquidated"] .result-value {
+  animation: liquidated-shake 0.5s ease-out;
+}
+
+@keyframes liquidated-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(3px); }
+}
+
 .result-subtitle {
   font-size: 14px;
   color: var(--text-secondary);
@@ -1101,6 +1229,27 @@
 .position-card[data-liq-state="danger"] {
   animation: position-danger-pulse 1.4s ease-in-out infinite;
   background: var(--danger-bg);
+}
+
+/* User-initiated close slide-out — only applies when the user taps "confirm
+   close". Path-crossing liquidations remove the card without this class so
+   the screen flash owns the drama there. */
+.position-card.closing {
+  animation: position-close 0.22s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes position-close {
+  to {
+    transform: translateX(32%);
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-width: 0;
+  }
 }
 
 /* ── Liquidation screen flash (0.35s danger pulse) ──────────────────────── */
@@ -1322,6 +1471,14 @@
   .futures-next-day-btn[data-animating="true"]::after { animation: none; opacity: 0.25; }
   .position-card[data-liq-state="danger"] { animation: none; background: var(--danger-bg); }
   .liq-screen-flash { display: none; }
+  /* Sprint 2 additions */
+  .lev-chip[data-danger="extreme"]::after { animation: none; opacity: 0.3; transform: none; }
+  .trade-panel[data-leverage-warning="true"] { animation: none; }
+  .liq-bar-fill { transition: none; }
+  .futures-stats-bar .stat-value[data-tick] { animation: none; }
+  .position-card.closing { animation: none; opacity: 0; }
+  .tab-indicator { transition: none; }
+  .futures-gameover[data-tier="liquidated"] .result-value { animation: none; }
 }
 
 /* ── Touch device: no hover ──────────────────────────────────────────────── */
