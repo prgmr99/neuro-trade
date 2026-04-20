@@ -207,6 +207,31 @@ function SplashScreen() {
           )}
         </div>
 
+        <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
+          <button
+            className={`mode-card mode-card-daily mode-card-futures ${selectedMode === 'futures' ? 'selected' : ''}`}
+            onClick={() => { setSelectedMode('futures'); setPendingView(null); trackModeSelected('futures'); }}
+            style={{ textAlign: 'left', position: 'relative' }}
+          >
+            <span style={{
+              position: 'absolute',
+              top: '0.6rem',
+              right: '0.6rem',
+              background: 'var(--negative)',
+              color: '#fff',
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              padding: '0.15rem 0.5rem',
+              borderRadius: '999px',
+              letterSpacing: '0.03em',
+            }}>{t('futures.badge')}</span>
+            <AlertTriangle size={24} className="mode-card-icon mode-card-icon-futures" />
+            <h3>{t('futures.title')}</h3>
+            <p className="mode-desc">{t('futures.subtitle')}</p>
+            <p className="mode-detail">{t('futures.detail')}</p>
+          </button>
+        </div>
+
         {selectedMode && (
           <div className="instructions instructions-desktop-only">
             <p>{t(selectedMode === 'classic' ? 'app.instruction1Classic' : 'app.instruction1Advanced')}</p>
@@ -278,31 +303,6 @@ function SplashScreen() {
             <h3>{t('roomBattle.title')}</h3>
             <p className="mode-desc">{t('roomBattle.subtitle')}</p>
             <p className="mode-detail">{t('roomBattle.splashDetail')}</p>
-          </button>
-        </div>
-
-        <div className="mode-selector" style={{ marginBottom: '0.5rem' }}>
-          <button
-            className={`mode-card mode-card-daily mode-card-futures ${selectedMode === 'futures' ? 'selected' : ''}`}
-            onClick={() => { setSelectedMode('futures'); setPendingView(null); trackModeSelected('futures'); }}
-            style={{ textAlign: 'left', position: 'relative' }}
-          >
-            <span style={{
-              position: 'absolute',
-              top: '0.6rem',
-              right: '0.6rem',
-              background: 'var(--negative)',
-              color: '#fff',
-              fontSize: '0.65rem',
-              fontWeight: 700,
-              padding: '0.15rem 0.5rem',
-              borderRadius: '999px',
-              letterSpacing: '0.03em',
-            }}>{t('futures.badge')}</span>
-            <AlertTriangle size={24} className="mode-card-icon mode-card-icon-futures" />
-            <h3>{t('futures.title')}</h3>
-            <p className="mode-desc">{t('futures.subtitle')}</p>
-            <p className="mode-detail">{t('futures.detail')}</p>
           </button>
         </div>
 

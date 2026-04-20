@@ -214,9 +214,6 @@ export const useFuturesStore = create<FuturesStoreState>()(immer((set) => ({
       if (pos.isLiquidated) continue;
 
       const currentPrice = draft.stocks[pos.symbol].price;
-      const lastCandle = draft.stocks[pos.symbol].priceHistory[draft.stocks[pos.symbol].priceHistory.length - 1];
-      const todayHigh = lastCandle?.high ?? currentPrice;
-      const todayLow = lastCandle?.low ?? currentPrice;
 
       // Funding rate — deducted from wallet cash (margin stays immutable after open)
       const fundingCost = pos.size * fundingRate;
@@ -224,10 +221,9 @@ export const useFuturesStore = create<FuturesStoreState>()(immer((set) => ({
       pos.fundingPaid += fundingCost;
       draft.stats.totalFundingPaid += fundingCost;
 
-      // Liquidation check — use high/low to catch intraday breaches
       const isLiquidated =
-        (pos.direction === 'long' && (currentPrice <= pos.liquidationPrice || todayLow <= pos.liquidationPrice)) ||
-        (pos.direction === 'short' && (currentPrice >= pos.liquidationPrice || todayHigh >= pos.liquidationPrice));
+        (pos.direction === 'long'  && currentPrice <= pos.liquidationPrice) ||
+        (pos.direction === 'short' && currentPrice >= pos.liquidationPrice);
 
       if (isLiquidated) {
         // PnL locked at liquidation price (margin is wiped)
