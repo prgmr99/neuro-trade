@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { TrendingUp, TrendingDown, AlertTriangle, ChevronLeft, CandlestickChart, LineChart, ChevronUp, ChevronDown } from 'lucide-react';
+import { useShallow } from 'zustand/shallow';
+import { TrendingUp, AlertTriangle, CandlestickChart, LineChart, ChevronUp, ChevronDown } from 'lucide-react';
 import { useFuturesStore } from '../../store/futuresStore';
 import { useTranslation } from '../../i18n/translations';
 import { FUTURES_STOCKS, FUTURES_CONFIG, FUTURES_LEVERAGE_OPTIONS } from '../../data/futures';
@@ -7,6 +8,11 @@ import { CLASSIC_ARCS } from '../../data/classic';
 import { selectClassicArc } from '../../data/classic-arcs';
 import StockChart from '../StockChart/StockChart';
 import type { FuturesPosition } from '../../types';
+import { FuturesHeader } from './FuturesHeader';
+import { FuturesStatsBar } from './FuturesStatsBar';
+import { StockRow } from './StockRow';
+import { useDisplayPrice, useIsAnimatingPrices } from '../../hooks/useDisplayPrice';
+import { runNextDayAnimated } from '../../lib/nextDayOrchestrator';
 
 type ChartType = 'candle' | 'line';
 
@@ -57,41 +63,25 @@ function getDangerLevel(lv: number): string {
 
 // ── StockList ──────────────────────────────────────────────────────────────────
 function StockList({ trade, compact = false }: { trade: TradeState; compact?: boolean }) {
-  const { language } = useTranslation();
-  const stocks = useFuturesStore(s => s.stocks);
-  const stockList = Object.values(stocks);
+  // Subscribe only to symbol keys — prevents re-render on price changes of
+  // other symbols. `useShallow` does shallow-array equality on the keys.
+  const symbols = useFuturesStore(useShallow(s => Object.keys(s.stocks)));
 
   return (
     <ul className={`stock-list${compact ? ' compact' : ''}`} role="list">
-      {stockList.map(stock => {
-        const change = stock.price - stock.previousPrice;
-        const pctChange = stock.previousPrice > 0 ? (change / stock.previousPrice) * 100 : 0;
-        const isUp = change >= 0;
-        const isSelected = trade.selectedSymbol === stock.symbol;
-
+      {symbols.map(sym => {
+        const isSelected = trade.selectedSymbol === sym;
         return (
-          <li key={stock.symbol}>
-            <button
-              type="button"
-              className={`stock-item${isSelected ? ' selected' : ''}`}
+          <li key={sym}>
+            <StockRow
+              symbol={sym}
+              isSelected={isSelected}
+              compact={compact}
               onClick={() => {
-                trade.setSelectedSymbol(isSelected && !compact ? null : stock.symbol);
+                trade.setSelectedSymbol(isSelected && !compact ? null : sym);
                 trade.setErrorMsg('');
               }}
-              aria-pressed={isSelected}
-            >
-              <div className="stock-item-left">
-                <span className="stock-item-symbol">{stock.symbol}</span>
-                <span className="stock-item-name">{stock.name[language]}</span>
-              </div>
-              <div className={`stock-item-right ${isUp ? 'positive' : 'negative'}`}>
-                <span className="stock-item-price">${stock.price.toFixed(2)}</span>
-                <span className="stock-item-change">
-                  {isUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                  {isUp ? '+' : ''}{pctChange.toFixed(2)}%
-                </span>
-              </div>
-            </button>
+            />
           </li>
         );
       })}
@@ -118,9 +108,13 @@ function TradePanel({
 
   const { selectedSymbol, direction, setDirection, leverage, setLeverage, marginInput, setMarginInput, errorMsg, setErrorMsg, chartType, setChartType } = trade;
   const selectedStock = selectedSymbol ? stocks[selectedSymbol] : null;
+  // Always-defined hook call (safe when selectedSymbol is null — returns 0 fallback).
+  const displayPrice = useDisplayPrice(selectedSymbol ?? '');
   const marginNum = parseFloat(marginInput) || 0;
   const size = marginNum * leverage;
 
+  // NOTE: liqPrice preview uses the committed price (not displayPrice) so the
+  // preview matches what openPosition will actually commit at.
   const liqPrice = selectedStock && marginNum > 0
     ? (direction === 'long'
         ? selectedStock.price * (1 - (1 / leverage) * 0.9)
@@ -148,7 +142,7 @@ function TradePanel({
         <div className="futures-chart-header">
           <div className="futures-chart-title">
             <span className="stock-item-symbol">{selectedStock.symbol}</span>
-            <span className="futures-chart-price">${selectedStock.price.toFixed(2)}</span>
+            <span className="futures-chart-price">${displayPrice.toFixed(2)}</span>
           </div>
           <div className="futures-chart-toggle">
             <button
@@ -253,28 +247,71 @@ function TradePanel({
   );
 }
 
+// ── PositionCard ───────────────────────────────────────────────────────────────
+// Per-position card. Subscribes to display price for `pos.symbol` so the
+// current-price readout + liq-distance tick live during the animation.
+// NOTE(phase2): `pos.unrealizedPnl` is the committed value — it only updates
+// on `nextDay()`. Phase 2 will swap this for a display-price derived PnL.
+function PositionCard({ pos }: { pos: FuturesPosition }) {
+  const { t } = useTranslation();
+  const closePosition = useFuturesStore(s => s.closePosition);
+  const displayPrice = useDisplayPrice(pos.symbol);
+  const currentPrice = displayPrice || pos.entryPrice;
+
+  const liqDist = pos.direction === 'long'
+    ? ((currentPrice - pos.liquidationPrice) / currentPrice) * 100
+    : ((pos.liquidationPrice - currentPrice) / currentPrice) * 100;
+  const liqDistClass = liqDist < 2 ? 'danger' : liqDist < 5 ? 'warning' : 'safe';
+
+  return (
+    <div className="position-card">
+      <div className="position-header">
+        <span className={`direction-badge direction-${pos.direction}`}>
+          {pos.direction === 'long' ? t('futures.long') : t('futures.short')}
+        </span>
+        <span className="leverage-badge">{pos.leverage}x</span>
+        <span className="position-symbol">{pos.symbol}</span>
+        <span className={`position-pnl ${pos.unrealizedPnl >= 0 ? 'positive' : 'negative'}`}>
+          {pos.unrealizedPnl >= 0 ? '+' : ''}${pos.unrealizedPnl.toFixed(2)}
+        </span>
+      </div>
+
+      <div className="position-row">
+        <span>{t('futures.entryPrice')}: ${pos.entryPrice.toFixed(2)} → ${currentPrice.toFixed(2)}</span>
+      </div>
+
+      <div className={`position-row liq-row${liqDistClass === 'danger' ? ' danger' : ''}`}>
+        <span>{t('futures.liquidationPrice')}: ${pos.liquidationPrice.toFixed(2)}</span>
+        <span className={`liq-distance ${liqDistClass}`}>
+          {liqDistClass === 'danger' && <AlertTriangle size={12} />}
+          {liqDist.toFixed(1)}%
+        </span>
+      </div>
+
+      {liqDistClass === 'danger' && (
+        <div className="liq-danger-banner">
+          <AlertTriangle size={14} />
+          {t('futures.liqDanger')}
+        </div>
+      )}
+
+      <div className="position-row position-row-meta">
+        <span>{t('futures.margin')}: ${pos.margin.toFixed(2)} · {t('futures.size')}: ${pos.size.toFixed(0)}</span>
+        <span className="funding-paid">−${pos.fundingPaid.toFixed(2)}</span>
+      </div>
+
+      <button className="close-btn" onClick={() => closePosition(pos.id)}>
+        {t('futures.closePosition')}
+      </button>
+    </div>
+  );
+}
+
 // ── PositionsList ──────────────────────────────────────────────────────────────
 function PositionsList() {
   const { t } = useTranslation();
   const positions = useFuturesStore(s => s.positions);
-  const stocks = useFuturesStore(s => s.stocks);
-  const closePosition = useFuturesStore(s => s.closePosition);
   const positionList = Object.values(positions);
-
-  const getLiqDistance = (pos: FuturesPosition): number => {
-    const currentPrice = stocks[pos.symbol]?.price ?? pos.entryPrice;
-    if (pos.direction === 'long') {
-      return ((currentPrice - pos.liquidationPrice) / currentPrice) * 100;
-    } else {
-      return ((pos.liquidationPrice - currentPrice) / currentPrice) * 100;
-    }
-  };
-
-  const getLiqDistanceClass = (dist: number): string => {
-    if (dist < 2) return 'danger';
-    if (dist < 5) return 'warning';
-    return 'safe';
-  };
 
   if (positionList.length === 0) {
     return <div className="empty-state">{t('futures.emptyPositions')}</div>;
@@ -282,54 +319,9 @@ function PositionsList() {
 
   return (
     <div className="futures-positions-tab">
-      {positionList.map(pos => {
-        const currentPrice = stocks[pos.symbol]?.price ?? pos.entryPrice;
-        const liqDist = getLiqDistance(pos);
-        const liqDistClass = getLiqDistanceClass(liqDist);
-
-        return (
-          <div className="position-card" key={pos.id}>
-            <div className="position-header">
-              <span className={`direction-badge direction-${pos.direction}`}>
-                {pos.direction === 'long' ? t('futures.long') : t('futures.short')}
-              </span>
-              <span className="leverage-badge">{pos.leverage}x</span>
-              <span className="position-symbol">{pos.symbol}</span>
-              <span className={`position-pnl ${pos.unrealizedPnl >= 0 ? 'positive' : 'negative'}`}>
-                {pos.unrealizedPnl >= 0 ? '+' : ''}${pos.unrealizedPnl.toFixed(2)}
-              </span>
-            </div>
-
-            <div className="position-row">
-              <span>{t('futures.entryPrice')}: ${pos.entryPrice.toFixed(2)} → ${currentPrice.toFixed(2)}</span>
-            </div>
-
-            <div className={`position-row liq-row${liqDistClass === 'danger' ? ' danger' : ''}`}>
-              <span>{t('futures.liquidationPrice')}: ${pos.liquidationPrice.toFixed(2)}</span>
-              <span className={`liq-distance ${liqDistClass}`}>
-                {liqDistClass === 'danger' && <AlertTriangle size={12} />}
-                {liqDist.toFixed(1)}%
-              </span>
-            </div>
-
-            {liqDistClass === 'danger' && (
-              <div className="liq-danger-banner">
-                <AlertTriangle size={14} />
-                {t('futures.liqDanger')}
-              </div>
-            )}
-
-            <div className="position-row position-row-meta">
-              <span>{t('futures.margin')}: ${pos.margin.toFixed(2)} · {t('futures.size')}: ${pos.size.toFixed(0)}</span>
-              <span className="funding-paid">−${pos.fundingPaid.toFixed(2)}</span>
-            </div>
-
-            <button className="close-btn" onClick={() => closePosition(pos.id)}>
-              {t('futures.closePosition')}
-            </button>
-          </div>
-        );
-      })}
+      {positionList.map(pos => (
+        <PositionCard key={pos.id} pos={pos} />
+      ))}
     </div>
   );
 }
@@ -384,13 +376,19 @@ function NewsList() {
 
 // ── Mobile Market tab (list with inline trade panel) ───────────────────────────
 function MobileMarketTab({ trade }: { trade: TradeState }) {
-  const { t, language } = useTranslation();
-  const stocks = useFuturesStore(s => s.stocks);
+  const { t } = useTranslation();
+  const symbols = useFuturesStore(useShallow(s => Object.keys(s.stocks)));
   const cash = useFuturesStore(s => s.cash);
   const positions = useFuturesStore(s => s.positions);
+  // We still need committed stocks[symbol] for `priceHistory` + `liqPrice` calc,
+  // but only for the currently selected symbol.
+  const selectedStock = useFuturesStore(s =>
+    trade.selectedSymbol ? s.stocks[trade.selectedSymbol] : null
+  );
   const tradePanelRef = useRef<HTMLDivElement>(null);
 
   const { selectedSymbol, setSelectedSymbol, direction, setDirection, leverage, setLeverage, marginInput, setMarginInput, errorMsg, setErrorMsg, chartType, setChartType } = trade;
+  const selectedDisplayPrice = useDisplayPrice(selectedSymbol ?? '');
 
   useEffect(() => {
     if (!selectedSymbol || !tradePanelRef.current) return;
@@ -400,7 +398,6 @@ function MobileMarketTab({ trade }: { trade: TradeState }) {
     return () => clearTimeout(id);
   }, [selectedSymbol]);
 
-  const stockList = Object.values(stocks);
   const marginNum = parseFloat(marginInput) || 0;
   const size = marginNum * leverage;
 
@@ -409,64 +406,54 @@ function MobileMarketTab({ trade }: { trade: TradeState }) {
     setMarginInput(amount.toFixed(2));
   };
 
+  // liqPrice preview based on committed price — matches what openPosition will commit.
+  const liqPrice = selectedStock && marginNum > 0
+    ? (direction === 'long'
+        ? selectedStock.price * (1 - (1 / leverage) * 0.9)
+        : selectedStock.price * (1 + (1 / leverage) * 0.9))
+    : null;
+
   return (
     <div className="futures-market-tab">
-      {stockList.map(stock => {
-        const change = stock.price - stock.previousPrice;
-        const pctChange = stock.previousPrice > 0 ? (change / stock.previousPrice) * 100 : 0;
-        const isUp = change >= 0;
-        const isSelected = selectedSymbol === stock.symbol;
-
-        const liqPrice = isSelected && marginNum > 0
-          ? (direction === 'long'
-              ? stock.price * (1 - (1 / leverage) * 0.9)
-              : stock.price * (1 + (1 / leverage) * 0.9))
-          : null;
-
+      {symbols.map(sym => {
+        const isSelected = selectedSymbol === sym;
         return (
-          <div key={stock.symbol}>
-            <button
-              type="button"
-              className={`stock-item${isSelected ? ' selected' : ''}`}
+          <div key={sym}>
+            <StockRow
+              symbol={sym}
+              isSelected={isSelected}
               onClick={() => {
-                setSelectedSymbol(isSelected ? null : stock.symbol);
+                setSelectedSymbol(isSelected ? null : sym);
                 setErrorMsg('');
               }}
-              aria-pressed={isSelected}
-            >
-              <div className="stock-item-left">
-                <span className="stock-item-symbol">{stock.symbol}</span>
-                <span className="stock-item-name">{stock.name[language]}</span>
-              </div>
-              <div className={`stock-item-right ${isUp ? 'positive' : 'negative'}`}>
-                <span className="stock-item-price">${stock.price.toFixed(2)}</span>
-                <span className="stock-item-change">
-                  {isUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                  {isUp ? '+' : ''}{pctChange.toFixed(2)}%
-                </span>
-              </div>
-            </button>
+            />
 
-            {isSelected && (
+            {isSelected && selectedStock && (
               <div className="trade-panel" ref={tradePanelRef}>
                 <div className="futures-chart-area">
-                  <div className="futures-chart-toggle">
-                    <button
-                      className={`chart-type-btn${chartType === 'candle' ? ' active' : ''}`}
-                      onClick={() => setChartType('candle')}
-                      aria-label={t('futures.chart.candle')}
-                    >
-                      <CandlestickChart size={14} />
-                    </button>
-                    <button
-                      className={`chart-type-btn${chartType === 'line' ? ' active' : ''}`}
-                      onClick={() => setChartType('line')}
-                      aria-label={t('futures.chart.line')}
-                    >
-                      <LineChart size={14} />
-                    </button>
+                  <div className="futures-chart-header">
+                    <div className="futures-chart-title">
+                      <span className="stock-item-symbol">{selectedStock.symbol}</span>
+                      <span className="futures-chart-price">${selectedDisplayPrice.toFixed(2)}</span>
+                    </div>
+                    <div className="futures-chart-toggle">
+                      <button
+                        className={`chart-type-btn${chartType === 'candle' ? ' active' : ''}`}
+                        onClick={() => setChartType('candle')}
+                        aria-label={t('futures.chart.candle')}
+                      >
+                        <CandlestickChart size={14} />
+                      </button>
+                      <button
+                        className={`chart-type-btn${chartType === 'line' ? ' active' : ''}`}
+                        onClick={() => setChartType('line')}
+                        aria-label={t('futures.chart.line')}
+                      >
+                        <LineChart size={14} />
+                      </button>
+                    </div>
                   </div>
-                  <StockChart data={stock.priceHistory} chartType={chartType} />
+                  <StockChart data={selectedStock.priceHistory} chartType={chartType} />
                 </div>
 
                 <div className="trade-row-compact">
@@ -612,9 +599,9 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
   const { t, language } = useTranslation();
   const isDesktop = useIsDesktop();
 
-  const cash = useFuturesStore(s => s.cash);
   const currentDay = useFuturesStore(s => s.currentDay);
   const maxDays = useFuturesStore(s => s.maxDays);
+  const cash = useFuturesStore(s => s.cash);
   const positions = useFuturesStore(s => s.positions);
   const dailyNews = useFuturesStore(s => s.dailyNews);
   const gamePhase = useFuturesStore(s => s.gamePhase);
@@ -622,7 +609,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
   const arcName = useFuturesStore(s => s.arcName);
   const openPosition = useFuturesStore(s => s.openPosition);
   const setInitialState = useFuturesStore(s => s.setInitialState);
-  const nextDay = useFuturesStore(s => s.nextDay);
+  const isAnimating = useIsAnimatingPrices();
 
   const [activeTab, setActiveTab] = useState<'market' | 'positions' | 'news'>('market');
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -693,20 +680,14 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
     return () => { timers.forEach(clearTimeout); };
   }, [liquidatedThisTurn, t]);
 
-  const { totalPnl, posEquity, positionCount } = useMemo(() => {
-    const posList = Object.values(positions);
-    return {
-      totalPnl: posList.reduce((sum, p) => sum + p.unrealizedPnl, 0),
-      posEquity: posList.reduce((sum, p) => sum + Math.max(0, p.margin + p.unrealizedPnl), 0),
-      positionCount: posList.length,
-    };
-  }, [positions]);
-  const totalEquity = cash + posEquity;
+  const positionCount = Object.keys(positions).length;
   const unreadCount = useMemo(() => dailyNews.filter(n => !n.read).length, [dailyNews]);
 
   const handleNextDay = () => {
+    if (isAnimating) return;
     if (!isDesktop) setSelectedSymbol(null);
-    nextDay();
+    // Fire-and-forget: orchestrator commits nextDay() and animates prices.
+    void runNextDayAnimated();
   };
 
   const handleOpenPosition = () => {
@@ -745,51 +726,16 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
   const isTrading = activeTab === 'market' && selectedSymbol !== null;
   const canOpenPosition = selectedSymbol !== null && marginNum > 0 && marginNum <= cash && !positions[`${selectedSymbol}-${direction}`];
 
-  // ── Header (shared) ─────────────────────────────────────────────────────────
-  const Header = (
-    <header className="futures-header">
-      <button className="futures-back-btn" onClick={onBack} aria-label={t('futures.back')}>
-        <ChevronLeft size={20} />
-      </button>
-      <div className="futures-title-area">
-        <h1 className="futures-title-text">{t('futures.title')}</h1>
-        <div className="futures-badges">
-          <span className="pro-badge">{t('futures.proRoom')}</span>
-          {arcName && <span className="arc-badge">{arcName}</span>}
-        </div>
-      </div>
-      {gamePhase !== 'gameover' && (
-        <div className="futures-day">{t('futures.dayCounter', { current: String(currentDay), max: String(maxDays) })}</div>
-      )}
-    </header>
-  );
-
-  // ── Stats bar (shared, extended on desktop) ─────────────────────────────────
-  const StatsBar = (
-    <div className="futures-stats-bar">
-      <div className="stat-item">
-        <span className="stat-label">{t('futures.availableCash')}</span>
-        <strong className="stat-value">${cash.toFixed(2)}</strong>
-      </div>
-      <div className="stat-item">
-        <span className="stat-label">{t('futures.unrealizedPnl')}</span>
-        <strong className={`stat-value ${totalPnl >= 0 ? 'positive' : 'negative'}`}>
-          {totalPnl >= 0 ? '+' : ''}${totalPnl.toFixed(2)}
-        </strong>
-      </div>
-      {isDesktop && (
-        <div className="stat-item">
-          <span className="stat-label">{t('futures.totalEquity')}</span>
-          <strong className="stat-value">${totalEquity.toFixed(2)}</strong>
-        </div>
-      )}
-    </div>
-  );
-
   if (gamePhase === 'gameover') {
     return (
       <div className="futures-mode">
-        {Header}
+        <FuturesHeader
+          onBack={onBack}
+          arcName={arcName}
+          gamePhase={gamePhase}
+          currentDay={currentDay}
+          maxDays={maxDays}
+        />
         <div className="futures-content futures-content-gameover">
           <GameOverScreen onBack={onBack} onRetry={handleRetry} />
         </div>
@@ -808,8 +754,14 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
   if (isDesktop) {
     return (
       <div className="futures-mode futures-mode-desktop">
-        {Header}
-        {StatsBar}
+        <FuturesHeader
+          onBack={onBack}
+          arcName={arcName}
+          gamePhase={gamePhase}
+          currentDay={currentDay}
+          maxDays={maxDays}
+        />
+        <FuturesStatsBar isDesktop={isDesktop} />
         <main className="futures-desktop-grid">
           {/* Left: Market list */}
           <aside className="futures-desktop-left">
@@ -851,6 +803,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
               <button
                 className="futures-bottom-btn futures-next-day-btn"
                 onClick={handleNextDay}
+                disabled={isAnimating}
               >
                 {`${t('futures.nextDay')} (${currentDay}/${maxDays})`}
               </button>
@@ -872,8 +825,14 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
   // ── Mobile Layout ──────────────────────────────────────────────────────────
   return (
     <div className="futures-mode">
-      {Header}
-      {StatsBar}
+      <FuturesHeader
+        onBack={onBack}
+        arcName={arcName}
+        gamePhase={gamePhase}
+        currentDay={currentDay}
+        maxDays={maxDays}
+      />
+      <FuturesStatsBar isDesktop={isDesktop} />
 
       <nav className="futures-tabs" role="tablist">
         <button
@@ -928,6 +887,7 @@ export default function FuturesMode({ onBack }: FuturesModeProps) {
           <button
             className="futures-bottom-btn futures-next-day-btn"
             onClick={handleNextDay}
+            disabled={isAnimating}
           >
             {`${t('futures.nextDay')} (${currentDay}/${maxDays})`}
           </button>
