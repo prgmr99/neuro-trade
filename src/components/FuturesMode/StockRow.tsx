@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
 import { useFuturesStore } from '../../store/futuresStore';
 import { useTranslation } from '../../i18n/translations';
 import { useDisplayPrice } from '../../hooks/useDisplayPrice';
+import { RollingNumber } from '../common/RollingNumber/RollingNumber';
 
 interface StockRowProps {
   symbol: string;
@@ -52,7 +53,12 @@ export const StockRow = React.memo(function StockRow({
         <span className="stock-item-name">{stock.name[language]}</span>
       </div>
       <div className={`stock-item-right ${isUp ? 'positive' : 'negative'}`}>
-        <span className="stock-item-price">${displayPrice.toFixed(2)}</span>
+        <RollingNumber
+          className="stock-item-price"
+          value={displayPrice}
+          decimals={2}
+          prefix="$"
+        />
         <span className="stock-item-change">
           {isUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
           {isUp ? '+' : ''}

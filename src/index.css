@@ -29,12 +29,12 @@
   --bg-color: #ffffff; /* Toss light gray background */
   --bg-gradient: none; /* No gradients */
   --text-primary: #191f28; /* Toss dark text */
-  --text-secondary: #8b95a1; /* Toss secondary text */
+  --text-secondary: #6b7684; /* Toss secondary text — WCAG AA 4.79:1 on white */
   --accent-color: #3182f6; /* Toss signature blue */
   --accent-hover: #1b64da;
   --surface-color: #ffffff; /* Solid white cards */
   --surface-light: #f2f4f6;
-  --border-color: rgba(0, 0, 0, 0.04);
+  --border-color: rgba(0, 0, 0, 0.08);
   --glass-blur: none;
   --positive: #f04452; /* Red for positive in Korean finance */
   --negative: #3182f6; /* Blue for negative in Korean finance */

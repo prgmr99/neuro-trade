@@ -16,19 +16,47 @@ import { DayPrice } from '../../types';
 
 type ChartType = 'candle' | 'line';
 
+export interface StockChartOverlay {
+  value: number;
+  label: string;
+  kind: 'entry' | 'liq';
+  direction?: 'long' | 'short';
+}
+
 interface StockChartProps {
   data: DayPrice[];
   chartType?: ChartType;
+  overlays?: StockChartOverlay[];
 }
 
-// Korean finance convention: red = up, blue = down (matches CSS vars)
+/**
+ * Reads a CSS custom property from :root and returns the resolved value.
+ * Recharts SVG primitives require real color strings (not `var(--x)`), so we
+ * resolve variables once at module-level. Inside Vitest/SSR `window` is
+ * undefined so we fall back to static Toss palette values.
+ *
+ * TODO(dark-mode): recompute on `[data-theme]` change via MutationObserver.
+ */
+const cssVar = (name: string, fallback: string): string => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return fallback;
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v || fallback;
+};
+
+// Korean finance convention: red = up, blue = down. Resolved from CSS vars so
+// theme / user overrides cascade correctly; fallbacks match :root in index.css.
 const COLORS = {
-  positive: '#f04452',
-  negative: '#3182f6',
-  sma: '#a78bfa',
-  grid: 'rgba(0, 0, 0, 0.04)',
-  axis: '#8b95a1',
-  refLine: '#8b95a1',
+  positive: cssVar('--positive', '#f04452'),
+  negative: cssVar('--negative', '#3182f6'),
+  sma: cssVar('--accent-color', '#3182f6'),
+  grid: cssVar('--border-color', 'rgba(0, 0, 0, 0.08)'),
+  axis: cssVar('--text-secondary', '#6b7684'),
+  refLine: cssVar('--text-secondary', '#6b7684'),
+  surface: cssVar('--surface-color', '#ffffff'),
+  textPrimary: cssVar('--text-primary', '#191f28'),
+  textSecondary: cssVar('--text-secondary', '#6b7684'),
+  border: cssVar('--border-color', 'rgba(0, 0, 0, 0.08)'),
+  danger: cssVar('--danger', '#ff3b30'),
   areaFill: 'url(#priceGradient)',
 };
 
@@ -57,7 +85,7 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
 
   return (
     <div style={{
-      background: '#ffffff',
+      background: COLORS.surface,
       border: `1px solid ${color}`,
       padding: '12px 14px',
       borderRadius: '12px',
@@ -66,35 +94,35 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
       lineHeight: 1.7,
       minWidth: '140px',
     }}>
-      <div style={{ fontWeight: 700, marginBottom: '6px', color: '#191f28', fontSize: '0.85rem' }}>
+      <div style={{ fontWeight: 700, marginBottom: '6px', color: COLORS.textPrimary, fontSize: '0.85rem' }}>
         {formatDateFromOffset(Number(label))}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0 10px' }}>
-        <span style={{ color: '#8b95a1' }}>Open</span>
-        <span style={{ textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>${data.open.toFixed(2)}</span>
-        <span style={{ color: '#8b95a1' }}>High</span>
-        <span style={{ textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>${data.high.toFixed(2)}</span>
-        <span style={{ color: '#8b95a1' }}>Low</span>
-        <span style={{ textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>${data.low.toFixed(2)}</span>
-        <span style={{ color: '#8b95a1' }}>Close</span>
+        <span style={{ color: COLORS.textSecondary }}>Open</span>
+        <span style={{ textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: COLORS.textPrimary }}>${data.open.toFixed(2)}</span>
+        <span style={{ color: COLORS.textSecondary }}>High</span>
+        <span style={{ textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: COLORS.textPrimary }}>${data.high.toFixed(2)}</span>
+        <span style={{ color: COLORS.textSecondary }}>Low</span>
+        <span style={{ textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: COLORS.textPrimary }}>${data.low.toFixed(2)}</span>
+        <span style={{ color: COLORS.textSecondary }}>Close</span>
         <span style={{ textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color }}>${data.close.toFixed(2)}</span>
       </div>
       <div style={{
         marginTop: '6px',
         paddingTop: '6px',
-        borderTop: '1px solid rgba(0,0,0,0.06)',
+        borderTop: `1px solid ${COLORS.border}`,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
       }}>
-        <span style={{ color: '#8b95a1', fontSize: '0.75rem' }}>Change</span>
+        <span style={{ color: COLORS.textSecondary, fontSize: '0.75rem' }}>Change</span>
         <span style={{ fontWeight: 700, color, fontSize: '0.85rem' }}>
           {isUp ? '+' : ''}{changePercent.toFixed(2)}%
         </span>
       </div>
       {data.sma != null && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px' }}>
-          <span style={{ color: '#8b95a1', fontSize: '0.75rem' }}>SMA(5)</span>
+          <span style={{ color: COLORS.textSecondary, fontSize: '0.75rem' }}>SMA(5)</span>
           <span style={{ fontWeight: 600, color: COLORS.sma, fontSize: '0.8rem', fontVariantNumeric: 'tabular-nums' }}>
             ${data.sma.toFixed(2)}
           </span>
@@ -149,7 +177,7 @@ const CustomCandle = (props: Record<string, number | boolean>) => {
   );
 };
 
-const StockChart: React.FC<StockChartProps> = ({ data, chartType = 'candle' }) => {
+const StockChart: React.FC<StockChartProps> = ({ data, chartType = 'candle', overlays }) => {
   const { preparedData, minLow, maxHigh, currentPrice } = useMemo(() => {
     const smaValues = calculateSMA(data, 5);
 
@@ -210,7 +238,7 @@ const StockChart: React.FC<StockChartProps> = ({ data, chartType = 'candle' }) =
           />
           <Tooltip
             content={<CustomTooltip />}
-            cursor={{ stroke: 'rgba(0, 0, 0, 0.08)', strokeWidth: 1, strokeDasharray: '4 4' }}
+            cursor={{ stroke: COLORS.border, strokeWidth: 1, strokeDasharray: '4 4' }}
             trigger="click"
           />
 
@@ -231,6 +259,30 @@ const StockChart: React.FC<StockChartProps> = ({ data, chartType = 'candle' }) =
               }}
             />
           )}
+
+          {/* Position overlays: entry + liquidation lines */}
+          {overlays?.map((o, idx) => {
+            const stroke = o.kind === 'liq' ? COLORS.danger : COLORS.textPrimary;
+            const dash = o.kind === 'liq' ? '2 2' : '5 3';
+            const opacity = o.kind === 'liq' ? 0.7 : 0.5;
+            return (
+              <ReferenceLine
+                key={`${o.kind}-${o.direction ?? 'n'}-${idx}`}
+                y={o.value}
+                stroke={stroke}
+                strokeDasharray={dash}
+                strokeWidth={1}
+                strokeOpacity={opacity}
+                label={{
+                  value: o.label,
+                  position: 'left',
+                  fill: stroke,
+                  fontSize: 10,
+                  fontWeight: 700,
+                }}
+              />
+            );
+          })}
 
           {chartType === 'candle' ? (
             <Bar
