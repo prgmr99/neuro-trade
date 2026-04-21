@@ -24,8 +24,13 @@ export const FuturesHeader = React.memo(function FuturesHeader({
 }: FuturesHeaderProps) {
   const { t } = useTranslation();
 
+  const clampedProgress = Math.min(currentDay / maxDays, 1) * 100;
+
   return (
-    <header className="futures-header">
+    <header
+      className="futures-header"
+      style={{ '--day-progress': `${clampedProgress}%` } as React.CSSProperties}
+    >
       <button className="futures-back-btn" onClick={onBack} aria-label={t('futures.back')}>
         <ChevronLeft size={20} />
       </button>

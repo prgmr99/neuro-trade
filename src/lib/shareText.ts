@@ -165,6 +165,42 @@ export function generateGameShareText(params: {
   return [header, divider, ...stockLines, divider, finalLine, titleLine, '', ctaLine, `${shareUrl}  ${HASHTAG}`].join('\n');
 }
 
+export function formatFuturesResult(params: {
+  returnPct: number;
+  finalValue: number;
+  startingCash: number;
+  liquidations: number;
+  drawdown: number;
+  language: 'en' | 'ko';
+}): string {
+  const { returnPct, finalValue, startingCash, liquidations, drawdown, language } = params;
+  const resultEmoji = getResultEmoji(returnPct);
+  const returnSign = returnPct >= 0 ? '+' : '';
+  const ctaLine = pickCta(returnPct, language);
+
+  if (language === 'ko') {
+    return [
+      `NeuroTrade 선물 ⚡`,
+      `${resultEmoji} 수익률: ${returnSign}${returnPct.toFixed(1)}%`,
+      `💰 최종: $${finalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} / $${startingCash.toLocaleString()}`,
+      `💀 청산: ${liquidations}회  |  낙폭: -${(drawdown * 100).toFixed(1)}%`,
+      '',
+      ctaLine,
+      `${SITE_URL}  ${HASHTAG}`,
+    ].join('\n');
+  }
+
+  return [
+    `NeuroTrade Futures ⚡`,
+    `${resultEmoji} Return: ${returnSign}${returnPct.toFixed(1)}%`,
+    `💰 Final: $${finalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} / $${startingCash.toLocaleString()}`,
+    `💀 Liquidations: ${liquidations}  |  Drawdown: -${(drawdown * 100).toFixed(1)}%`,
+    '',
+    ctaLine,
+    `${SITE_URL}  ${HASHTAG}`,
+  ].join('\n');
+}
+
 export function generateFlashShareText(params: {
   stockSymbol: string;
   choice: 'allin' | 'pass';

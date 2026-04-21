@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { TrendingUp, AlertTriangle, CandlestickChart, LineChart, ChevronUp, ChevronDown } from 'lucide-react';
+import { TrendingUp, AlertTriangle, CandlestickChart, LineChart, ChevronUp, ChevronDown, Share2 } from 'lucide-react';
 import { useFuturesStore } from '../../store/futuresStore';
 import { useTranslation } from '../../i18n/translations';
 import { FUTURES_STOCKS, FUTURES_CONFIG, FUTURES_LEVERAGE_OPTIONS } from '../../data/futures';
@@ -13,6 +13,7 @@ import { FuturesStatsBar } from './FuturesStatsBar';
 import { StockRow } from './StockRow';
 import { useDisplayPrice, useIsAnimatingPrices, useLiveCandle } from '../../hooks/useDisplayPrice';
 import { runNextDayAnimated } from '../../lib/nextDayOrchestrator';
+import { formatFuturesResult } from '../../lib/shareText';
 import { RollingNumber } from '../common/RollingNumber/RollingNumber';
 
 type ChartType = 'candle' | 'line';
@@ -733,10 +734,11 @@ function MobileMarketTab({ trade }: { trade: TradeState }) {
 
 // ── GameOverScreen ─────────────────────────────────────────────────────────────
 function GameOverScreen({ onBack, onRetry }: { onBack: () => void; onRetry: () => void }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const cash = useFuturesStore(s => s.cash);
   const positions = useFuturesStore(s => s.positions);
   const stats = useFuturesStore(s => s.stats);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const posValues = Object.values(positions).reduce((sum, p) => sum + Math.max(0, p.margin + p.unrealizedPnl), 0);
   const finalValue = cash + posValues;
@@ -749,11 +751,34 @@ function GameOverScreen({ onBack, onRetry }: { onBack: () => void; onRetry: () =
     : returnPct > -90 ? 'loss'
     : 'liquidated';
 
+  const subtitleKey = tier === 'legend' ? 'futures.gameOver.subtitleLegend'
+    : tier === 'profit' ? 'futures.gameOver.subtitleProfit'
+    : tier === 'loss' ? 'futures.gameOver.subtitleLoss'
+    : 'futures.gameOver.subtitleLiquidated';
+
+  const handleShare = async () => {
+    const text = formatFuturesResult({
+      returnPct,
+      finalValue,
+      startingCash: FUTURES_CONFIG.startingCash,
+      liquidations: stats.totalLiquidations,
+      drawdown: stats.worstDrawdown,
+      language,
+    });
+    if (navigator.share) {
+      try { await navigator.share({ text }); } catch { /* user canceled */ }
+    } else {
+      await navigator.clipboard.writeText(text);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }
+  };
+
   return (
     <div className="futures-gameover" data-tier={tier}>
       <div className="gameover-title-area">
         <h2>{t('futures.gameOver.title')}</h2>
-        <p className="gameover-subtitle">{t('futures.gameOver.subtitle')}</p>
+        <p className="gameover-subtitle">{t(subtitleKey)}</p>
       </div>
 
       <div className="gameover-result">
@@ -796,8 +821,14 @@ function GameOverScreen({ onBack, onRetry }: { onBack: () => void; onRetry: () =
       </details>
 
       <div className="gameover-actions">
-        <button className="gameover-retry-btn" onClick={onRetry}>{t('futures.gameOver.retry')}</button>
-        <button className="gameover-classic-btn" onClick={onBack}>{t('futures.gameOver.goClassic')}</button>
+        <button className="gameover-share-btn" onClick={handleShare}>
+          <Share2 size={18} />
+          {shareCopied ? t('futures.gameOver.shareCopied') : t('futures.gameOver.share')}
+        </button>
+        <div className="gameover-actions-row">
+          <button className="gameover-retry-btn" onClick={onRetry}>{t('futures.gameOver.retry')}</button>
+          <button className="gameover-classic-btn" onClick={onBack}>{t('futures.gameOver.goClassic')}</button>
+        </div>
       </div>
     </div>
   );

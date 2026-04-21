@@ -45,6 +45,24 @@
   box-shadow: var(--shadow-sm);
   flex-shrink: 0;
   min-height: 56px;
+  position: relative;
+}
+
+.futures-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: var(--day-progress, 0%);
+  background: var(--accent-color);
+  transition: width var(--transition-normal);
+  border-radius: 0 2px 2px 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .futures-header::after { transition: none; }
 }
 
 .futures-back-btn {
@@ -1109,28 +1127,46 @@
 }
 
 .gameover-stats {
-  background: var(--surface-color);
-  border-radius: 16px;
-  border: 1px solid var(--border-color);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  padding: 0;
   text-align: left;
 }
 
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
+.gameover-stats .stat-row {
+  flex-direction: column;
+  align-items: flex-start;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 14px;
+  gap: 6px;
+  display: flex;
   font-size: 14px;
   font-variant-numeric: tabular-nums;
 }
 
-.stat-row:last-child { border-bottom: none; }
-.stat-label { color: var(--text-secondary); }
-.stat-value { font-weight: 600; font-variant-numeric: tabular-nums; }
+.gameover-stats .stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.gameover-stats .stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 360px) {
+  .gameover-stats { grid-template-columns: 1fr; }
+}
 
 .educational-section {
   text-align: left;
@@ -1156,6 +1192,36 @@
 
 .gameover-actions {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gameover-share-btn {
+  width: 100%;
+  min-height: 52px;
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition-fast);
+}
+
+.gameover-share-btn:hover  { opacity: 0.92; }
+.gameover-share-btn:active { opacity: 0.8; transform: scale(0.98); }
+
+.futures-gameover[data-tier="legend"] .gameover-share-btn {
+  box-shadow: 0 4px 12px rgba(49, 130, 246, 0.24);
+}
+
+.gameover-actions-row {
+  display: flex;
   gap: 10px;
 }
 
@@ -1174,7 +1240,7 @@
   word-break: keep-all;
 }
 
-.gameover-retry-btn   { background: var(--accent-color); color: #fff; }
+.gameover-retry-btn   { background: var(--surface-color); color: var(--text-primary); border: 1px solid var(--border-color); }
 .gameover-classic-btn {
   background: var(--surface-color);
   color: var(--text-primary);
@@ -1459,7 +1525,8 @@
   .close-btn,
   .margin-chip,
   .gameover-retry-btn,
-  .gameover-classic-btn {
+  .gameover-classic-btn,
+  .gameover-share-btn {
     transition: none;
   }
   .liquidation-toast { animation: none; }
@@ -1491,6 +1558,7 @@
   .close-btn:hover,
   .gameover-retry-btn:hover,
   .gameover-classic-btn:hover,
+  .gameover-share-btn:hover,
   .futures-next-day-btn:hover,
   .margin-chip:hover,
   .chart-type-btn:hover,
