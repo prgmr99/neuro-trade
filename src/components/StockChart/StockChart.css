@@ -1,0 +1,15 @@
+.live-candle-body {
+  animation: live-candle-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes live-candle-pulse {
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-candle-body {
+    animation: none;
+    opacity: 0.75;
+  }
+}
