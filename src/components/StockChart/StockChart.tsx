@@ -27,6 +27,13 @@ interface StockChartProps {
   data: DayPrice[];
   chartType?: ChartType;
   overlays?: StockChartOverlay[];
+  /**
+   * Optional in-progress candle to append at the right edge of the chart.
+   * During Futures Next-Day animation the orchestrator sets this per frame so
+   * a live candle grows alongside the price tween. Cleared (undefined) once
+   * the tween resolves and nextDay() pushes its permanent candle.
+   */
+  liveCandle?: DayPrice;
 }
 
 /**
@@ -177,33 +184,38 @@ const CustomCandle = (props: Record<string, number | boolean>) => {
   );
 };
 
-const StockChart: React.FC<StockChartProps> = ({ data, chartType = 'candle', overlays }) => {
+const StockChart: React.FC<StockChartProps> = ({ data, chartType = 'candle', overlays, liveCandle }) => {
   const { preparedData, minLow, maxHigh, currentPrice } = useMemo(() => {
-    const smaValues = calculateSMA(data, 5);
+    // Append the in-progress candle at the right edge. SMA and extrema are
+    // computed on the combined array so axis/domain/overlay math stay coherent.
+    const combinedData = liveCandle ? [...data, liveCandle] : data;
+    const smaValues = calculateSMA(combinedData, 5);
+    const lastIdx = combinedData.length - 1;
 
-    const prepared = data.map((d, i) => {
+    const prepared = combinedData.map((d, i) => {
       const isUp = d.close >= d.open;
       return {
         ...d,
         isUp,
         candleBody: [Math.min(d.open, d.close), Math.max(d.open, d.close)] as [number, number],
         sma: smaValues[i],
+        isLive: liveCandle != null && i === lastIdx,
       };
     });
 
-    const low = Math.min(...data.map(d => d.low));
-    const high = Math.max(...data.map(d => d.high));
+    const low = Math.min(...combinedData.map(d => d.low));
+    const high = Math.max(...combinedData.map(d => d.high));
 
     return {
       preparedData: prepared,
       minLow: low,
       maxHigh: high,
-      currentPrice: data.length > 0 ? data[data.length - 1].close : 0,
+      currentPrice: combinedData.length > 0 ? combinedData[combinedData.length - 1].close : 0,
     };
-  }, [data]);
+  }, [data, liveCandle]);
 
   const buffer = (maxHigh - minLow) * 0.12;
-  const isLatestUp = data.length >= 2 && data[data.length - 1].close >= data[data.length - 2].close;
+  const isLatestUp = preparedData.length >= 2 && preparedData[preparedData.length - 1].close >= preparedData[preparedData.length - 2].close;
   const refLineColor = isLatestUp ? COLORS.positive : COLORS.negative;
 
   return (

@@ -2,7 +2,7 @@ import { useFuturesStore, computeNextDayPrices } from '../store/futuresStore';
 import { useDisplayPriceStore } from '../store/displayPriceStore';
 import { runTween } from './tweenAnimation';
 import { simulateTickPath, type TickPath } from './simulateTickPath';
-import type { FuturesPosition } from '../types';
+import type { DayPrice, FuturesPosition } from '../types';
 
 const ANIMATION_DURATION_MS = 1800;
 const TICK_FRAMES = 60;
@@ -116,9 +116,35 @@ export async function runNextDayAnimated(): Promise<void> {
   const crossings = detectCrossings(path, futures.positions);
   let nextCrossingIdx = 0;
 
+  // Live-candle tracking. The in-progress candle's `day` value mirrors what
+  // nextDay() will ultimately push into priceHistory (`state.currentDay` at
+  // the moment nextDay() runs — see futuresStore.ts push site — which equals
+  // the pre-increment snapshot captured here).
+  const dayForLive = futures.currentDay;
+  const symbols = Object.keys(fromPrices);
+  const liveHigh: Record<string, number> = {};
+  const liveLow: Record<string, number> = {};
+  for (const sym of symbols) {
+    liveHigh[sym] = fromPrices[sym];
+    liveLow[sym] = fromPrices[sym];
+  }
+
   // 5. Seed display store and begin animation.
   const display = useDisplayPriceStore.getState();
   display.setPrices(fromPrices);
+  // Seed a zero-width candle at frame 0 so the chart gets a live candle
+  // immediately rather than waiting for the first rAF tick.
+  const initialCandles: Record<string, DayPrice> = {};
+  for (const sym of symbols) {
+    initialCandles[sym] = {
+      day: dayForLive,
+      open: fromPrices[sym],
+      close: fromPrices[sym],
+      high: fromPrices[sym],
+      low: fromPrices[sym],
+    };
+  }
+  display.setLiveCandles(initialCandles);
   display.setAnimating(true);
 
   // Reset the per-turn liquidation log so path-crossing entries accumulate
@@ -137,7 +163,25 @@ export async function runNextDayAnimated(): Promise<void> {
       seed: tweenSeed,
       precomputedPath: path,
       onFrame: (prices, frameIdx) => {
-        useDisplayPriceStore.getState().setPrices(prices);
+        const ds = useDisplayPriceStore.getState();
+        ds.setPrices(prices);
+
+        // Update running high/low trackers then publish a fresh liveCandles map.
+        // Per-frame cost is O(symbols) — no inner path scan.
+        const liveCandles: Record<string, DayPrice> = {};
+        for (const sym of symbols) {
+          const close = prices[sym] ?? fromPrices[sym];
+          if (close > liveHigh[sym]) liveHigh[sym] = close;
+          if (close < liveLow[sym]) liveLow[sym] = close;
+          liveCandles[sym] = {
+            day: dayForLive,
+            open: fromPrices[sym],
+            close,
+            high: liveHigh[sym],
+            low: liveLow[sym],
+          };
+        }
+        ds.setLiveCandles(liveCandles);
 
         while (
           nextCrossingIdx < crossings.length &&

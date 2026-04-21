@@ -1,5 +1,6 @@
 import { useDisplayPriceStore } from '../store/displayPriceStore';
 import { useFuturesStore } from '../store/futuresStore';
+import type { DayPrice } from '../types';
 
 /**
  * Returns the current display price for a symbol.
@@ -20,4 +21,16 @@ export function useDisplayPrice(symbol: string): number {
 /** Whether a price-tween animation is currently in progress. */
 export function useIsAnimatingPrices(): boolean {
   return useDisplayPriceStore((s) => s.isAnimating);
+}
+
+/**
+ * Returns the in-progress OHLC candle for a symbol while the Next-Day tween
+ * is running. Undefined when no animation is active (the chart then shows the
+ * committed priceHistory only).
+ *
+ * Selector returns the nested object reference directly, so components
+ * re-render only when this symbol's candle mutates — not for unrelated symbols.
+ */
+export function useLiveCandle(symbol: string | null): DayPrice | undefined {
+  return useDisplayPriceStore((s) => (symbol ? s.liveCandles[symbol] : undefined));
 }

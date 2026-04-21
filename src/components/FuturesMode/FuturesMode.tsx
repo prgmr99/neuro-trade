@@ -11,7 +11,7 @@ import type { FuturesPosition } from '../../types';
 import { FuturesHeader } from './FuturesHeader';
 import { FuturesStatsBar } from './FuturesStatsBar';
 import { StockRow } from './StockRow';
-import { useDisplayPrice, useIsAnimatingPrices } from '../../hooks/useDisplayPrice';
+import { useDisplayPrice, useIsAnimatingPrices, useLiveCandle } from '../../hooks/useDisplayPrice';
 import { runNextDayAnimated } from '../../lib/nextDayOrchestrator';
 import { RollingNumber } from '../common/RollingNumber/RollingNumber';
 
@@ -112,6 +112,7 @@ function TradePanel({
   // Always-defined hook call (safe when selectedSymbol is null — returns 0 fallback).
   const displayPrice = useDisplayPrice(selectedSymbol ?? '');
   const isAnimating = useIsAnimatingPrices();
+  const liveCandle = useLiveCandle(selectedSymbol);
 
   // Leverage-warning panel flash: fire a one-shot animation when user picks
   // extreme leverage (>=100x). Tracks prev leverage with a ref so it doesn't
@@ -210,7 +211,7 @@ function TradePanel({
             </button>
           </div>
         </div>
-        <StockChart data={selectedStock.priceHistory} chartType={chartType} overlays={overlays} />
+        <StockChart data={selectedStock.priceHistory} chartType={chartType} overlays={overlays} liveCandle={liveCandle} />
         {isAnimating && (
           <div className="futures-live-price-badge" aria-live="polite">
             <span className="badge-dot" aria-hidden="true" />
@@ -541,6 +542,7 @@ function MobileMarketTab({ trade }: { trade: TradeState }) {
   const { selectedSymbol, setSelectedSymbol, direction, setDirection, leverage, setLeverage, marginInput, setMarginInput, errorMsg, setErrorMsg, chartType, setChartType } = trade;
   const selectedDisplayPrice = useDisplayPrice(selectedSymbol ?? '');
   const isAnimatingMobile = useIsAnimatingPrices();
+  const liveCandle = useLiveCandle(selectedSymbol);
 
   // Leverage-warning flash (same semantics as desktop TradePanel).
   const [leverageWarn, setLeverageWarn] = useState(false);
@@ -616,7 +618,7 @@ function MobileMarketTab({ trade }: { trade: TradeState }) {
                       </button>
                     </div>
                   </div>
-                  <StockChart data={selectedStock.priceHistory} chartType={chartType} />
+                  <StockChart data={selectedStock.priceHistory} chartType={chartType} liveCandle={liveCandle} />
                   {isAnimatingMobile && (
                     <div className="futures-live-price-badge" aria-live="polite">
                       <span className="badge-dot" aria-hidden="true" />
