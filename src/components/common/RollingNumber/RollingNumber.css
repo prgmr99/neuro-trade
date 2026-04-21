@@ -1,0 +1,50 @@
+/* RollingNumber — odometer-style digit roll. Used for stock price + position
+ * PnL (high-frequency visual ticks). Kept scope-tight so other numerical
+ * readouts stay plain-text for legibility.
+ */
+
+.rolling-number {
+  display: inline-flex;
+  align-items: baseline;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.rolling-number-visual {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.rolling-static {
+  display: inline-block;
+}
+
+.rolling-digit {
+  display: inline-block;
+  overflow: hidden;
+  height: 1em;
+  line-height: 1;
+  vertical-align: baseline;
+  width: 0.62em; /* monospace-ish slot for each digit */
+  text-align: center;
+}
+
+.rolling-digit-track {
+  display: inline-flex;
+  flex-direction: column;
+  transform: translateY(calc(var(--rolling-digit, 0) * -10%));
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.rolling-digit-track > span {
+  display: block;
+  height: 1em;
+  line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rolling-digit-track {
+    transition: none;
+  }
+}

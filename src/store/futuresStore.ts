@@ -4,6 +4,66 @@ import { FuturesPosition, FuturesStats, News, Stock } from '../types';
 import { mulberry32 } from '../lib/prng';
 import { FUTURES_CONFIG } from '../data/futures';
 
+/**
+ * Pure helper — computes next-day target prices + OHLC candles for every stock.
+ *
+ * Mirrors the stock-pricing portion of `nextDay()` EXACTLY (identical rng call
+ * order: per symbol, 3 calls — noise, high, low) so Phase 2 orchestrators can
+ * preview the target prices and generate a path-crossing liquidation check
+ * BEFORE mutating the store. `nextDay()` itself reuses this helper so the
+ * stored prices match the previewed targets byte-for-byte.
+ *
+ * The function DOES NOT mutate any input; callers are free to pass committed
+ * store state or a snapshot. The rng is seeded deterministically from
+ * `(prngState + currentDay * 1000)` to match legacy behavior.
+ */
+export function computeNextDayPrices(
+  stocks: Record<string, Stock>,
+  allNews: News[],
+  currentDay: number,
+  prngState: number,
+): {
+  targetPrices: Record<string, number>;
+  ohlcBySymbol: Record<string, { open: number; high: number; low: number; close: number }>;
+} {
+  const rng = mulberry32(prngState + currentDay * 1000);
+
+  // Gather effects from next day's news
+  const nextDayNews = allNews.filter(n => n.dayIdx === currentDay + 1);
+  const effects: Record<string, number> = {};
+  for (const news of nextDayNews) {
+    for (const [sym, mult] of Object.entries(news.effect)) {
+      effects[sym] = (effects[sym] ?? 1) * mult;
+    }
+  }
+
+  const targetPrices: Record<string, number> = {};
+  const ohlcBySymbol: Record<string, { open: number; high: number; low: number; close: number }> = {};
+
+  // Preserve iteration order (Object.keys) to keep rng call order stable.
+  for (const sym of Object.keys(stocks)) {
+    const stock = stocks[sym];
+    const newsMultiplier = effects[sym] ?? 1;
+    const noise = 1 + (rng() - 0.5) * stock.volatility;
+    const newPrice = Math.max(0.01, stock.price * newsMultiplier * noise);
+
+    const open = stock.price;
+    const close = newPrice;
+    const high = Math.max(open, close) * (1 + rng() * 0.02);
+    const low = Math.min(open, close) * (1 - rng() * 0.02);
+
+    targetPrices[sym] = Math.round(newPrice * 100) / 100;
+    ohlcBySymbol[sym] = {
+      open: Math.round(open * 100) / 100,
+      high: Math.round(high * 100) / 100,
+      low: Math.round(low * 100) / 100,
+      close: Math.round(close * 100) / 100,
+    };
+  }
+
+  return { targetPrices, ohlcBySymbol };
+}
+
 interface FuturesStoreState {
   // Game state
   positions: Record<string, FuturesPosition>;
@@ -27,6 +87,13 @@ interface FuturesStoreState {
   openPosition: (symbol: string, direction: 'long' | 'short', leverage: number, marginAmount: number) => boolean;
   closePosition: (positionId: string) => void;
   nextDay: () => void;
+  /**
+   * Liquidate a position mid-path (during Phase 2 animation) when the tween
+   * trajectory crossed its liquidationPrice before the final close. Mirrors
+   * the PnL-locking behaviour of close-price liquidation: PnL is locked at
+   * `pos.liquidationPrice` and the margin is wiped.
+   */
+  liquidateByPathCrossing: (posId: string, crossingPrice: number) => void;
   readNews: (newsId: string) => void;
   toggleNewsExpanded: (newsId: string) => void;
 }
@@ -172,37 +239,34 @@ export const useFuturesStore = create<FuturesStoreState>()(immer((set) => ({
   }),
 
   nextDay: () => set((draft) => {
-    const rng = mulberry32(draft.prngState + draft.currentDay * 1000);
-
-    // Gather effects from next day's news
+    // Compute target prices + OHLC via the shared pure helper. Same rng seed
+    // and call order as before (3 calls per stock: noise, high, low) — the
+    // extraction is a pure refactor with identical numerical output.
+    const { targetPrices, ohlcBySymbol } = computeNextDayPrices(
+      draft.stocks,
+      draft.allNews,
+      draft.currentDay,
+      draft.prngState,
+    );
     const nextDayNews = draft.allNews.filter(n => n.dayIdx === draft.currentDay + 1);
-    const effects: Record<string, number> = {};
-    for (const news of nextDayNews) {
-      for (const [sym, mult] of Object.entries(news.effect)) {
-        effects[sym] = (effects[sym] ?? 1) * mult;
-      }
-    }
 
-    // Apply news effects + volatility noise to stock prices
+    // Preserve any path-crossing liquidations recorded during the pre-nextDay
+    // animation (Phase 2) so their toasts still fire. When nextDay() is called
+    // directly without an animation (e.g. tests), this is a fresh [].
+    const preExistingLiquidations = [...draft.liquidatedThisTurn];
+
+    // Apply computed prices to draft.
     for (const sym of Object.keys(draft.stocks)) {
       const stock = draft.stocks[sym];
-      const newsMultiplier = effects[sym] ?? 1;
-      const noise = 1 + (rng() - 0.5) * stock.volatility;
-      const newPrice = Math.max(0.01, stock.price * newsMultiplier * noise);
-
-      const open = stock.price;
-      const close = newPrice;
-      const high = Math.max(open, close) * (1 + rng() * 0.02);
-      const low = Math.min(open, close) * (1 - rng() * 0.02);
-
+      const ohlc = ohlcBySymbol[sym];
       stock.previousPrice = stock.price;
-      stock.price = Math.round(newPrice * 100) / 100;
+      stock.price = targetPrices[sym];
       stock.priceHistory.push({
         day: draft.currentDay,
-        open: Math.round(open * 100) / 100,
-        high: Math.round(high * 100) / 100,
-        low: Math.round(low * 100) / 100,
-        close: Math.round(close * 100) / 100,
+        open: ohlc.open,
+        high: ohlc.high,
+        low: ohlc.low,
+        close: ohlc.close,
       });
     }
 
@@ -243,7 +307,10 @@ export const useFuturesStore = create<FuturesStoreState>()(immer((set) => ({
       }
     }
 
-    draft.liquidatedThisTurn = liquidatedIds;
+    // Merge close-price liquidations with any path-crossing liquidations that
+    // were recorded before this nextDay() call (Phase 2 animation). When
+    // nextDay() runs standalone (no animation), preExistingLiquidations is [].
+    draft.liquidatedThisTurn = [...preExistingLiquidations, ...liquidatedIds];
 
     for (const posId of liquidatedIds) {
       delete draft.positions[posId];
@@ -275,6 +342,24 @@ export const useFuturesStore = create<FuturesStoreState>()(immer((set) => ({
     if (draft.currentDay > draft.maxDays) {
       draft.gamePhase = 'gameover';
     }
+  }),
+
+  liquidateByPathCrossing: (posId, _crossingPrice) => set((draft) => {
+    const pos = draft.positions[posId];
+    if (!pos || pos.isLiquidated) return;
+
+    // PnL locked at liquidationPrice (margin wiped) — mirrors close-price liq.
+    pos.unrealizedPnl = pos.direction === 'long'
+      ? ((pos.liquidationPrice - pos.entryPrice) / pos.entryPrice) * pos.size
+      : ((pos.entryPrice - pos.liquidationPrice) / pos.entryPrice) * pos.size;
+    pos.isLiquidated = true;
+    draft.stats.totalLiquidations += 1;
+    if (!draft.liquidatedThisTurn.includes(posId)) {
+      draft.liquidatedThisTurn.push(posId);
+    }
+    delete draft.positions[posId];
+    // `_crossingPrice` is unused at the store level today; kept in signature
+    // for future logging / replay and to document intent at the call site.
   }),
 
   readNews: (newsId) => set((state) => {

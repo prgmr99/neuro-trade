@@ -16,6 +16,11 @@
   50%      { opacity: 0.5; }
 }
 
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.2); }
+}
+
 /* ── Root ────────────────────────────────────────────────────────────────── */
 .futures-mode {
   display: flex;
@@ -40,6 +45,24 @@
   box-shadow: var(--shadow-sm);
   flex-shrink: 0;
   min-height: 56px;
+  position: relative;
+}
+
+.futures-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: var(--day-progress, 0%);
+  background: var(--accent-color);
+  transition: width var(--transition-normal);
+  border-radius: 0 2px 2px 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .futures-header::after { transition: none; }
 }
 
 .futures-back-btn {
@@ -157,6 +180,31 @@
   text-overflow: ellipsis;
 }
 
+/* PnL tick flash — fires once per committed price change (end of tween). */
+@keyframes stat-tick-up {
+  0%   { background: transparent; }
+  30%  { background: rgba(240, 68, 82, 0.08); }
+  100% { background: transparent; }
+}
+
+@keyframes stat-tick-down {
+  0%   { background: transparent; }
+  30%  { background: rgba(49, 130, 246, 0.08); }
+  100% { background: transparent; }
+}
+
+.futures-stats-bar .stat-value[data-tick="up"] {
+  animation: stat-tick-up 0.6s ease-out;
+  border-radius: 6px;
+  padding: 0 4px;
+}
+
+.futures-stats-bar .stat-value[data-tick="down"] {
+  animation: stat-tick-down 0.6s ease-out;
+  border-radius: 6px;
+  padding: 0 4px;
+}
+
 .futures-stats-bar .stat-item-action {
   align-items: flex-end;
   justify-content: center;
@@ -181,6 +229,7 @@
   background: var(--surface-color);
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
+  position: relative;
 }
 
 .futures-tabs button {
@@ -203,11 +252,24 @@
 
 .futures-tabs button.active {
   color: var(--accent-color);
-  border-bottom-color: var(--accent-color);
+  /* indicator div owns the underline so it can spring-slide between tabs */
+  border-bottom-color: transparent;
   font-weight: 600;
 }
 
 .futures-tabs button:active { opacity: 0.7; }
+
+/* Absolute-positioned sliding indicator. Left/width are set from React
+   in useLayoutEffect + ResizeObserver. */
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent-color);
+  border-radius: 2px 2px 0 0;
+  transition: left var(--transition-spring), width var(--transition-spring);
+  pointer-events: none;
+}
 
 /* ── Content area ────────────────────────────────────────────────────────── */
 .futures-content {
@@ -246,7 +308,60 @@
 .futures-bottom-btn:active:not(:disabled) { opacity: 0.8; transform: scale(0.98); }
 .futures-bottom-btn:disabled              { opacity: 0.35; cursor: not-allowed; }
 
-.futures-next-day-btn { background: var(--accent-color); }
+.futures-next-day-btn {
+  background: var(--accent-color);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Progress fill — shows how far through the run the player is. Width is driven
+   by the inline `--day-fill` variable set from the React component. Flat white
+   overlay (CLAUDE.md: no gradient backgrounds on buttons). */
+.futures-next-day-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: var(--day-fill, 0%);
+  background: rgba(255, 255, 255, 0.14);
+  transition: width var(--transition-spring);
+  z-index: -1;
+}
+
+/* Animated sweep — only while price tween is running. Visual "breathing" cue
+   that the market is moving; flat white overlay, not a color gradient. */
+.futures-next-day-btn[data-animating="true"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  animation: btn-sweep 1.2s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes btn-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.futures-next-day-btn .next-day-progress {
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.futures-next-day-btn[data-final="true"] .next-day-label {
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
 
 /* ── Badge ───────────────────────────────────────────────────────────────── */
 .badge {
@@ -329,6 +444,22 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 160px;
+}
+
+.stock-item-spark {
+  display: flex;
+  align-items: center;
+  margin: 0 8px 0 auto;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.sparkline {
+  display: block;
+}
+
+.stock-list.compact .stock-item-spark {
+  display: none;
 }
 
 .stock-item-right {
@@ -430,6 +561,42 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Live price pill overlay — only rendered while displayPriceStore.isAnimating */
+.futures-live-price-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-xs);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.futures-live-price-badge .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  animation: pulse-live 1.4s ease-in-out infinite;
+}
+
+/* On mobile the chart-toggle sits at top-right, so shift the badge to top-left
+   to avoid overlap. */
+.futures-market-tab .futures-live-price-badge {
+  left: 8px;
+  right: auto;
+}
+
 .futures-chart-toggle {
   display: flex;
   gap: 2px;
@@ -528,8 +695,35 @@
 .lev-chip.active { background: var(--text-primary); border-color: var(--text-primary); color: #fff; }
 .lev-chip[data-danger="high"]            { border-color: var(--warning); color: var(--warning); }
 .lev-chip[data-danger="high"].active     { background: var(--warning); color: #fff; border-color: var(--warning); }
-.lev-chip[data-danger="extreme"]         { border-color: var(--danger); color: var(--danger); }
+.lev-chip[data-danger="extreme"]         { border-color: var(--danger); color: var(--danger); position: relative; }
 .lev-chip[data-danger="extreme"].active  { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+/* Extreme leverage chip: pulsing halo ring to dramatize 100x/125x danger. */
+.lev-chip[data-danger="extreme"]::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 1px solid var(--danger);
+  border-radius: inherit;
+  opacity: 0;
+  animation: extreme-halo 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes extreme-halo {
+  0%, 100% { opacity: 0; transform: scale(0.95); }
+  50%      { opacity: 0.5; transform: scale(1.05); }
+}
+
+/* Trade panel flash when user switches to extreme (>=100x) leverage. */
+@keyframes panel-danger-flash {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.25); }
+  100% { box-shadow: 0 0 0 8px rgba(255, 59, 48, 0); }
+}
+
+.trade-panel[data-leverage-warning="true"] {
+  animation: panel-danger-flash 0.5s ease-out;
+}
 
 /* Margin row */
 .trade-margin-row {
@@ -586,6 +780,51 @@
 }
 
 .trade-calc-line strong { color: var(--text-primary); font-weight: 600; }
+
+/* Liquidation-distance bar — visualizes how close the chosen position is to
+   getting wiped out. Horizontal track with safety/warn/danger color steps. */
+.liq-distance-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.liq-bar-track {
+  position: relative;
+  height: 6px;
+  background: var(--surface-light);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.trade-panel.inline .liq-bar-track {
+  background: var(--surface-color);
+}
+
+.liq-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--positive);
+  border-radius: 3px;
+  transition: width var(--transition-normal), background var(--transition-fast);
+}
+
+.liq-bar-fill[data-safety="warn"]   { background: var(--warning); }
+.liq-bar-fill[data-safety="danger"] { background: var(--danger); }
+
+.liq-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.liq-bar-labels strong { color: var(--text-primary); font-weight: 700; }
+.liq-bar-labels strong.negative { color: var(--danger); }
 
 /* Leverage warning */
 .lev-warn {
@@ -746,6 +985,14 @@
 .close-btn:hover  { border-color: var(--negative); color: var(--negative); }
 .close-btn:active { opacity: 0.7; transform: scale(0.97); }
 
+/* Confirm state — 2-tap close flow. First tap arms, second tap commits. */
+.close-btn.confirming {
+  border-color: var(--negative);
+  color: var(--negative);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px var(--negative);
+}
+
 /* ── News ────────────────────────────────────────────────────────────────── */
 .futures-news-tab {
   display: flex;
@@ -872,6 +1119,23 @@
   word-break: break-all;
 }
 
+/* Game-over tier visual accents — quiet by default, louder at the extremes. */
+.futures-gameover[data-tier="legend"] .result-value {
+  text-shadow: 0 0 20px rgba(240, 68, 82, 0.3);
+}
+
+.futures-gameover[data-tier="liquidated"] .result-value {
+  animation: liquidated-shake 0.5s ease-out;
+}
+
+@keyframes liquidated-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(3px); }
+}
+
 .result-subtitle {
   font-size: 14px;
   color: var(--text-secondary);
@@ -879,28 +1143,46 @@
 }
 
 .gameover-stats {
-  background: var(--surface-color);
-  border-radius: 16px;
-  border: 1px solid var(--border-color);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  padding: 0;
   text-align: left;
 }
 
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
+.gameover-stats .stat-row {
+  flex-direction: column;
+  align-items: flex-start;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 14px;
+  gap: 6px;
+  display: flex;
   font-size: 14px;
   font-variant-numeric: tabular-nums;
 }
 
-.stat-row:last-child { border-bottom: none; }
-.stat-label { color: var(--text-secondary); }
-.stat-value { font-weight: 600; font-variant-numeric: tabular-nums; }
+.gameover-stats .stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.gameover-stats .stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 360px) {
+  .gameover-stats { grid-template-columns: 1fr; }
+}
 
 .educational-section {
   text-align: left;
@@ -926,6 +1208,36 @@
 
 .gameover-actions {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gameover-share-btn {
+  width: 100%;
+  min-height: 52px;
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition-fast);
+}
+
+.gameover-share-btn:hover  { opacity: 0.92; }
+.gameover-share-btn:active { opacity: 0.8; transform: scale(0.98); }
+
+.futures-gameover[data-tier="legend"] .gameover-share-btn {
+  box-shadow: 0 4px 12px rgba(49, 130, 246, 0.24);
+}
+
+.gameover-actions-row {
+  display: flex;
   gap: 10px;
 }
 
@@ -944,7 +1256,7 @@
   word-break: keep-all;
 }
 
-.gameover-retry-btn   { background: var(--accent-color); color: #fff; }
+.gameover-retry-btn   { background: var(--surface-color); color: var(--text-primary); border: 1px solid var(--border-color); }
 .gameover-classic-btn {
   background: var(--surface-color);
   color: var(--text-primary);
@@ -981,6 +1293,71 @@
   word-break: keep-all;
   text-align: center;
   box-shadow: var(--shadow-md);
+  pointer-events: auto;
+}
+
+/* ── Position danger pulse (card-level drama when liq < 2%) ─────────────── */
+@keyframes position-danger-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0), var(--shadow-xs);
+    border-color: var(--danger-border);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.16), var(--shadow-md);
+    border-color: var(--danger);
+  }
+}
+
+.position-card[data-liq-state="danger"] {
+  animation: position-danger-pulse 1.4s ease-in-out infinite;
+  background: var(--danger-bg);
+}
+
+/* User-initiated close slide-out — only applies when the user taps "confirm
+   close". Path-crossing liquidations remove the card without this class so
+   the screen flash owns the drama there. */
+.position-card.closing {
+  animation: position-close 0.22s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes position-close {
+  to {
+    transform: translateX(32%);
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-width: 0;
+  }
+}
+
+/* ── Liquidation screen flash (0.35s danger pulse) ──────────────────────── */
+.liq-screen-flash {
+  position: fixed;
+  inset: 0;
+  background: var(--danger);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 998;
+  animation: liq-flash 0.35s ease-out forwards;
+}
+
+@keyframes liq-flash {
+  0%   { opacity: 0; }
+  20%  { opacity: 0.18; }
+  100% { opacity: 0; }
+}
+
+/* ── Price-updating hint under desktop open-position button ─────────────── */
+.futures-animating-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  font-weight: 500;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -1164,13 +1541,27 @@
   .close-btn,
   .margin-chip,
   .gameover-retry-btn,
-  .gameover-classic-btn {
+  .gameover-classic-btn,
+  .gameover-share-btn {
     transition: none;
   }
   .liquidation-toast { animation: none; }
   .liq-distance.danger { animation: none; }
   .trade-panel { animation: none; }
   .position-card { animation: none; }
+  .futures-live-price-badge .badge-dot { animation: none; }
+  .futures-next-day-btn::before { transition: none; }
+  .futures-next-day-btn[data-animating="true"]::after { animation: none; opacity: 0.25; }
+  .position-card[data-liq-state="danger"] { animation: none; background: var(--danger-bg); }
+  .liq-screen-flash { display: none; }
+  /* Sprint 2 additions */
+  .lev-chip[data-danger="extreme"]::after { animation: none; opacity: 0.3; transform: none; }
+  .trade-panel[data-leverage-warning="true"] { animation: none; }
+  .liq-bar-fill { transition: none; }
+  .futures-stats-bar .stat-value[data-tick] { animation: none; }
+  .position-card.closing { animation: none; opacity: 0; }
+  .tab-indicator { transition: none; }
+  .futures-gameover[data-tier="liquidated"] .result-value { animation: none; }
 }
 
 /* ── Touch device: no hover ──────────────────────────────────────────────── */
@@ -1183,6 +1574,7 @@
   .close-btn:hover,
   .gameover-retry-btn:hover,
   .gameover-classic-btn:hover,
+  .gameover-share-btn:hover,
   .futures-next-day-btn:hover,
   .margin-chip:hover,
   .chart-type-btn:hover,
