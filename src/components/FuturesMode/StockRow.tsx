@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { useFuturesStore } from '../../store/futuresStore';
 import { useTranslation } from '../../i18n/translations';
 import { useDisplayPrice } from '../../hooks/useDisplayPrice';
 import { RollingNumber } from '../common/RollingNumber/RollingNumber';
+import { Sparkline } from '../common/Sparkline/Sparkline';
 
 interface StockRowProps {
   symbol: string;
@@ -33,6 +34,15 @@ export const StockRow = React.memo(function StockRow({
   const stock = useFuturesStore((s) => s.stocks[symbol]);
   const displayPrice = useDisplayPrice(symbol);
 
+  const sparkPoints = useMemo(() => {
+    if (!stock) return [];
+    const recent = stock.priceHistory.slice(-5);
+    return recent.map((d) => d.close);
+  }, [stock]);
+
+  const sparkIsUp =
+    sparkPoints.length >= 2 && sparkPoints[sparkPoints.length - 1] >= sparkPoints[0];
+
   if (!stock) return null;
 
   const previousPrice = stock.previousPrice;
@@ -52,6 +62,11 @@ export const StockRow = React.memo(function StockRow({
         <span className="stock-item-symbol">{symbol}</span>
         <span className="stock-item-name">{stock.name[language]}</span>
       </div>
+      {!compact && sparkPoints.length >= 2 && (
+        <div className="stock-item-spark" aria-hidden="true">
+          <Sparkline points={sparkPoints} isUp={sparkIsUp} />
+        </div>
+      )}
       <div className={`stock-item-right ${isUp ? 'positive' : 'negative'}`}>
         <RollingNumber
           className="stock-item-price"

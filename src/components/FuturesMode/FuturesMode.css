@@ -446,6 +446,22 @@
   max-width: 160px;
 }
 
+.stock-item-spark {
+  display: flex;
+  align-items: center;
+  margin: 0 8px 0 auto;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.sparkline {
+  display: block;
+}
+
+.stock-list.compact .stock-item-spark {
+  display: none;
+}
+
 .stock-item-right {
   display: flex;
   flex-direction: column;
