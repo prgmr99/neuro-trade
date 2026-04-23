@@ -1,0 +1,176 @@
+.install-prompt-overlay {
+  position: fixed;
+  bottom: 2rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 9999;
+  padding: 1rem;
+  pointer-events: none; /* Let clicks pass through the overlay background */
+}
+
+.install-prompt-modal {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  pointer-events: auto; /* Re-enable clicks for the modal itself */
+  animation: slideUpFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
+}
+
+.install-prompt-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.install-prompt-close:hover {
+  background: var(--glass-hover);
+  color: var(--text-color);
+}
+
+.install-prompt-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.install-prompt-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.install-prompt-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.install-prompt-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.install-prompt-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.install-prompt-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.install-prompt-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.install-prompt-dismiss-text {
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-decoration: underline;
+  opacity: 0.7;
+}
+
+.install-prompt-dismiss-text:hover {
+  opacity: 1;
+}
+
+/* iOS Specific Styles */
+.ios-install-guide {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  width: 100%;
+  border: 1px solid var(--glass-border);
+}
+
+.ios-install-guide p {
+  font-size: 0.875rem;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.ios-icons-demo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--accent-color);
+}
+
+.demo-icon {
+  padding: 0.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+}
+
+.demo-arrow {
+  color: var(--text-secondary);
+  font-weight: bold;
+}
+
+.demo-plus-box {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -14,6 +14,7 @@ import {
   trackReferredShareCompleted,
 } from '../../lib/analytics';
 import { createShareId, buildShareUrl, getIncomingRef } from '../../lib/shareSession';
+import { usePwaStore } from '../../store/pwaStore';
 
 interface Props {
   mode: GameMode;
@@ -26,6 +27,7 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
   const { history, stocks, dayState } = useGameStore();
   const { t } = useTranslation();
   const { language } = useLanguageStore();
+  const setHasPlayedGame = usePwaStore((state) => state.setHasPlayedGame);
 
   const initialValue = history[0]?.portfolioValue ?? 10000;
   const finalValue = history[history.length - 1].portfolioValue;
@@ -56,6 +58,9 @@ const GameOverScreen: React.FC<Props> = ({ mode, onRestart }) => {
       initial_value: initialValue,
       days_played: dayState.maxDays,
     });
+    
+    // Set flag for PWA installation prompt
+    setHasPlayedGame();
     const parentRef = getIncomingRef();
     if (parentRef) {
       trackReferredGameCompleted({

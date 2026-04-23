@@ -431,6 +431,13 @@ export const translations = {
         fact5: "The house always wins: exchanges profit from liquidation fees regardless of market direction",
         stats: "Your Statistics",
       },
+    },
+    pwa: {
+      installTitle: "Install NeuroTrade",
+      installDesc: "Add NeuroTrade to your home screen for a full-screen, native app experience without limits.",
+      installBtn: "Install App",
+      dismiss: "Do not show again",
+      iosGuide: "To install: tap the Share icon [↑] below and select 'Add to Home Screen' [+].",
     }
   },
   ko: {
@@ -863,6 +870,13 @@ export const translations = {
         fact5: "하우스는 항상 이깁니다: 거래소는 시장 방향과 관계없이 청산 수수료로 수익을 냅니다",
         stats: "내 통계",
       },
+    },
+    pwa: {
+      installTitle: "NeuroTrade 앱 설치하기",
+      installDesc: "홈 화면에 추가하여 전체화면의 쾌적한 네이티브 앱 환경으로 즐겨보세요.",
+      installBtn: "앱 설치하기",
+      dismiss: "다시 보지 않기",
+      iosGuide: "설치 방법: 아래 공유 버튼 [↑] 을 누르고 '홈 화면에 추가' [+] 를 선택하세요.",
     }
   }
 };

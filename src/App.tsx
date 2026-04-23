@@ -20,6 +20,8 @@ import SocialProof from './components/SocialProof/SocialProof';
 import MarketTicker from './components/MarketTicker/MarketTicker';
 import { trackGameStarted, trackModeSelected, trackVisitFromShare } from './lib/analytics';
 import { captureIncomingRef } from './lib/shareSession';
+import InstallPrompt from './components/InstallPrompt/InstallPrompt';
+import { usePwaStore } from './store/pwaStore';
 
 const FuturesMode = lazy(() => import('./components/FuturesMode/FuturesMode'));
 
@@ -380,18 +382,38 @@ function App() {
     }
   }, []);
 
+  // Intercept beforeinstallprompt for PWA installation
+  const setDeferredPrompt = usePwaStore((state) => state.setDeferredPrompt);
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, [setDeferredPrompt]);
+
   return (
-    <Routes>
-      <Route path="/flash" element={<FlashRound onBack={goHome} />} />
-      <Route path="/daily" element={<DailyChallenge onBack={goHome} />} />
-      <Route path="/duel" element={<DuelRoute goHome={goHome} />} />
-      <Route path="/multiplayer" element={<LiveCompetition onBack={goHome} />} />
-      <Route path="/room-battle" element={<RoomBattle onBack={goHome} />} />
-      <Route path="/futures" element={<Suspense fallback={<div className="lazy-fallback">Loading…</div>}><FuturesMode onBack={goHome} /></Suspense>} />
-      <Route path="/rankings" element={<RankingsRoute goHome={goHome} />} />
-      <Route path="/game" element={<GameRoute goHome={goHome} />} />
-      <Route path="/" element={<SplashScreen />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/flash" element={<FlashRound onBack={goHome} />} />
+        <Route path="/daily" element={<DailyChallenge onBack={goHome} />} />
+        <Route path="/duel" element={<DuelRoute goHome={goHome} />} />
+        <Route path="/multiplayer" element={<LiveCompetition onBack={goHome} />} />
+        <Route path="/room-battle" element={<RoomBattle onBack={goHome} />} />
+        <Route path="/futures" element={<Suspense fallback={<div className="lazy-fallback">Loading…</div>}><FuturesMode onBack={goHome} /></Suspense>} />
+        <Route path="/rankings" element={<RankingsRoute goHome={goHome} />} />
+        <Route path="/game" element={<GameRoute goHome={goHome} />} />
+        <Route path="/" element={<SplashScreen />} />
+      </Routes>
+      <InstallPrompt />
+    </>
   );
 }
 
