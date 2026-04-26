@@ -3,16 +3,6 @@ import { Routes, Route, useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from './store/gameStore';
 import { useLanguageStore } from './store/useLanguageStore';
 import { SCENARIOS, GameMode, CLASSIC_ARCS, selectClassicArc, selectAdvancedArcs } from './data';
-import Layout from './components/Layout/Layout';
-import GameOverScreen from './components/GameOverScreen/GameOverScreen';
-import RankingBoard from './components/RankingBoard/RankingBoard';
-import FlashRound from './components/FlashRound/FlashRound';
-import DailyChallenge from './components/DailyChallenge/DailyChallenge';
-import DuelMode from './components/DuelMode/DuelMode';
-import LiveCompetition from './components/LiveCompetition/LiveCompetition';
-import RoomBattle from './components/RoomBattle/RoomBattle';
-import AttendanceModal from './components/AttendanceModal/AttendanceModal';
-import AchievementGallery from './components/AchievementGallery/AchievementGallery';
 import { useAttendanceStore } from './store/attendanceStore';
 import { useTranslation } from './i18n/translations';
 import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users, Newspaper, Swords, AlertTriangle } from 'lucide-react';
@@ -23,6 +13,18 @@ import { captureIncomingRef } from './lib/shareSession';
 import InstallPrompt from './components/InstallPrompt/InstallPrompt';
 import { usePwaStore } from './store/pwaStore';
 
+// Route-level + heavy modal components are lazy-loaded so the splash bundle
+// stays small. The splash itself stays eager because it's the first paint.
+const Layout = lazy(() => import('./components/Layout/Layout'));
+const GameOverScreen = lazy(() => import('./components/GameOverScreen/GameOverScreen'));
+const RankingBoard = lazy(() => import('./components/RankingBoard/RankingBoard'));
+const FlashRound = lazy(() => import('./components/FlashRound/FlashRound'));
+const DailyChallenge = lazy(() => import('./components/DailyChallenge/DailyChallenge'));
+const DuelMode = lazy(() => import('./components/DuelMode/DuelMode'));
+const LiveCompetition = lazy(() => import('./components/LiveCompetition/LiveCompetition'));
+const RoomBattle = lazy(() => import('./components/RoomBattle/RoomBattle'));
+const AttendanceModal = lazy(() => import('./components/AttendanceModal/AttendanceModal'));
+const AchievementGallery = lazy(() => import('./components/AchievementGallery/AchievementGallery'));
 const FuturesMode = lazy(() => import('./components/FuturesMode/FuturesMode'));
 
 // --- Route-level components ---
@@ -349,15 +351,19 @@ function SplashScreen() {
       </div>
 
       {attendanceInfo.show && (
-        <AttendanceModal
-          isNewDay={attendanceInfo.isNewDay}
-          streakBroken={attendanceInfo.streakBroken}
-          onClose={() => setAttendanceInfo({ show: false, isNewDay: false, streakBroken: false })}
-        />
+        <Suspense fallback={null}>
+          <AttendanceModal
+            isNewDay={attendanceInfo.isNewDay}
+            streakBroken={attendanceInfo.streakBroken}
+            onClose={() => setAttendanceInfo({ show: false, isNewDay: false, streakBroken: false })}
+          />
+        </Suspense>
       )}
 
       {showAchievements && (
-        <AchievementGallery onClose={() => setShowAchievements(false)} />
+        <Suspense fallback={null}>
+          <AchievementGallery onClose={() => setShowAchievements(false)} />
+        </Suspense>
       )}
     </div>
   );
@@ -401,17 +407,19 @@ function App() {
 
   return (
     <>
-      <Routes>
-        <Route path="/flash" element={<FlashRound onBack={goHome} />} />
-        <Route path="/daily" element={<DailyChallenge onBack={goHome} />} />
-        <Route path="/duel" element={<DuelRoute goHome={goHome} />} />
-        <Route path="/multiplayer" element={<LiveCompetition onBack={goHome} />} />
-        <Route path="/room-battle" element={<RoomBattle onBack={goHome} />} />
-        <Route path="/futures" element={<Suspense fallback={<div className="lazy-fallback">Loading…</div>}><FuturesMode onBack={goHome} /></Suspense>} />
-        <Route path="/rankings" element={<RankingsRoute goHome={goHome} />} />
-        <Route path="/game" element={<GameRoute goHome={goHome} />} />
-        <Route path="/" element={<SplashScreen />} />
-      </Routes>
+      <Suspense fallback={<div className="lazy-fallback">Loading…</div>}>
+        <Routes>
+          <Route path="/flash" element={<FlashRound onBack={goHome} />} />
+          <Route path="/daily" element={<DailyChallenge onBack={goHome} />} />
+          <Route path="/duel" element={<DuelRoute goHome={goHome} />} />
+          <Route path="/multiplayer" element={<LiveCompetition onBack={goHome} />} />
+          <Route path="/room-battle" element={<RoomBattle onBack={goHome} />} />
+          <Route path="/futures" element={<FuturesMode onBack={goHome} />} />
+          <Route path="/rankings" element={<RankingsRoute goHome={goHome} />} />
+          <Route path="/game" element={<GameRoute goHome={goHome} />} />
+          <Route path="/" element={<SplashScreen />} />
+        </Routes>
+      </Suspense>
       <InstallPrompt />
     </>
   );
