@@ -8,7 +8,10 @@ import TradeToast, { TradeToastData } from '../TradeToast/TradeToast';
 import { playBuySound, playSellSound, playErrorSound } from '../../lib/sounds';
 
 const Market: React.FC = () => {
-  const { stocks, portfolio, buyStock, sellStock } = useGameStore();
+  const stocks = useGameStore((s) => s.stocks);
+  const portfolio = useGameStore((s) => s.portfolio);
+  const buyStock = useGameStore((s) => s.buyStock);
+  const sellStock = useGameStore((s) => s.sellStock);
   const [tradeQuantity, setTradeQuantity] = useState<Record<string, number>>({});
   const stockSymbols = Object.keys(stocks);
   const [expandedCharts, setExpandedCharts] = useState<string[]>(stockSymbols);

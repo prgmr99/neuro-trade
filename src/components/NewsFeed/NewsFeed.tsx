@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import { useAttendanceStore } from '../../store/attendanceStore';
 import { ChevronDown, ChevronUp, Globe, TrendingUp, TrendingDown, Eye } from 'lucide-react';
 import { useTranslation } from '../../i18n/translations';
 import { News } from '../../types';
 
-const HintBadges: React.FC<{ news: News }> = ({ news }) => {
+// Memoized: re-renders only when the `news` reference changes. The news object
+// is stable across day-state mutations until it's replaced in nextDay().
+const HintBadges: React.FC<{ news: News }> = memo(({ news }) => {
   const effects = Object.entries(news.effect);
   if (effects.length === 0) return null;
 
@@ -22,12 +24,21 @@ const HintBadges: React.FC<{ news: News }> = ({ news }) => {
       })}
     </div>
   );
-};
+});
+HintBadges.displayName = 'HintBadges';
 
 const NewsFeed: React.FC = () => {
-  const { dayState, allNews, readNews, expandedNews, toggleNewsExpanded } = useGameStore();
+  const dayState = useGameStore((s) => s.dayState);
+  const allNews = useGameStore((s) => s.allNews);
+  const expandedNews = useGameStore((s) => s.expandedNews);
+  const readNews = useGameStore((s) => s.readNews);
+  const toggleNewsExpanded = useGameStore((s) => s.toggleNewsExpanded);
   const isRewardUnlocked = useAttendanceStore((s) => s.isRewardUnlocked);
   const { t, language } = useTranslation();
+
+  // Build a Set once per expandedNews change so each card lookup is O(1)
+  // instead of repeating Array.includes() across the daily news + featured.
+  const expandedSet = useMemo(() => new Set(expandedNews), [expandedNews]);
 
   const showHints = isRewardUnlocked('hint');
   const showInsider = isRewardUnlocked('insider');
@@ -65,14 +76,14 @@ const NewsFeed: React.FC = () => {
             <h2>{featuredNews.title[language]}</h2>
             {showHints && !featuredNews.isBridgeNews && <HintBadges news={featuredNews} />}
 
-            <div className={`news-body ${expandedNews.includes(featuredNews.id) ? 'expanded' : 'collapsed'}`}>
+            <div className={`news-body ${expandedSet.has(featuredNews.id) ? 'expanded' : 'collapsed'}`}>
               <p>{featuredNews.content[language]}</p>
             </div>
 
             <div className="news-meta">
               <span className="source">{t('newsfeed.sourceGfn')}</span>
               <button className="expand-btn">
-                {expandedNews.includes(featuredNews.id) ? t('newsfeed.readLess') : t('newsfeed.readFull')}
+                {expandedSet.has(featuredNews.id) ? t('newsfeed.readLess') : t('newsfeed.readFull')}
               </button>
             </div>
           </div>
@@ -91,14 +102,14 @@ const NewsFeed: React.FC = () => {
               <h3 className=''>{news.title[language]}</h3>
               {showHints && <HintBadges news={news} />}
 
-              <div className={`news-body ${expandedNews.includes(news.id) ? 'expanded' : 'collapsed'}`}>
+              <div className={`news-body ${expandedSet.has(news.id) ? 'expanded' : 'collapsed'}`}>
                 <p>{news.content[language]}</p>
               </div>
 
               <div className="news-meta">
                 <span className="source">{t('newsfeed.sourceMarketWatch')}</span>
                 <span className="read-more">
-                   {expandedNews.includes(news.id) ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                   {expandedSet.has(news.id) ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </span>
               </div>
             </div>

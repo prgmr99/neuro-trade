@@ -29,7 +29,12 @@ const Layout: React.FC<LayoutProps> = ({ onGoHome, onDayEnd, hudOverlay, endDayL
   const scrollPositions = useRef<Record<string, number>>({});
   const mainContentRef = useRef<HTMLDivElement>(null);
 
-  const { dayState, portfolio, nextDay, arcName } = useGameStore();
+  // Field-level selectors so Layout only re-renders on the slices it reads.
+  // Action references (nextDay) are stable in zustand and never trigger renders.
+  const dayState = useGameStore((s) => s.dayState);
+  const portfolio = useGameStore((s) => s.portfolio);
+  const nextDay = useGameStore((s) => s.nextDay);
+  const arcName = useGameStore((s) => s.arcName);
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
   const [showMobileRanking, setShowMobileRanking] = useState(false);

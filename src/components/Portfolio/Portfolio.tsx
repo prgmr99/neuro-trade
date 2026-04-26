@@ -1,15 +1,23 @@
 import type React from 'react';
+import { useMemo } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import { useTranslation } from '../../i18n/translations';
 import { Briefcase } from 'lucide-react';
 
 const Portfolio: React.FC = () => {
-  const { portfolio, stocks } = useGameStore();
+  const portfolio = useGameStore((s) => s.portfolio);
+  const stocks = useGameStore((s) => s.stocks);
   const { t } = useTranslation();
 
-  const holdingsList = Object.values(portfolio.holdings);
+  const holdingsList = useMemo(() => Object.values(portfolio.holdings), [portfolio.holdings]);
 
-  let totalValue = portfolio.cash;
+  // Holdings market value depends on holdings + current prices; recompute only
+  // when either of those changes so unrelated store updates don't pay the cost.
+  const holdingsValue = useMemo(
+    () => holdingsList.reduce((acc, h) => acc + h.quantity * stocks[h.symbol].price, 0),
+    [holdingsList, stocks],
+  );
+  const totalValue = portfolio.cash + holdingsValue;
 
   return (
     <div className="portfolio-container">
@@ -23,7 +31,7 @@ const Portfolio: React.FC = () => {
         <div className="summary-card">
           <span className="label">{t('portfolio.totalValue')}</span>
           <span className="value">
-            ${(totalValue + holdingsList.reduce((acc, h) => acc + h.quantity * stocks[h.symbol].price, 0)).toFixed(2)}
+            ${totalValue.toFixed(2)}
           </span>
         </div>
       </div>
