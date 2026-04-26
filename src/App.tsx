@@ -2,12 +2,15 @@ import { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import { Routes, Route, useNavigate, useSearchParams } from 'react-router-dom';
 import { useGameStore } from './store/gameStore';
 import { useLanguageStore } from './store/useLanguageStore';
-import { SCENARIOS, GameMode, CLASSIC_ARCS, selectClassicArc, selectAdvancedArcs } from './data';
+import type { GameMode } from './data';
 import { useAttendanceStore } from './store/attendanceStore';
 import { useTranslation } from './i18n/translations';
 import { Globe, Trophy, TrendingUp, BarChart3, CalendarCheck, Users, Newspaper, Swords, AlertTriangle } from 'lucide-react';
-import SocialProof from './components/SocialProof/SocialProof';
-import MarketTicker from './components/MarketTicker/MarketTicker';
+// Both render below the splash hero; SocialProof returns null until its
+// supabase fetch resolves anyway, so deferring them is invisible to users
+// and keeps supabase-js out of the splash bundle.
+const SocialProof = lazy(() => import('./components/SocialProof/SocialProof'));
+const MarketTicker = lazy(() => import('./components/MarketTicker/MarketTicker'));
 import { trackGameStarted, trackModeSelected, trackVisitFromShare } from './lib/analytics';
 import { captureIncomingRef } from './lib/shareSession';
 import InstallPrompt from './components/InstallPrompt/InstallPrompt';
@@ -102,7 +105,10 @@ function SplashScreen() {
     setLanguage(language === 'en' ? 'ko' : 'en');
   };
 
-  const startGame = () => {
+  // Scenario data (~all classic arcs + advanced + futures dictionaries) is
+  // dynamically imported only when the user actually starts a non-futures
+  // game, so it doesn't ship in the splash bundle.
+  const startGame = async () => {
     if (pendingView) {
       navigate(`/${pendingView}`);
       return;
@@ -113,6 +119,7 @@ function SplashScreen() {
       trackGameStarted(selectedMode, false);
       return;
     }
+    const { SCENARIOS, CLASSIC_ARCS, selectClassicArc, selectAdvancedArcs } = await import('./data');
     const scenario = SCENARIOS[selectedMode];
     if (selectedMode === 'classic') {
       const seed = Date.now();
@@ -155,8 +162,10 @@ function SplashScreen() {
         </div>
         <h1>{t('app.title')}</h1>
         <p className="subtitle">{t('app.subtitle')}</p>
-        <SocialProof />
-        <MarketTicker />
+        <Suspense fallback={null}>
+          <SocialProof />
+          <MarketTicker />
+        </Suspense>
 
         <div className="how-to-play">
             <div className="how-to-play-step">
