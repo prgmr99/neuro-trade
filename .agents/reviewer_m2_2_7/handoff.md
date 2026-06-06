@@ -1,30 +1,36 @@
 # Handoff Report
 
-## 1. Observation
-- Inspected the `supabase/migrations/007_vulnerability_fixes.sql` migration file.
-- The migration implements four trigger functions to harden the database against the identified vulnerabilities.
-- For **Fix 1 (TOCTOU Race Condition)**: Uses `SELECT ... FOR UPDATE` on `battle_rooms` to enforce row-level locking during `INSERT`s on `room_participants`.
-- For **Fix 2 (Spoofing via UPDATE)**: Adds a `BEFORE UPDATE` trigger on `room_participants` that explicitly rejects any modifications to immutable columns (`id`, `room_code`, `player_id`, `joined_at`, `player_name`).
-- For **Fix 3 (Clock Skew Arbitrary Advancement)**: Amends `check_day_advancement` to strictly enforce `NEW.day = OLD.day + 1` and server-side overrides of `NEW.day_ends_at := now() + interval '1 minute'`, entirely ignoring client-provided timestamps.
-- For **Fix 4 (Room Hijacking)**: Adds a `BEFORE UPDATE` trigger on `battle_rooms` restricting non-hosts. Non-hosts can only mutate specific columns (`day`, `day_ends_at`, `status`, `time_remaining`, `finished_at`) and only if they are advancing the day. Game termination is also strictly bound by `OLD.max_days`.
-- *Note*: Test execution (`npm run test`) was attempted but could not be completed via `run_command` due to execution environment permission constraints (user approval timeout in `CODE_ONLY` mode). Static analysis and adversarial code tracing were used instead.
+## Observation
+I reviewed the provided `008_vulnerability_fixes_v2.sql` migration to verify the 4 vulnerability fixes. 
+1. **Initial State Injection**: Handled correctly via `enforce_initial_participant_state` trigger, which forces `portfolio_value` to `10000` and `return_pct` to `0` on `INSERT`.
+2. **Mid-game Join & Loss-Resetting**: `restrict_mid_game_joins_and_leaves` prevents `INSERT`/`DELETE` on `room_participants` when the parent room is not `'waiting'`.
+3. **Clock Skew Arbitrary Advancement Bypass**: Handled in `restrict_room_updates` using the logic `IF NEW.day = OLD.day AND NEW.day_ends_at IS DISTINCT FROM OLD.day_ends_at THEN ... RAISE EXCEPTION ...`.
+4. **Self-Spoofing Unvalidated Updates**: `restrict_participant_updates` limits `portfolio_value` between 0 and 10,000,000,000 and `return_pct` between -100 and 10,000,000.
 
-## 2. Logic Chain
-1. The row-level lock (`FOR UPDATE`) on the parent `battle_rooms` row during `room_participants` inserts ensures that concurrent transactions are serialized. The second transaction will read the committed `count(*)` of the first transaction, flawlessly preventing the TOCTOU capacity bypass.
-2. The trigger `restrict_participant_updates` ensures that an attacker cannot bypass the capacity check by using an `UPDATE` statement to change their `room_code`, as `room_code` and other identity columns are strictly immutable.
-3. The server-side overwrite of `NEW.day_ends_at` successfully strips any malicious client-side payloads attempting to set past timestamps, while the strict `+1` day check prevents multi-day skips. The 5-second leeway is appropriate and correctly implemented.
-4. The Room Hijacking fix comprehensively locks down sensitive columns like `host_id`, `seed`, and `max_days`. By enforcing `NEW.day > OLD.day`, non-hosts are restricted to legitimate game progression updates. Early termination is structurally prevented via the `max_days` validation.
+## Logic Chain
+During my adversarial review, I uncovered two significant flaws that warrant a VETO:
 
-## 3. Caveats
-- I could not execute `npm run test` because the interactive terminal prompt timed out. Verification relies on rigorous manual semantic and adversarial static analysis of the PostgreSQL PL/pgSQL triggers.
-- The triggers rely heavily on `OLD` and `NEW` records in `BEFORE` triggers, which is standard but assumes no subsequent triggers incorrectly override these values. (Checked: no conflicting triggers exist in the schema).
+**1. Critical Logic Bypass in Clock Skew Fix (Vulnerability 3)**
+The worker implemented the fix as:
+```sql
+  IF NEW.day = OLD.day AND NEW.day_ends_at IS DISTINCT FROM OLD.day_ends_at THEN
+```
+A malicious host can trivially bypass this entire block by simultaneously decrementing the day:
+`UPDATE battle_rooms SET day = day - 1, day_ends_at = '2030-01-01' ...`
+Since `NEW.day = OLD.day - 1`, the condition `NEW.day = OLD.day` is FALSE. It skips the `day_ends_at` check. Furthermore, the `check_day_advancement` trigger only fires its corrections `IF NEW.day > OLD.day`. Therefore, a malicious host can decrease the day and arbitrarily set `day_ends_at` forward or backward without restriction.
+*Mitigation:* Prevent day decrements entirely (`IF NEW.day < OLD.day THEN RAISE EXCEPTION 'Cannot decrease day';`) and change the condition to `IF NEW.day <= OLD.day ...`
 
-## 4. Conclusion
-The implementation is incredibly robust, well-designed, and perfectly patches all 4 major vulnerabilities. No integrity violations, dummy logic, or bypasses were found. The use of strict PL/pgSQL constraints appropriately shifts security enforcement to the database layer.
+**2. Blocked Participant Leaves on Finished Games (UX/Logic Flaw)**
+The `restrict_mid_game_joins_and_leaves` trigger blocks `DELETE` on `room_participants` when `status != 'waiting'`. However, when a game finishes (`status = 'finished'`), players are given a UI button to "Leave Room", which executes a `DELETE` against `room_participants` (see `src/hooks/useRoomBattle.ts:110`). The new trigger blocks this, meaning players and hosts can never leave a finished room on the backend, leading to orphaned participant records.
+*Mitigation:* The trigger should allow `DELETE` when `current_status = 'finished'`.
 
-**Verdict**: APPROVE.
+## Caveats
+I could not test the PostgreSQL cascade delete (`ON DELETE CASCADE` for `battle_rooms`) in a live database due to environmental limitations (no Docker). However, my analysis indicates that the `current_status IS NOT NULL` fallback in `restrict_mid_game_joins_and_leaves` correctly allows cascade deletions because the parent row is already marked deleted by the time the constraint trigger fires.
 
-## 5. Verification Method
-- Static analysis: Ensure the SQL `FOR UPDATE` lock targets the correct parent row.
-- Adversarial simulation: Trace `NULL` logic (`NEW.player_name != OLD.player_name` yields `NULL`, which evaluates to `FALSE` in PL/pgSQL `IF` conditions, but `NOT NULL` schema constraints provide a safety net).
-- RLS context verification: Verify `auth.uid()::text` behavior under system role (bypasses RLS, yields `NULL`, naturally granting service roles intended bypass).
+## Conclusion
+**Verdict: REQUEST_CHANGES (VETO)**
+The migration fails the adversarial review. The clock skew vulnerability is not fully patched, and the strict join/leave trigger breaks normal game exit flows for finished rooms.
+
+## Verification Method
+1. Create a room and start a game. Send `UPDATE battle_rooms SET day = day - 1, day_ends_at = '2030-01-01'`. The DB will erroneously accept it.
+2. Finish a game. Attempt to click "Leave" in the UI. The frontend will disconnect, but the backend `DELETE` request will fail, keeping the participant stuck in the DB.

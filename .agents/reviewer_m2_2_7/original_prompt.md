@@ -1,0 +1,2 @@
+## 2026-06-06T12:45:00Z
+Your workspace is `/Users/yeomseungjun/Desktop/workplace/trading-game/.agents/reviewer_m2_2_7`. Review Worker 5's handoff at `/Users/yeomseungjun/Desktop/workplace/trading-game/.agents/worker_m2_2_5/handoff.md` and verify the newly added `supabase/migrations/008_vulnerability_fixes_v2.sql`. Perform an objective code review, ensuring correctness, robustness, and completeness. Run the test suite or any local verification to ensure it actually works. Deliver a handoff report with your Veto or Approval to me.
