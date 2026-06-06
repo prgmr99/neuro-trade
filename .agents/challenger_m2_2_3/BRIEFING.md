@@ -25,12 +25,21 @@ Perform Phase 2 (Adversarial Coverage Hardening / Tier 5) on NeuroTrade Multipla
 - **Review criteria**: untested code paths, edge cases, race conditions, or logic bugs that the current security mitigations missed.
 
 ## Attack Surface
-- **Hypotheses tested**: [TBD]
-- **Vulnerabilities found**: [TBD]
-- **Untested angles**: [TBD]
+- **Hypotheses tested**: 
+  - Host updates to bypass 1-minute timer -> Confirmed.
+  - Client inserting malicious initial portfolio -> Confirmed.
+- **Vulnerabilities found**: 
+  - Clock Skew Arbitrary Advancement Bypass via Host-only field mutability
+  - Portfolio Spoofing on Join (Initial State Injection)
+- **Untested angles**: None.
 
 ## Key Decisions Made
-- Starting analysis of source code and migrations.
+- Investigated SQL triggers to find logic bypasses.
+- Discovered that `BEFORE INSERT` has no checks for `portfolio_value` default.
+- Discovered that the host can update `day_ends_at` to bypass timer.
+- Created `test_host_clock_skew.js` and `test_portfolio_spoof_join.js` to demonstrate vulnerabilities.
 
 ## Artifact Index
-- [TBD]
+- /Users/yeomseungjun/Desktop/workplace/trading-game/scripts/test_host_clock_skew.js — Test script for clock skew bypass
+- /Users/yeomseungjun/Desktop/workplace/trading-game/scripts/test_portfolio_spoof_join.js — Test script for portfolio spoof on join
+- /Users/yeomseungjun/Desktop/workplace/trading-game/.agents/challenger_m2_2_3/handoff.md — Detailed gap report
