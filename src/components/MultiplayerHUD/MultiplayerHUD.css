@@ -50,6 +50,8 @@
 /* Entries */
 .mp-hud-entries {
   padding: 0.35rem;
+  max-height: 250px;
+  overflow-y: auto;
 }
 
 .mp-hud-empty {

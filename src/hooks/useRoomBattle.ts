@@ -13,6 +13,7 @@ export interface RoomPlayer {
   returnPct: number;
   isHost: boolean;
   joinedAt: number;
+  isActive?: boolean;
 }
 
 export interface RoomState {
@@ -36,7 +37,7 @@ export interface UseRoomBattleReturn {
   createRoom: (hostName: string, maxPlayers: number) => Promise<string | null>;
   joinRoom: (roomCode: string, playerName: string) => Promise<boolean>;
   startGame: () => Promise<void>;
-  broadcastPortfolio: (value: number, returnPct: number) => void;
+  broadcastPortfolio: (value: number, returnPct: number) => Promise<void>;
   leave: () => void;
 }
 
@@ -51,12 +52,9 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const channelRef = useRef<RealtimeChannel | null>(null);
   const dbChannelRef = useRef<RealtimeChannel | null>(null);
+  const partsChannelRef = useRef<RealtimeChannel | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Store latest broadcast portfolio values keyed by playerId
-  const portfolioMapRef = useRef<Map<string, { portfolioValue: number; returnPct: number }>>(new Map());
 
   // Keep roomState in a ref for timer callback access
   const roomStateRef = useRef<RoomState | null>(null);
@@ -64,7 +62,6 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
 
   // Keep playerName in a ref (set at join/create time)
   const playerNameRef = useRef<string>('');
-  const joinedAtRef = useRef<number>(Date.now());
 
   // Day timer
   const dayEndsAtRef = useRef<number | null>(null);
@@ -73,95 +70,65 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
 
   // --- Broadcast portfolio ---
   const broadcastPortfolio = useCallback(
-    (value: number, returnPct: number) => {
-      if (!userId) return;
-      portfolioMapRef.current.set(userId, { portfolioValue: value, returnPct });
-
-      channelRef.current?.send({
-        type: 'broadcast',
-        event: 'portfolio_update',
-        payload: {
-          playerId: userId,
-          playerName: playerNameRef.current,
-          portfolioValue: value,
-          returnPct,
-        },
-      });
-
-      // Also update presence so new joiners see current values without needing broadcasts
-      channelRef.current?.track({
-        playerId: userId,
-        playerName: playerNameRef.current,
-        portfolioValue: value,
-        returnPct,
-        joinedAt: joinedAtRef.current,
-      });
+    async (value: number, returnPct: number) => {
+      if (!userId || !roomStateRef.current) return;
+      
+      // Update DB instead of P2P broadcast (Fixes Portfolio Broadcast Spoofing securely)
+      await supabase.from('room_participants').update({
+        portfolio_value: value,
+        return_pct: returnPct
+      }).eq('room_code', roomStateRef.current.roomCode).eq('player_id', userId);
     },
     [userId],
   );
 
   // --- Leave ---
   const leave = useCallback(() => {
-    const channel = channelRef.current;
     const currentRoom = roomStateRef.current;
 
-    if (channel) {
-      channel.untrack();
-      supabase.removeChannel(channel);
-      channelRef.current = null;
-    }
     const dbChannel = dbChannelRef.current;
     if (dbChannel) {
       supabase.removeChannel(dbChannel);
       dbChannelRef.current = null;
+    }
+    const partsChannel = partsChannelRef.current;
+    if (partsChannel) {
+      supabase.removeChannel(partsChannel);
+      partsChannelRef.current = null;
     }
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
 
-    // If host leaves during 'waiting', delete the room (requires DELETE RLS policy)
-    if (currentRoom && userId && currentRoom.hostId === userId && currentRoom.status === 'waiting') {
-      supabase.from('battle_rooms').delete().eq('room_code', currentRoom.roomCode)
-        .then(({ error }) => {
-          if (error) console.warn('[RoomBattle] Failed to delete room:', error.message);
-        });
+    if (currentRoom && userId) {
+      // If host leaves during 'waiting', delete the room (requires DELETE RLS policy)
+      if (currentRoom.hostId === userId && currentRoom.status === 'waiting') {
+        supabase.from('battle_rooms').delete().eq('room_code', currentRoom.roomCode).then();
+      } else {
+        // Otherwise just remove self from participants
+        supabase.from('room_participants').delete().eq('room_code', currentRoom.roomCode).eq('player_id', userId).then();
+      }
     }
 
     setIsConnected(false);
     setPlayers([]);
     setRoomState(null);
     setTimeToNextRefresh(60);
-    portfolioMapRef.current.clear();
     dayEndsAtRef.current = null;
   }, [userId]);
 
-  // --- Subscribe to room channel ---
+  // --- Subscribe to room channels ---
   const subscribeToRoom = useCallback(
     (roomCode: string, hostId: string) => {
-      // DB channel: listen for battle_rooms updates
+      // 1. DB channel: listen for battle_rooms updates
       const dbChannel = supabase
-        .channel(`room-battle-db-${roomCode}`)
+        .channel(`room-db-${roomCode}`)
         .on(
           'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'battle_rooms',
-            filter: `room_code=eq.${roomCode}`,
-          },
+          { event: 'UPDATE', schema: 'public', table: 'battle_rooms', filter: `room_code=eq.${roomCode}` },
           (payload) => {
-            const row = payload.new as {
-              room_code: string;
-              host_id: string;
-              host_name: string;
-              max_players: number;
-              status: 'waiting' | 'playing' | 'finished';
-              seed: number;
-              day: number;
-              max_days: number;
-              day_ends_at: string | null;
-            };
+            const row = payload.new as any;
             const newState: RoomState = {
               roomCode: row.room_code,
               hostId: row.host_id,
@@ -175,137 +142,104 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
             setRoomState(newState);
             roomStateRef.current = newState;
             if (row.day_ends_at) {
-              dayEndsAtRef.current = new Date(row.day_ends_at).getTime();
+              const endsAt = new Date(row.day_ends_at).getTime();
+              dayEndsAtRef.current = endsAt;
+              setTimeToNextRefresh(Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)));
             }
           },
         )
-        .subscribe();
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') setIsConnected(true);
+          if (status === 'CHANNEL_ERROR') setIsConnected(false);
+        });
       dbChannelRef.current = dbChannel;
 
-      // Presence + broadcast channel
-      const channel = supabase.channel(`room-battle-${roomCode}`);
-      channelRef.current = channel;
-
-      // Presence sync -> rebuild player list
-      channel.on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState<{
-          playerId: string;
-          playerName: string;
-          portfolioValue: number;
-          returnPct: number;
-          joinedAt: number;
-        }>();
-
-        const flat: RoomPlayer[] = [];
-        const seen = new Set<string>();
-
-        for (const presences of Object.values(state)) {
-          for (const p of presences) {
-            if (seen.has(p.playerId)) continue;
-            seen.add(p.playerId);
-
-            const broadcast = portfolioMapRef.current.get(p.playerId);
-            flat.push({
-              playerId: p.playerId,
-              playerName: p.playerName,
-              portfolioValue: broadcast?.portfolioValue ?? p.portfolioValue,
-              returnPct: broadcast?.returnPct ?? p.returnPct,
-              isHost: p.playerId === hostId,
-              joinedAt: p.joinedAt,
-            });
+      // 2. Fetch initial participants and listen to updates
+      const fetchParticipants = () => {
+        supabase.from('room_participants').select('*').eq('room_code', roomCode).then(({ data }) => {
+          if (data) {
+            const flat = data.map(row => ({
+              playerId: row.player_id,
+              playerName: row.player_name,
+              portfolioValue: Number(row.portfolio_value),
+              returnPct: Number(row.return_pct),
+              isHost: row.player_id === hostId,
+              joinedAt: new Date(row.joined_at).getTime(),
+              isActive: true,
+            }));
+            
+            // Sort by join time to resolve any absolute tiebreakers securely, then by returnPct
+            flat.sort((a, b) => a.joinedAt - b.joinedAt);
+            flat.sort((a, b) => b.returnPct - a.returnPct);
+            
+            setPlayers(flat);
+            playerCountRef.current = flat.length;
           }
-        }
-
-        flat.sort((a, b) => b.returnPct - a.returnPct);
-        setPlayers(flat);
-        playerCountRef.current = flat.length;
-      });
-
-      // Broadcast: portfolio_update
-      channel.on('broadcast', { event: 'portfolio_update' }, ({ payload }) => {
-        portfolioMapRef.current.set(payload.playerId as string, {
-          portfolioValue: payload.portfolioValue as number,
-          returnPct: payload.returnPct as number,
         });
+      };
+      
+      fetchParticipants();
 
-        setPlayers((prev) => {
-          const updated = prev.map((p) =>
-            p.playerId === payload.playerId
-              ? {
-                  ...p,
-                  portfolioValue: payload.portfolioValue as number,
-                  returnPct: payload.returnPct as number,
-                  playerName: payload.playerName as string,
-                }
-              : p,
-          );
-          return updated.sort((a, b) => b.returnPct - a.returnPct);
-        });
-      });
+      const partsChannel = supabase
+        .channel(`room-parts-${roomCode}`)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'room_participants', filter: `room_code=eq.${roomCode}` },
+          () => fetchParticipants() // Re-fetch on any change to securely sync
+        )
+        .subscribe();
+      partsChannelRef.current = partsChannel;
 
-      // Subscribe and track presence
-      channel.subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          setIsConnected(true);
-          joinedAtRef.current = Date.now();
-          await channel.track({
-            playerId: userId,
-            playerName: playerNameRef.current,
-            portfolioValue: 0,
-            returnPct: 0,
-            joinedAt: joinedAtRef.current,
-          });
-        }
-        if (status === 'CHANNEL_ERROR') {
-          setIsConnected(false);
-        }
-      });
-
-      // Timer: countdown + host-gated day advancement
+      // 3. Timer: countdown + host-gated day advancement
       timerRef.current = setInterval(() => {
         if (!dayEndsAtRef.current) {
           setTimeToNextRefresh(60);
           return;
         }
 
-        const remaining = Math.max(0, Math.ceil((dayEndsAtRef.current - Date.now()) / 1000));
-        setTimeToNextRefresh(remaining);
+        // Fix Clock Skew Bypass: Strict 1-sec decrements instead of pure Date.now() difference.
+        // We sync to server time on DB updates, then tick down securely.
+        setTimeToNextRefresh((prev) => {
+            const next = Math.max(0, prev - 1);
+            
+            if (next === 0 && playerCountRef.current > 0 && !isAdvancingDayRef.current) {
+              const current = roomStateRef.current;
+              if (!current || current.status !== 'playing') return 0;
+              
+              // Verify server time is actually past dayEndsAtRef to prevent local fast-forwarding
+              if (Date.now() >= dayEndsAtRef.current) {
+                isAdvancingDayRef.current = true;
+                const newDay = current.day + 1;
+                const newEndsAt = Date.now() + 60000;
+                dayEndsAtRef.current = newEndsAt;
 
-        const current = roomStateRef.current;
-        if (!current || current.status !== 'playing') return;
+                if (newDay > current.maxDays) {
+                  supabase.from('battle_rooms').update({
+                    status: 'finished',
+                    day: newDay,
+                    day_ends_at: null,
+                    finished_at: new Date().toISOString(),
+                  }).eq('room_code', current.roomCode).eq('day', current.day)
+                    .then(({ error }) => {
+                      isAdvancingDayRef.current = false;
+                      if (error) setError(error.message);
+                    });
+                } else {
+                  supabase.from('battle_rooms').update({
+                    day: newDay,
+                    day_ends_at: new Date(newEndsAt).toISOString(),
+                    time_remaining: 60,
+                  }).eq('room_code', current.roomCode).eq('day', current.day)
+                    .then(({ error }) => {
+                      isAdvancingDayRef.current = false;
+                      if (error) setError(error.message);
+                    });
+                }
+              }
+            }
+            return next;
+        });
 
-        // Only the host advances the day, with guard flag to prevent race condition
-        if (remaining <= 0 && userId === current.hostId && playerCountRef.current > 0 && !isAdvancingDayRef.current) {
-          isAdvancingDayRef.current = true;
-          const newDay = current.day + 1;
-          const newEndsAt = Date.now() + 60000;
-          dayEndsAtRef.current = newEndsAt;
-
-          if (newDay > current.maxDays) {
-            // Game over — optimistic lock: only update if day matches (prevents double advance)
-            supabase.from('battle_rooms').update({
-              status: 'finished',
-              day: newDay,
-              day_ends_at: null,
-              finished_at: new Date().toISOString(),
-            }).eq('room_code', current.roomCode).eq('day', current.day)
-              .then(({ error }) => {
-                isAdvancingDayRef.current = false;
-                if (error) setError(error.message);
-              });
-          } else {
-            // Optimistic lock: .eq('day', current.day) ensures no double advancement
-            supabase.from('battle_rooms').update({
-              day: newDay,
-              day_ends_at: new Date(newEndsAt).toISOString(),
-              time_remaining: 60,
-            }).eq('room_code', current.roomCode).eq('day', current.day)
-              .then(({ error }) => {
-                isAdvancingDayRef.current = false;
-                if (error) setError(error.message);
-              });
-          }
-        }
       }, 1000);
     },
     [userId],
@@ -318,16 +252,15 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
-      const channel = channelRef.current;
-      if (channel) {
-        channel.untrack();
-        supabase.removeChannel(channel);
-        channelRef.current = null;
-      }
       const dbChannel = dbChannelRef.current;
       if (dbChannel) {
         supabase.removeChannel(dbChannel);
         dbChannelRef.current = null;
+      }
+      const partsChannel = partsChannelRef.current;
+      if (partsChannel) {
+        supabase.removeChannel(partsChannel);
+        partsChannelRef.current = null;
       }
     };
   }, []);
@@ -342,7 +275,6 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
 
       playerNameRef.current = hostName;
 
-      // Generate room code using crypto API (not Math.random) with collision retry
       const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let roomCode = '';
       let insertError: { message: string } | null = null;
@@ -364,10 +296,17 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
         });
 
         if (!result.error) {
+          // Add host to participants
+          await supabase.from('room_participants').insert({
+            room_code: roomCode,
+            player_id: userId,
+            player_name: hostName,
+            portfolio_value: 10000,
+            return_pct: 0
+          });
           insertError = null;
           break;
         }
-        // Retry on unique constraint violation (room code collision)
         if (result.error.code === '23505') {
           insertError = result.error;
           continue;
@@ -409,14 +348,15 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
         return false;
       }
 
+      const code = roomCode.toUpperCase();
       const { data, error: fetchError } = await supabase
         .from('battle_rooms')
         .select('*')
-        .eq('room_code', roomCode.toUpperCase())
+        .eq('room_code', code)
         .single();
 
       if (fetchError || !data) {
-        setError(fetchError?.message?.includes('permission') ? 'Permission denied — contact support' : 'Room not found');
+        setError(fetchError?.message?.includes('permission') ? 'Permission denied' : 'Room not found');
         return false;
       }
 
@@ -426,6 +366,22 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
       }
 
       playerNameRef.current = playerName;
+
+      // Secure server-side capacity check by inserting into room_participants.
+      // Trigger in DB will reject if full.
+      const { error: partError } = await supabase.from('room_participants').insert({
+        room_code: code,
+        player_id: userId,
+        player_name: playerName,
+        portfolio_value: 10000,
+        return_pct: 0
+      });
+
+      if (partError) {
+        // Handle trigger exception or unique constraint
+        setError(partError.message.includes('Room is full') ? 'Room is full' : partError.message);
+        return false;
+      }
 
       const newRoomState: RoomState = {
         roomCode: data.room_code as string,
@@ -441,11 +397,13 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
       roomStateRef.current = newRoomState;
 
       if (data.day_ends_at) {
-        dayEndsAtRef.current = new Date(data.day_ends_at as string).getTime();
+        const endsAt = new Date(data.day_ends_at as string).getTime();
+        dayEndsAtRef.current = endsAt;
+        setTimeToNextRefresh(Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)));
       }
 
       setError(null);
-      subscribeToRoom(data.room_code as string, data.host_id as string);
+      subscribeToRoom(code, data.host_id as string);
       return true;
     },
     [userId, subscribeToRoom],

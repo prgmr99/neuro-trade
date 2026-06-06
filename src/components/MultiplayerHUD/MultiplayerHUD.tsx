@@ -1,13 +1,20 @@
 import React from 'react';
-import { Users, Trophy } from 'lucide-react';
+import { Users, Trophy, Crown } from 'lucide-react';
 import { useTranslation } from '../../i18n/translations';
 
-import { LivePlayer } from '../../hooks/useLiveMarket';
 import './MultiplayerHUD.css';
+
+export interface MultiplayerHUDPlayer {
+  playerId: string;
+  playerName: string;
+  returnPct: number;
+  isHost?: boolean;
+  isActive?: boolean;
+}
 
 interface MultiplayerHUDProps {
   totalPlayers: number;
-  leaderboard: LivePlayer[];
+  leaderboard: MultiplayerHUDPlayer[];
   currentPlayerId: string;
 }
 
@@ -59,6 +66,7 @@ const MultiplayerHUD: React.FC<MultiplayerHUDProps> = ({
             <div
               key={entry.playerId}
               className={`mp-hud-entry${isMe ? ' is-me' : ''}`}
+              style={{ opacity: entry.isActive === false ? 0.5 : 1 }}
             >
               {/* Rank badge */}
               <div className={`mp-hud-rank${rankClass ? ` ${rankClass}` : ''}`}>
@@ -71,6 +79,11 @@ const MultiplayerHUD: React.FC<MultiplayerHUDProps> = ({
                   <span className={`mp-hud-name${isMe ? ' is-me' : ''}`}>
                     {entry.playerName}
                   </span>
+                  {entry.isHost && (
+                    <span className="mp-hud-host-badge" title="Host">
+                      <Crown size={12} color="#f59e0b" />
+                    </span>
+                  )}
                   {isMe && (
                     <span className="mp-hud-you-badge">
                       {t('multiplayer.you')}

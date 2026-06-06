@@ -53,6 +53,7 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
     players,
     roomState,
     timeToNextRefresh,
+    isConnected,
     isHost,
     error,
     createRoom,
@@ -62,7 +63,7 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
     leave,
   } = useRoomBattle(userId);
 
-  const { setInitialState, dayState, portfolio, stocks } = useGameStore();
+  const { setInitialState, dayState, portfolio, stocks, nextDay } = useGameStore();
 
   const startingCash = SCENARIOS.classic.startingCash;
   const initializedRef = useRef(false);
@@ -132,9 +133,24 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
       setScreen('playing');
     }
     if (roomState.status === 'finished' && (screen === 'playing' || screen === 'lobby')) {
+      if (dayState.currentDay < roomState.day) return; // Wait for day advancement effect
+      const value = computePortfolioValue();
+      const returnPct = ((value - startingCash) / startingCash) * 100;
+      broadcastPortfolio(value, returnPct);
       setScreen('finished');
     }
-  }, [roomState?.status, screen]);
+  }, [roomState?.status, roomState?.day, dayState.currentDay, screen, computePortfolioValue, broadcastPortfolio, startingCash]);
+
+  // ---- Sync day advancement ----
+  useEffect(() => {
+    if (screen !== 'playing' || !roomState) return;
+    if (roomState.day > dayState.currentDay) {
+      const diff = roomState.day - dayState.currentDay;
+      for (let i = 0; i < diff; i++) {
+        nextDay();
+      }
+    }
+  }, [roomState?.day, dayState.currentDay, screen, nextDay]);
 
   // ---- Handlers ----
   const handleCreateRoom = useCallback(async () => {
@@ -449,15 +465,16 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
       const myId = userId ?? '';
       const idx = list.findIndex((p) => p.playerId === myId);
       if (idx >= 0) {
-        list[idx] = { ...list[idx], portfolioValue: myValue, returnPct: myReturnPct };
+        list[idx] = { ...list[idx], portfolioValue: myValue, returnPct: myReturnPct, isActive: true };
       } else {
         list.push({
           playerId: myId,
           playerName,
           portfolioValue: myValue,
           returnPct: myReturnPct,
-          isHost: false,
+          isHost,
           joinedAt: Date.now(),
+          isActive: true,
         });
       }
       return list.sort((a, b) => b.returnPct - a.returnPct);
@@ -468,6 +485,11 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
 
     return (
       <div className="room-battle-playing app-container">
+        {!isConnected && (
+          <div className="room-battle-reconnecting-banner">
+            {t('roomBattle.reconnecting', 'Connection lost. Reconnecting...')}
+          </div>
+        )}
         <Layout
           onGoHome={handleLeave}
           dayLabel={`${t('roomBattle.day')} ${currentDay}/${maxDays}`}
@@ -486,7 +508,30 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
 
   // ---- Screen: finished ----
   if (screen === 'finished') {
-    const sorted = [...players].sort((a, b) => b.returnPct - a.returnPct);
+    const myValue = computePortfolioValue();
+    const myReturnPct = ((myValue - startingCash) / startingCash) * 100;
+
+    const leaderboard = (() => {
+      const list = [...players];
+      const myId = userId ?? '';
+      const idx = list.findIndex((p) => p.playerId === myId);
+      if (idx >= 0) {
+        list[idx] = { ...list[idx], portfolioValue: myValue, returnPct: myReturnPct, isActive: true };
+      } else {
+        list.push({
+          playerId: myId,
+          playerName,
+          portfolioValue: myValue,
+          returnPct: myReturnPct,
+          isHost,
+          joinedAt: Date.now(),
+          isActive: true,
+        });
+      }
+      return list.sort((a, b) => b.returnPct - a.returnPct);
+    })();
+
+    const sorted = leaderboard;
 
     return (
       <div className="room-battle-screen">

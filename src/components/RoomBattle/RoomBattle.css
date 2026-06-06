@@ -504,6 +504,19 @@
   height: 100dvh;
 }
 
+.room-battle-reconnecting-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--negative);
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  font-weight: bold;
+  z-index: 1000;
+}
+
 /* ---- Day info bar (playing overlay header) ---- */
 .room-day-bar {
   display: flex;
