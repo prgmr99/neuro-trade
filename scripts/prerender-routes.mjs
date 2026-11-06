@@ -31,7 +31,12 @@ function staticBody(route) {
       <section class="route-about" lang="${lang}">
         <h2>${esc(copy.heading)}</h2>
         ${copy.blocks
-          .map((b) => `<h3>${esc(b.h)}</h3>\n        <p>${esc(b.p)}</p>`)
+          .map((b) => {
+            const paras = (Array.isArray(b.p) ? b.p : [b.p])
+              .map((t) => `<p>${esc(t)}</p>`)
+              .join('\n        ');
+            return b.h ? `<h3>${esc(b.h)}</h3>\n        ${paras}` : paras;
+          })
           .join('\n        ')}
       </section>`;
 
@@ -39,10 +44,12 @@ function staticBody(route) {
     route.en,
     'en',
   )}${section(route.ko, 'ko')}
-      <p class="route-about-links">
-        <a href="/">All NeuroTrade modes</a> &middot;
-        <a href="https://yeomniverse.com">Yeomniverse</a>
-      </p>
+      <p class="route-about-links">${
+        route.en.hub
+          ? `<a href="https://yeomniverse.com">${esc(route.en.hub)}</a>`
+          : `<a href="/">All NeuroTrade modes</a> &middot;
+        <a href="https://yeomniverse.com">Yeomniverse</a>`
+      }</p>
     </div></div>`;
 }
 
@@ -81,7 +88,7 @@ for (const [name, route] of Object.entries(routes)) {
 
   html = replaceTag(html, /<div id="root"><\/div>/, `<div id="root">${staticBody(route)}</div>`, '#root', name);
 
-  writeFileSync(join(DIST, `${name}.html`), html);
+  writeFileSync(join(DIST, `${route.file ?? name}.html`), html);
   count += 1;
 }
 

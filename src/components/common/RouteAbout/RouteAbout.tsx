@@ -22,18 +22,30 @@ export default function RouteAbout({ route }: Props) {
   return (
     <section className="route-about">
       <h2>{copy.heading}</h2>
-      {copy.blocks.map((block) => (
-        <div key={block.h}>
-          <h3>{block.h}</h3>
-          <p>{block.p}</p>
-        </div>
-      ))}
+      {copy.blocks.map((block, i) => {
+        const heading = 'h' in block ? block.h : null;
+        const paras = Array.isArray(block.p) ? block.p : [block.p];
+        return (
+          <div key={heading ?? i}>
+            {heading && <h3>{heading}</h3>}
+            {paras.map((para) => (
+              <p key={para}>{para}</p>
+            ))}
+          </div>
+        );
+      })}
       <p className="route-about-links">
-        <a href="/">
-          {language === 'ko' ? 'NeuroTrade 모드 전체 보기' : 'All NeuroTrade modes'}
-        </a>
-        {' · '}
-        <a href="https://yeomniverse.com">Yeomniverse</a>
+        {'hub' in copy ? (
+          <a href="https://yeomniverse.com">{copy.hub}</a>
+        ) : (
+          <>
+            <a href="/">
+              {language === 'ko' ? 'NeuroTrade 모드 전체 보기' : 'All NeuroTrade modes'}
+            </a>
+            {' · '}
+            <a href="https://yeomniverse.com">Yeomniverse</a>
+          </>
+        )}
       </p>
     </section>
   );
