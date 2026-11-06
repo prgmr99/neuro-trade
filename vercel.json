@@ -1,5 +1,55 @@
 {
+  "redirects": [
+    {
+      "source": "/flash.html",
+      "destination": "/flash",
+      "permanent": true
+    },
+    {
+      "source": "/daily.html",
+      "destination": "/daily",
+      "permanent": true
+    },
+    {
+      "source": "/duel.html",
+      "destination": "/duel",
+      "permanent": true
+    },
+    {
+      "source": "/multiplayer.html",
+      "destination": "/multiplayer",
+      "permanent": true
+    },
+    {
+      "source": "/rankings.html",
+      "destination": "/rankings",
+      "permanent": true
+    }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/flash",
+      "destination": "/flash.html"
+    },
+    {
+      "source": "/daily",
+      "destination": "/daily.html"
+    },
+    {
+      "source": "/duel",
+      "destination": "/duel.html"
+    },
+    {
+      "source": "/multiplayer",
+      "destination": "/multiplayer.html"
+    },
+    {
+      "source": "/rankings",
+      "destination": "/rankings.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

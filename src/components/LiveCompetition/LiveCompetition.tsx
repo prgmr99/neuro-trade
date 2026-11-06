@@ -6,6 +6,7 @@ import { SCENARIOS, CLASSIC_ARCS, CLASSIC_CHAINS, selectArcFromChain, buildPhase
 import MultiplayerHUD from '../MultiplayerHUD/MultiplayerHUD';
 import Layout from '../Layout/Layout';
 import { useTranslation } from '../../i18n/translations';
+import RouteAbout from '../common/RouteAbout/RouteAbout';
 
 interface Props {
   onBack: () => void;
@@ -299,6 +300,8 @@ const LiveCompetition: React.FC<Props> = ({ onBack }) => {
               {t('multiplayer.back')}
             </button>
           </div>
+
+          <RouteAbout route="multiplayer" />
         </div>
       </div>
     );

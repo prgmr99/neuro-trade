@@ -14,6 +14,7 @@ const MarketTicker = lazy(() => import('./components/MarketTicker/MarketTicker')
 import { trackGameStarted, trackModeSelected, trackVisitFromShare } from './lib/analytics';
 import { captureIncomingRef } from './lib/shareSession';
 import InstallPrompt from './components/InstallPrompt/InstallPrompt';
+import RouteAbout from './components/common/RouteAbout/RouteAbout';
 import { usePwaStore } from './store/pwaStore';
 
 // Route-level + heavy modal components are lazy-loaded so the splash bundle
@@ -54,6 +55,7 @@ function RankingsRoute({ goHome }: { goHome: () => void }) {
     <div className="splash-screen ranking-page">
       <div className="splash-content glass-card" style={{ maxWidth: '700px', width: '95%' }}>
         <RankingBoard />
+        <RouteAbout route="rankings" />
         <div className="gameover-cta-desktop">
           <button className="start-btn" onClick={goHome} style={{ width: '100%', marginTop: '1.5rem' }}>
             {t('ranking.back')}
@@ -89,10 +91,6 @@ function SplashScreen() {
   const { language, setLanguage } = useLanguageStore();
   const checkIn = useAttendanceStore((s) => s.checkIn);
   const { t } = useTranslation();
-
-  useEffect(() => {
-    document.documentElement.lang = language === 'ko' ? 'ko' : 'en';
-  }, [language]);
 
   useEffect(() => {
     const result = checkIn();
@@ -403,6 +401,12 @@ function App() {
   const navigate = useNavigate();
   const goHome = () => navigate('/');
   const refCapturedRef = useRef(false);
+  const language = useLanguageStore((s) => s.language);
+
+  // 스플래시가 아닌 주소로 바로 들어와도 html[lang]이 실제 표시 언어와 맞아야 한다.
+  useEffect(() => {
+    document.documentElement.lang = language === 'ko' ? 'ko' : 'en';
+  }, [language]);
 
   // Capture the incoming ?ref=<share_id> once per session, persist it to
   // sessionStorage via shareSession, and fire visit_from_share if this is

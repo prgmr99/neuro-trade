@@ -1,0 +1,237 @@
+{
+  "flash": {
+    "path": "/flash",
+    "title": "Flash Round — One Stock, One Headline, 60 Seconds | NeuroTrade",
+    "description": "One ticker, one headline, a sixty-second clock, and two buttons. Read the news right and you win. Free stock trading simulator, no signup.",
+    "en": {
+      "heading": "About Flash Round",
+      "blocks": [
+        {
+          "h": "What this is",
+          "p": "One ticker, one headline, and a sixty-second clock. There are two buttons and nothing else: ALL IN or PASS. It is the shortest mode in NeuroTrade, meant for a single decision rather than a session."
+        },
+        {
+          "h": "How a round works",
+          "p": "A stock and a news story appear together. Decide whether the story pushes the price up or down, then commit. Going all in wins if the price rises; passing wins if it falls. If the timer runs out before you choose, the round counts it as a pass."
+        },
+        {
+          "h": "Reading your result",
+          "p": "The screen keeps your wins, losses, current streak and best streak across rounds. One round tells you almost nothing — the streak is the number worth watching, because it is the part that only improves if you are actually reading the headlines."
+        },
+        {
+          "h": "What it is not",
+          "p": "The news decides the direction, so a correct read wins; only the two weakest signals in the set can be reversed by the stock's own volatility. Every company, headline and price here is invented, and none of this is investment advice."
+        }
+      ]
+    },
+    "ko": {
+      "heading": "플래시 라운드란",
+      "blocks": [
+        {
+          "h": "어떤 모드인가",
+          "p": "종목 하나, 뉴스 하나, 그리고 60초. 버튼은 올인과 패스 둘뿐이다. NeuroTrade에서 가장 짧은 모드로, 한 판을 하려는 게 아니라 판단 한 번을 연습하려는 자리다."
+        },
+        {
+          "h": "진행 방식",
+          "p": "종목과 뉴스가 함께 뜬다. 이 뉴스가 주가를 올릴지 내릴지 정하고 버튼을 누른다. 올인은 주가가 오르면 이기고, 패스는 내리면 이긴다. 시간 안에 고르지 않으면 패스로 처리된다."
+        },
+        {
+          "h": "결과 읽는 법",
+          "p": "승수·패수·현재 연승·최고 연승이 라운드를 넘어 누적된다. 한 판은 거의 아무것도 말해주지 않는다. 볼 만한 숫자는 연승이다. 뉴스를 실제로 읽고 있어야만 올라가는 값이기 때문이다."
+        },
+        {
+          "h": "한계",
+          "p": "방향은 뉴스가 결정한다. 제대로 읽으면 이긴다. 종목 변동성이 결과를 뒤집을 수 있는 건 신호가 가장 약한 두 시나리오뿐이다. 등장하는 기업·뉴스·가격은 전부 가상이며, 투자 조언이 아니다."
+        }
+      ]
+    }
+  },
+  "daily": {
+    "path": "/daily",
+    "title": "Daily Challenge — Same Market, One Attempt | NeuroTrade",
+    "description": "Every player gets the same scenario each day and one attempt at it. Compare your return against everyone who played today. Free, no signup.",
+    "en": {
+      "heading": "About the Daily Challenge",
+      "blocks": [
+        {
+          "h": "What this is",
+          "p": "One scenario per day, handed to every player identically, with a single attempt each. Because nobody gets a different market and nobody gets a retry, the spread in results comes from how people read the same news rather than from who drew the easier draw."
+        },
+        {
+          "h": "How a round works",
+          "p": "You trade the day's market the way you would any other round: read what lands, take positions, close out. When you finish, your return is posted to that date's leaderboard and the screen tells you what share of today's traders you came out ahead of."
+        },
+        {
+          "h": "When it changes",
+          "p": "The scenario rolls over once a day, and the entry screen shows how long is left on the current one. Yesterday's market cannot be replayed, and today's cannot be attempted twice."
+        },
+        {
+          "h": "What it is not",
+          "p": "One attempt is the point, but it cuts both ways — a single bad read costs you the day with no way to grind it back. The leaderboard compares returns and nothing else, so it says who finished ahead, not who traded well. Every company and headline is invented."
+        }
+      ]
+    },
+    "ko": {
+      "heading": "데일리 챌린지란",
+      "blocks": [
+        {
+          "h": "어떤 모드인가",
+          "p": "하루에 시나리오 하나가 모든 참가자에게 똑같이 주어지고, 기회는 한 번씩이다. 아무도 다른 장을 받지 않고 아무도 다시 하지 못하므로, 결과 차이는 운이 아니라 같은 뉴스를 어떻게 읽었는지에서 나온다."
+        },
+        {
+          "h": "진행 방식",
+          "p": "다른 모드와 똑같이 그날의 장을 거래한다. 들어오는 뉴스를 읽고, 포지션을 잡고, 정리한다. 끝내면 그 날짜의 리더보드에 수익률이 올라가고, 오늘 참가자 중 몇 퍼센트를 앞섰는지 알려준다."
+        },
+        {
+          "h": "갱신 주기",
+          "p": "시나리오는 하루에 한 번 바뀌고, 진입 화면에 현재 챌린지가 얼마나 남았는지 표시된다. 어제 장은 다시 할 수 없고 오늘 장도 두 번은 못 한다."
+        },
+        {
+          "h": "한계",
+          "p": "한 번뿐인 게 핵심이지만 양날이다. 한 번 잘못 읽으면 그날은 만회할 방법이 없다. 리더보드는 수익률만 비교하므로 누가 앞섰는지는 말해주되 누가 잘 거래했는지는 말해주지 않는다. 등장하는 기업과 뉴스는 전부 가상이다."
+        }
+      ]
+    }
+  },
+  "duel": {
+    "path": "/duel",
+    "title": "Duel — Same Market, Head to Head | NeuroTrade",
+    "description": "Invite someone to the exact same market. The link carries a seed that builds an identical scenario for both players. Higher return wins.",
+    "en": {
+      "heading": "About Duel",
+      "blocks": [
+        {
+          "h": "What this is",
+          "p": "A one-on-one match against someone you invite. The point of a duel is that the market is not merely similar for both of you — it is the same market, built from the same seed, so the only variable left is the two reads."
+        },
+        {
+          "h": "How a round works",
+          "p": "Create a duel and share the link. That link carries the seed, and the seed is what generates the scenario, so your opponent trades the same stocks and the same news in the same order. Each of you plays your own run; the higher final return takes it, and matching returns are a draw."
+        },
+        {
+          "h": "Reading your result",
+          "p": "The result screen puts both runs side by side with each player's return and final portfolio value. If you finish first you will wait on the versus screen until your opponent is done."
+        },
+        {
+          "h": "What it is not",
+          "p": "You do not trade at the same moment, so there is none of the live pressure of the multiplayer market — a duel compares judgment on identical information, not reaction speed. Every company and headline is invented, and none of this is investment advice."
+        }
+      ]
+    },
+    "ko": {
+      "heading": "듀얼이란",
+      "blocks": [
+        {
+          "h": "어떤 모드인가",
+          "p": "초대한 상대와 1대1로 붙는 모드다. 듀얼의 핵심은 두 사람의 장이 비슷한 게 아니라 아예 같다는 것이다. 같은 시드로 만들어진 같은 장이라, 남는 변수는 두 사람의 판단뿐이다."
+        },
+        {
+          "h": "진행 방식",
+          "p": "듀얼을 만들고 링크를 넘긴다. 링크에 시드가 실려 있고 그 시드가 시나리오를 생성하므로, 상대도 같은 종목과 같은 뉴스를 같은 순서로 받는다. 각자 자기 판을 돌리고, 최종 수익률이 높은 쪽이 이긴다. 같으면 무승부다."
+        },
+        {
+          "h": "결과 읽는 법",
+          "p": "결과 화면에 양쪽 기록이 나란히 뜬다. 각자의 수익률과 최종 평가액을 볼 수 있다. 먼저 끝내면 상대가 끝낼 때까지 대기 화면에서 기다린다."
+        },
+        {
+          "h": "한계",
+          "p": "동시에 거래하는 게 아니라서 멀티플레이어 같은 실시간 압박은 없다. 듀얼이 비교하는 건 반응 속도가 아니라 같은 정보를 두고 내린 판단이다. 등장하는 기업과 뉴스는 전부 가상이며, 투자 조언이 아니다."
+        }
+      ]
+    }
+  },
+  "multiplayer": {
+    "path": "/multiplayer",
+    "title": "Live Competition — Shared Market, Live Rankings | NeuroTrade",
+    "description": "A shared market you can join at any time. It advances once a minute on its own and the leaderboard updates as it moves. Free, no signup.",
+    "en": {
+      "heading": "About Live Competition",
+      "blocks": [
+        {
+          "h": "What this is",
+          "p": "A single market that everyone present trades at once, open to join at any time. Unlike the other modes, it does not wait for you to be ready — the market is already running when you arrive."
+        },
+        {
+          "h": "How a round works",
+          "p": "Enter a name and you are in the same market as everyone else currently trading it. The market advances on its own roughly once a minute, and the ranking reorders as it does. The screen carries a countdown to the next refresh and a count of active traders."
+        },
+        {
+          "h": "Reading your result",
+          "p": "The leaderboard orders players by return, with your own row marked. Because the market keeps moving, a position looks good or bad only until the next refresh."
+        },
+        {
+          "h": "What it is not",
+          "p": "The clock does not pause for a decision, so hesitating costs you a cycle — that pressure is deliberate, but it means this mode measures something different from Daily Challenge. Every company and headline is invented, and none of this is investment advice."
+        }
+      ]
+    },
+    "ko": {
+      "heading": "실시간 경쟁이란",
+      "blocks": [
+        {
+          "h": "어떤 모드인가",
+          "p": "접속한 사람들이 하나의 장을 동시에 거래하는 모드이고, 언제든 들어올 수 있다. 다른 모드와 달리 이쪽은 네가 준비될 때까지 기다려주지 않는다. 도착했을 때 장은 이미 돌아가고 있다."
+        },
+        {
+          "h": "진행 방식",
+          "p": "이름을 넣고 들어가면 지금 거래 중인 사람들과 같은 장에 놓인다. 장은 대략 1분에 한 번 스스로 진행되고, 그때마다 순위가 다시 정렬된다. 화면에 다음 갱신까지 남은 시간과 현재 참가자 수가 표시된다."
+        },
+        {
+          "h": "결과 읽는 법",
+          "p": "리더보드는 수익률 순이고 내 줄이 따로 표시된다. 장이 계속 움직이므로, 어떤 포지션이 좋아 보이든 다음 갱신까지만 유효하다."
+        },
+        {
+          "h": "한계",
+          "p": "결정하는 동안 시계가 멈추지 않는다. 망설이면 한 사이클을 잃는다. 그 압박은 의도된 것이지만, 그래서 이 모드는 데일리 챌린지와 다른 능력을 잰다. 등장하는 기업과 뉴스는 전부 가상이며, 투자 조언이 아니다."
+        }
+      ]
+    }
+  },
+  "rankings": {
+    "path": "/rankings",
+    "title": "Leaderboard — Top Returns by Mode | NeuroTrade",
+    "description": "The top 100 runs ranked by return, filterable by Classic, Advanced or Duel. See where a score sits before you read anything into it.",
+    "en": {
+      "heading": "About the leaderboard",
+      "blocks": [
+        {
+          "h": "What this is",
+          "p": "The top hundred runs across the game, ordered by return. It exists so a score has something to sit against — on its own, a number like \"+14%\" tells you nothing about whether you read the market well."
+        },
+        {
+          "h": "How to read it",
+          "p": "Each row carries the rank, the player's name, the return, the final portfolio value, the mode it was set in and the date. The filters along the top narrow the table to Classic, Advanced or Duel, or show everything at once."
+        },
+        {
+          "h": "Why the filter matters",
+          "p": "Modes differ in length and in how many tickers are in play, so a Classic run and an Advanced run are not directly comparable even though both report a return. Filter to one mode before concluding anything from a position in the table."
+        },
+        {
+          "h": "What it is not",
+          "p": "Ranking is on return alone — not on risk taken, not on how close the calls were. A high finish means a run ended ahead, which is not the same as having traded well. Scores come from simulated markets with invented companies."
+        }
+      ]
+    },
+    "ko": {
+      "heading": "랭킹이란",
+      "blocks": [
+        {
+          "h": "어떤 화면인가",
+          "p": "게임 전체에서 수익률 상위 100건을 모아 정렬한 표다. 점수에 비교 대상을 주려고 있는 화면이다. \"+14%\"라는 숫자 하나만으로는 장을 잘 읽었는지 알 수 없기 때문이다."
+        },
+        {
+          "h": "읽는 법",
+          "p": "각 줄에 순위, 이름, 수익률, 최종 평가액, 어느 모드에서 나온 기록인지, 그리고 날짜가 담긴다. 위쪽 필터로 클래식·어드밴스드·듀얼 중 하나만 보거나 전체를 한꺼번에 볼 수 있다."
+        },
+        {
+          "h": "필터가 중요한 이유",
+          "p": "모드마다 기간과 종목 수가 다르다. 클래식 기록과 어드밴스드 기록은 둘 다 수익률로 표시되지만 직접 비교할 수 있는 값이 아니다. 표에서 자기 위치를 해석하기 전에 한 모드로 좁히는 게 맞다."
+        },
+        {
+          "h": "한계",
+          "p": "정렬 기준은 수익률 하나뿐이다. 감수한 위험도, 판단이 얼마나 아슬아슬했는지도 반영하지 않는다. 상위권이라는 건 그 판이 앞서서 끝났다는 뜻이지 잘 거래했다는 뜻이 아니다. 기록은 전부 가상 기업으로 구성된 모의 장에서 나온다."
+        }
+      ]
+    }
+  }
+}

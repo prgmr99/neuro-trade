@@ -7,6 +7,7 @@ import { generateFlashShareText } from '../../lib/shareText';
 import { createShareId, getIncomingRef } from '../../lib/shareSession';
 import { trackShareCompleted, trackReferredShareCompleted } from '../../lib/analytics';
 import { trackFlashPlayed, trackShareClicked } from '../../lib/analytics';
+import RouteAbout from '../common/RouteAbout/RouteAbout';
 
 interface Props {
   onBack: () => void;
@@ -220,6 +221,8 @@ export default function FlashRound({ onBack }: Props) {
               <span className="flash-stat-label">{labels.best}</span>
             </div>
           </div>
+
+          <RouteAbout route="flash" />
 
           <div className="gameover-cta-desktop">
             <button className="flash-start-btn" onClick={startRound}>

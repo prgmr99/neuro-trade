@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase';
 import { getPlayerId } from '../../lib/identity';
 import Layout from '../Layout/Layout';
 import { trackDuelCreated, trackDuelJoined, trackGameStarted } from '../../lib/analytics';
+import RouteAbout from '../common/RouteAbout/RouteAbout';
 
 interface Props {
   onBack: () => void;
@@ -240,6 +241,9 @@ const DuelMode: React.FC<Props> = ({ onBack, initialSeed }) => {
               {t('duel.startGame')}
             </button>
           </div>
+
+          <RouteAbout route="duel" />
+
           <div className="gameover-actions-spacer" />
         </div>
         <div className="gameover-fixed-bottom">

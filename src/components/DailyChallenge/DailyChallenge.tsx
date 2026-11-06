@@ -10,6 +10,7 @@ import { trackShareCompleted, trackReferredShareCompleted } from '../../lib/anal
 import { useTranslation } from '../../i18n/translations';
 import { trackDailyPlayed, trackShareClicked, trackGameStarted } from '../../lib/analytics';
 import Layout from '../Layout/Layout';
+import RouteAbout from '../common/RouteAbout/RouteAbout';
 
 interface Props {
   onBack: () => void;
@@ -281,6 +282,8 @@ export default function DailyChallenge({ onBack }: Props) {
           }}>
             {t('daily.disclaimer')}
           </p>
+
+          <RouteAbout route="daily" />
         </div>
       </div>
     );
