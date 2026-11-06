@@ -192,7 +192,10 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
 
       // 3. Timer: countdown + host-gated day advancement
       timerRef.current = setInterval(() => {
-        if (!dayEndsAtRef.current) {
+        // 이 틱이 검증한 마감 시각을 붙잡아 둔다. setTimeToNextRefresh 콜백은
+        // 별도 클로저라 ref를 그대로 읽으면 위 가드의 좁힘이 풀린다.
+        const dayEndsAt = dayEndsAtRef.current;
+        if (!dayEndsAt) {
           setTimeToNextRefresh(60);
           return;
         }
@@ -207,7 +210,7 @@ export function useRoomBattle(userId: string | null): UseRoomBattleReturn {
               if (!current || current.status !== 'playing') return 0;
               
               // Verify server time is actually past dayEndsAtRef to prevent local fast-forwarding
-              if (Date.now() >= dayEndsAtRef.current) {
+              if (Date.now() >= dayEndsAt) {
                 isAdvancingDayRef.current = true;
                 const newDay = current.day + 1;
                 const newEndsAt = Date.now() + 60000;

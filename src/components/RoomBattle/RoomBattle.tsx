@@ -487,7 +487,7 @@ const RoomBattle: React.FC<Props> = ({ onBack }) => {
       <div className="room-battle-playing app-container">
         {!isConnected && (
           <div className="room-battle-reconnecting-banner">
-            {t('roomBattle.reconnecting', 'Connection lost. Reconnecting...')}
+            {t('roomBattle.reconnecting')}
           </div>
         )}
         <Layout

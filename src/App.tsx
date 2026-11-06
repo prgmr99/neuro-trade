@@ -346,6 +346,25 @@ function SplashScreen() {
           </button>
         </div>
 
+        <section className="splash-about">
+          <h2>{t('app.aboutTitle')}</h2>
+          <p>{t('app.aboutBody1')}</p>
+          <p>{t('app.aboutBody2')}</p>
+
+          <h3>{t('app.aboutHowTitle')}</h3>
+          <p>{t('app.aboutHowBody')}</p>
+
+          <h3>{t('app.aboutModesTitle')}</h3>
+          <p>{t('app.aboutModesBody')}</p>
+
+          <h3>{t('app.aboutLimitsTitle')}</h3>
+          <p>{t('app.aboutLimitsBody')}</p>
+
+          <p className="splash-about-hub">
+            <a href="https://yeomniverse.com">{t('app.aboutHubLink')}</a>
+          </p>
+        </section>
+
         <div className="splash-actions-spacer" />
       </div>
 

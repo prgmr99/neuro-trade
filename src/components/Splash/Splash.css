@@ -430,3 +430,33 @@
     font-size: 0.9rem;
   }
 }
+
+/* 설명·면책 섹션. 본문이라 가운데 정렬을 쓰는 상위 규칙을 되돌린다. */
+.splash-about {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.splash-about h2 {
+  font-size: 1.35rem;
+  margin: 0 0 1rem;
+}
+
+.splash-about h3 {
+  font-size: 1.05rem;
+  margin: 1.75rem 0 0.5rem;
+}
+
+.splash-about p {
+  margin: 0 0 0.85rem;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.splash-about-hub {
+  margin-top: 1.75rem;
+  font-size: 0.85rem;
+}

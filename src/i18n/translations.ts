@@ -33,7 +33,17 @@ export const translations = {
       howToPlayStep2Desc: "Buy and sell stocks based on your analysis.",
       howToPlayStep3: "Beat the Market",
       howToPlayStep3Desc: "Maximize your portfolio return to top the leaderboard.",
-      dailyExpires: "Today's challenge expires in {hours}h"
+      dailyExpires: "Today's challenge expires in {hours}h",
+      aboutTitle: "What this is",
+      aboutBody1: "NeuroTrade is a practice ground for reading news. Every company, headline and price move here is invented. Nothing is connected to a brokerage, no real money is at stake, and no order you place reaches a market.",
+      aboutBody2: "The news is fictional on purpose. Replay real headlines and anyone who remembers what the market did that week has an edge, which defeats the point. Facing an event you have never seen, under conditions you cannot look up, is what trains judgment.",
+      aboutHowTitle: "How a round works",
+      aboutHowBody: "A round gives you starting cash and a short list of tickers. Each day an event lands, you decide what it means before the market reacts, and you take a position. When the day closes you see how the market actually moved and why. That gap — between what you expected and what happened — is where the learning sits, and skipping the recap wastes the round.",
+      aboutModesTitle: "Choosing a mode",
+      aboutModesBody: "Classic runs five days over five tickers and is the place to start. Advanced runs ten days over ten tickers with events that link into a longer storyline. Daily Challenge gives every player the same scenario and a single attempt, so the spread in results comes from judgment rather than luck. Room Battle puts up to ten friends in a private room.",
+      aboutLimitsTitle: "What it is not",
+      aboutLimitsBody: "This is a game, not a model of any real market. A result here predicts nothing about actual trading, and none of it is investment advice. The simulator leaves out costs that dominate real returns — spreads, slippage, taxes, and the difficulty of acting on news before everyone else has. Treat a good score as evidence you read the story well, not that you would have made money.",
+      aboutHubLink: "NeuroTrade is one of the tools built at Yeomniverse."
     },
     daily: {
       title: "Daily Challenge",
@@ -123,6 +133,7 @@ export const translations = {
       backToMenu: "Back to Menu",
     },
     roomBattle: {
+      reconnecting: 'Connection lost. Reconnecting...',
       title: 'Room Battle',
       subtitle: 'Create a private room and compete with friends',
       splashDetail: 'Up to 10 players, 5-day classic mode',
@@ -472,7 +483,17 @@ export const translations = {
       howToPlayStep2Desc: "분석을 바탕으로 주식을 사고 파세요.",
       howToPlayStep3: "시장을 이겨라",
       howToPlayStep3Desc: "포트폴리오 수익을 극대화하여 순위에 도전하세요.",
-      dailyExpires: "오늘의 도전 마감까지 {hours}시간"
+      dailyExpires: "오늘의 도전 마감까지 {hours}시간",
+      aboutTitle: "이게 무엇인가",
+      aboutBody1: "NeuroTrade는 뉴스를 읽는 연습장입니다. 여기 등장하는 기업, 헤드라인, 가격 움직임은 전부 가상입니다. 증권 계좌와 연결되는 지점이 없고, 실제 자금이 들어가지 않으며, 주문이 시장에 전달되지도 않습니다.",
+      aboutBody2: "뉴스를 가상으로 만든 데는 이유가 있습니다. 실제 기사를 다시 쓰면 그 주에 시장이 어떻게 움직였는지 기억하는 사람이 유리해져 연습의 목적이 깨집니다. 처음 보는 사건을, 찾아볼 수 없는 조건에서 해석해야 판단력이 훈련됩니다.",
+      aboutHowTitle: "한 판은 이렇게 돌아갑니다",
+      aboutHowBody: "초기 자금과 몇 개의 종목이 주어집니다. 매일 사건이 하나 터지고, 시장이 반응하기 전에 그것이 무슨 의미인지 판단해 포지션을 잡습니다. 하루가 마감되면 시장이 실제로 어떻게 움직였고 왜 그랬는지를 확인합니다. 예상과 결과 사이의 그 간극이 배우는 지점이고, 마감 요약을 건너뛰면 한 판을 버리는 셈입니다.",
+      aboutModesTitle: "모드 고르기",
+      aboutModesBody: "클래식은 5일 5종목으로 처음 시작하기 좋습니다. 어드밴스드는 10일 10종목이고 사건이 하나의 긴 이야기로 이어집니다. 오늘의 도전은 모든 플레이어가 같은 시나리오를 한 번만 받으므로 결과 차이가 운이 아니라 판단에서 납니다. 방 배틀은 비공개 방에서 최대 10명이 겨룹니다.",
+      aboutLimitsTitle: "이건 아닙니다",
+      aboutLimitsBody: "이것은 게임이지 실제 시장의 모형이 아닙니다. 여기서의 성과는 실제 거래에 대해 아무것도 예측하지 않으며, 어떤 내용도 투자 자문이 아닙니다. 실제 수익률을 좌우하는 비용 — 호가 스프레드, 슬리피지, 세금, 그리고 남들보다 먼저 뉴스에 반응하는 일의 어려움 — 은 시뮬레이터에 들어 있지 않습니다. 좋은 점수는 이야기를 잘 읽었다는 증거지 돈을 벌었으리라는 증거가 아닙니다.",
+      aboutHubLink: "NeuroTrade는 Yeomniverse에서 만든 도구 중 하나입니다."
     },
     daily: {
       title: "오늘의 도전",
@@ -562,6 +583,7 @@ export const translations = {
       backToMenu: "메뉴로 돌아가기",
     },
     roomBattle: {
+      reconnecting: '연결이 끊겼습니다. 재연결 중...',
       title: '방 배틀',
       subtitle: '비공개 방을 만들고 친구와 수익률 대결',
       splashDetail: '최대 10명, 클래식 5일 모드',
